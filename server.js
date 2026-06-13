@@ -36,6 +36,16 @@ app.use('/uploads', (req, res, next) => {
   next();
 }, express.static(UPLOADS_DIR));
 
+// Explicit MIME types for video files
+app.use('/fotos', (req, res, next) => {
+  if (req.path.endsWith('.mp4') || req.path.endsWith('.MP4')) {
+    res.setHeader('Content-Type', 'video/mp4');
+  } else if (req.path.endsWith('.MOV') || req.path.endsWith('.mov')) {
+    res.setHeader('Content-Type', 'video/quicktime');
+  }
+  next();
+}, express.static(path.join(__dirname, 'public', 'fotos')));
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 const storage = multer.diskStorage({
