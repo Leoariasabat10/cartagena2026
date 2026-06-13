@@ -1,9 +1,6 @@
 /**
- * ============================================================
- * CARTAGENA 2026 — BACKEND v3
- * Mejoras: foto de perfil, rol participant, countdown, sin fondo
- * Stack: Express + sql.js + ws + bcryptjs + jwt + multer
- * ============================================================
+ * CARTAGENA 2026 — BACKEND v4
+ * Fixes: participant payments, avatar persistence, video support, permissions
  */
 
 const express   = require('express');
@@ -17,43 +14,46 @@ const fs        = require('fs');
 const multer    = require('multer');
 const initSqlJs = require('sql.js');
 
-// ── Config ────────────────────────────────────────────────────
 const PORT        = process.env.PORT || 3001;
 const JWT_SECRET  = process.env.JWT_SECRET || crypto.randomBytes(64).toString('hex');
 const DB_PATH     = process.env.DB_PATH || path.join(__dirname, 'cartagena.db');
 const UPLOADS_DIR = process.env.UPLOADS_DIR || path.join(__dirname, 'public', 'uploads');
 const SALT_ROUNDS = 12;
 
-// Ensure uploads dir exists
 if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 
-// ── Express + HTTP + WS ───────────────────────────────────────
 const app    = express();
 const server = http.createServer(app);
 const wss    = new WebSocket.Server({ server });
 
-app.use(express.json({ limit: '10mb' }));
+app.use(express.json({ limit: '15mb' }));
 app.use(express.urlencoded({ extended: true }));
+
+// Serve static with proper cache headers for avatars
+app.use('/uploads', (req, res, next) => {
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  next();
+}, express.static(UPLOADS_DIR));
+
 app.use(express.static(path.join(__dirname, 'public')));
 
-// ── Multer (avatar uploads) ───────────────────────────────────
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, UPLOADS_DIR),
-  filename:    (req, file, cb) => {
+  filename: (req, file, cb) => {
     const ext = path.extname(file.originalname).toLowerCase() || '.jpg';
     cb(null, `avatar_${req.user.id}_${Date.now()}${ext}`);
   }
 });
 const upload = multer({
   storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+  limits: { fileSize: 8 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     const ok = ['image/jpeg','image/png','image/webp','image/gif'].includes(file.mimetype);
     cb(ok ? null : new Error('Solo imágenes'), ok);
   }
 });
 
-// ── Helpers ───────────────────────────────────────────────────
 function uid()  { return crypto.randomBytes(8).toString('hex'); }
 function now()  { return new Date().toISOString(); }
 function signToken(user) {
@@ -64,8 +64,8 @@ function signToken(user) {
   );
 }
 
-// ── DB bootstrap ──────────────────────────────────────────────
 let db;
+let persistTimer = null;
 
 async function initDB() {
   const SQL = await initSqlJs();
@@ -77,132 +77,144 @@ async function initDB() {
   }
 
   function persist() {
-    fs.writeFileSync(DB_PATH, Buffer.from(db.export()));
+    if (persistTimer) clearTimeout(persistTimer);
+    persistTimer = setTimeout(() => {
+      try { fs.writeFileSync(DB_PATH, Buffer.from(db.export())); } catch(e) { console.error('Persist error:', e); }
+    }, 500);
   }
-  global.persistDB = persist;
 
-  // Schema — ROLES: 'admin' | 'participant'
-  db.run(`
-    CREATE TABLE IF NOT EXISTS users (
-      id         TEXT PRIMARY KEY,
-      username   TEXT UNIQUE NOT NULL,
-      password   TEXT NOT NULL,
-      role       TEXT NOT NULL DEFAULT 'participant',
-      active     INTEGER NOT NULL DEFAULT 1,
-      display_name TEXT,
-      avatar_url TEXT,
-      traveler_id TEXT,
-      created_at TEXT NOT NULL DEFAULT (datetime('now')),
-      updated_at TEXT NOT NULL DEFAULT (datetime('now'))
-    );
-    CREATE TABLE IF NOT EXISTS settings (
-      id           INTEGER PRIMARY KEY CHECK (id=1),
-      installments INTEGER NOT NULL DEFAULT 4,
-      interest     REAL    NOT NULL DEFAULT 3.0,
-      dark_mode    INTEGER NOT NULL DEFAULT 0,
-      trip_date    TEXT    NOT NULL DEFAULT '2026-11-12',
-      updated_at   TEXT    NOT NULL DEFAULT (datetime('now'))
-    );
-    CREATE TABLE IF NOT EXISTS travelers (
-      id             TEXT PRIMARY KEY,
-      name           TEXT NOT NULL,
-      flight         REAL NOT NULL,
-      first_pay_date TEXT NOT NULL,
-      avatar_url     TEXT,
-      created_at     TEXT NOT NULL DEFAULT (datetime('now')),
-      updated_at     TEXT NOT NULL DEFAULT (datetime('now'))
-    );
-    CREATE TABLE IF NOT EXISTS payments (
-      id          TEXT PRIMARY KEY,
-      traveler_id TEXT NOT NULL,
-      cuota       INTEGER NOT NULL,
-      date        TEXT NOT NULL,
-      value       REAL NOT NULL,
-      created_at  TEXT NOT NULL DEFAULT (datetime('now'))
-    );
-  `);
+  const _run = db.run.bind(db);
+  db.run = function(...args) { const r = _run(...args); persist(); return r; };
 
-  // Migrations: add columns if they don't exist (safe re-runs)
-  const tryAdd = (tbl, col, def) => {
-    try { db.run(`ALTER TABLE ${tbl} ADD COLUMN ${col} ${def}`); } catch {}
-  };
-  tryAdd('users', 'display_name', 'TEXT');
-  tryAdd('users', 'avatar_url',   'TEXT');
-  tryAdd('users', 'traveler_id',  'TEXT');
-  tryAdd('travelers', 'avatar_url', 'TEXT');
-  tryAdd('settings', 'trip_date', "TEXT NOT NULL DEFAULT '2026-11-12'");
+  // Schema
+  db.run(`CREATE TABLE IF NOT EXISTS users (
+    id TEXT PRIMARY KEY, username TEXT UNIQUE NOT NULL,
+    password TEXT NOT NULL, role TEXT DEFAULT 'participant',
+    active INTEGER DEFAULT 1, display_name TEXT,
+    avatar_url TEXT, traveler_id TEXT,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+  )`);
 
-  // Seed settings
-  const hasSettings = db.exec("SELECT id FROM settings WHERE id=1")[0]?.values.length > 0;
-  if (!hasSettings) db.run("INSERT INTO settings (id) VALUES (1)");
+  db.run(`CREATE TABLE IF NOT EXISTS settings (
+    id INTEGER PRIMARY KEY DEFAULT 1,
+    installments INTEGER DEFAULT 4, interest REAL DEFAULT 3,
+    dark_mode INTEGER DEFAULT 0, trip_date TEXT DEFAULT '2026-11-12',
+    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+  )`);
 
-  // Seed admin
-  const hasAdmin = db.exec("SELECT id FROM users WHERE role='admin' LIMIT 1")[0]?.values.length > 0;
-  if (!hasAdmin) {
+  db.run(`CREATE TABLE IF NOT EXISTS travelers (
+    id TEXT PRIMARY KEY, name TEXT NOT NULL,
+    flight REAL DEFAULT 0, first_pay_date TEXT,
+    avatar_url TEXT,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+  )`);
+
+  db.run(`CREATE TABLE IF NOT EXISTS payments (
+    id TEXT PRIMARY KEY, traveler_id TEXT NOT NULL,
+    cuota INTEGER NOT NULL, date TEXT NOT NULL,
+    value REAL NOT NULL, approved INTEGER DEFAULT 1,
+    pending_approval INTEGER DEFAULT 0,
+    submitted_by TEXT,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(traveler_id) REFERENCES travelers(id)
+  )`);
+
+  // Add missing columns if upgrading
+  try { db.run(`ALTER TABLE payments ADD COLUMN approved INTEGER DEFAULT 1`); } catch(e){}
+  try { db.run(`ALTER TABLE payments ADD COLUMN pending_approval INTEGER DEFAULT 0`); } catch(e){}
+  try { db.run(`ALTER TABLE payments ADD COLUMN submitted_by TEXT`); } catch(e){}
+
+  // Init settings row
+  const st = dbGet('SELECT id FROM settings WHERE id=1');
+  if (!st) db.run(`INSERT INTO settings (id) VALUES (1)`);
+
+  // Init admin
+  const adm = dbGet("SELECT id FROM users WHERE username='admin'");
+  if (!adm) {
+    const id = uid();
     const hash = bcrypt.hashSync('admin123', SALT_ROUNDS);
-    db.run("INSERT INTO users (id,username,password,role,display_name) VALUES (?,?,?,?,?)",
-      [uid(), 'admin', hash, 'admin', 'Administrador']);
+    db.run(`INSERT INTO users (id,username,password,role,display_name) VALUES (?,?,?,?,?)`,
+      [id, 'admin', hash, 'admin', 'Administrador']);
     console.log('✅ Admin creado → user: admin | pass: admin123');
   }
 
   persist();
-  setInterval(persist, 10000);
 }
 
-// ── DB helpers ────────────────────────────────────────────────
-function dbAll(sql, params = []) {
-  const res = db.exec(sql, params);
-  if (!res.length) return [];
-  const { columns, values } = res[0];
-  return values.map(row => Object.fromEntries(columns.map((c, i) => [c, row[i]])));
-}
-function dbGet(sql, params = []) { return dbAll(sql, params)[0] || null; }
-function dbRun(sql, params = []) { db.run(sql, params); global.persistDB(); }
-
-// ── Auth middleware ───────────────────────────────────────────
-function requireAuth(req, res, next) {
-  const header = req.headers.authorization || '';
-  const token  = header.startsWith('Bearer ') ? header.slice(7) : null;
-  if (!token) return res.status(401).json({ error: 'No autenticado' });
+function dbGet(sql, params = []) {
   try {
-    req.user = jwt.verify(token, JWT_SECRET);
-    const u  = dbGet('SELECT active FROM users WHERE id=?', [req.user.id]);
-    if (!u || !u.active) return res.status(401).json({ error: 'Cuenta desactivada' });
+    const stmt = db.prepare(sql);
+    stmt.bind(params);
+    if (stmt.step()) { const r = stmt.getAsObject(); stmt.free(); return r; }
+    stmt.free(); return null;
+  } catch(e) { console.error('dbGet error:', sql, e.message); return null; }
+}
+
+function dbAll(sql, params = []) {
+  try {
+    const stmt = db.prepare(sql);
+    const rows = [];
+    stmt.bind(params);
+    while (stmt.step()) rows.push(stmt.getAsObject());
+    stmt.free(); return rows;
+  } catch(e) { console.error('dbAll error:', sql, e.message); return []; }
+}
+
+function dbRun(sql, params = []) {
+  try { db.run(sql, params); } catch(e) { console.error('dbRun error:', sql, e.message); }
+}
+
+// ── Middleware ─────────────────────────────────────────────────
+function requireAuth(req, res, next) {
+  const h = req.headers.authorization;
+  if (!h || !h.startsWith('Bearer '))
+    return res.status(401).json({ error: 'No autorizado' });
+  try {
+    req.user = jwt.verify(h.slice(7), JWT_SECRET);
     next();
-  } catch { return res.status(401).json({ error: 'Token inválido' }); }
+  } catch { res.status(401).json({ error: 'Token inválido' }); }
 }
 
 function requireAdmin(req, res, next) {
   requireAuth(req, res, () => {
-    if (req.user.role !== 'admin') return res.status(403).json({ error: 'Solo administradores' });
+    if (req.user.role !== 'admin')
+      return res.status(403).json({ error: 'Solo administradores' });
     next();
   });
 }
 
 // ── Broadcast ─────────────────────────────────────────────────
-function broadcast(payload) {
-  const msg = JSON.stringify(payload);
-  wss.clients.forEach(c => { if (c.readyState === WebSocket.OPEN) c.send(msg); });
+function broadcast(msg) {
+  const s = JSON.stringify(msg);
+  wss.clients.forEach(ws => {
+    if (ws.readyState === WebSocket.OPEN) ws.send(s);
+  });
 }
 
-// ── Full state ────────────────────────────────────────────────
 function getFullState() {
-  const settings  = dbGet('SELECT * FROM settings WHERE id=1');
+  const s = dbGet('SELECT * FROM settings WHERE id=1') || {};
   const travelers = dbAll('SELECT * FROM travelers ORDER BY created_at');
-  const payments  = dbAll('SELECT * FROM payments ORDER BY date, created_at');
+  const payments  = dbAll('SELECT * FROM payments ORDER BY date');
   return {
     settings: {
-      installments: settings.installments,
-      interest:     settings.interest,
-      darkMode:     !!settings.dark_mode,
-      tripDate:     settings.trip_date || '2026-11-12'
+      installments: s.installments || 4,
+      interest:     s.interest || 3,
+      darkMode:     s.dark_mode === 1,
+      tripDate:     s.trip_date || '2026-11-12'
     },
     travelers: travelers.map(t => ({
       id: t.id, name: t.name, flight: t.flight,
-      firstPayDate: t.first_pay_date, avatarUrl: t.avatar_url || null
+      firstPayDate: t.first_pay_date,
+      avatarUrl: t.avatar_url ? `${t.avatar_url}?v=${Date.now()}` : null
     })),
     payments: payments.map(p => ({
-      id: p.id, travelerId: p.traveler_id, cuota: p.cuota, date: p.date, value: p.value
+      id: p.id, travelerId: p.traveler_id, cuota: p.cuota,
+      date: p.date, value: p.value,
+      approved: p.approved !== 0,
+      pendingApproval: p.pending_approval === 1,
+      submittedBy: p.submitted_by || null
     }))
   };
 }
@@ -211,7 +223,6 @@ function getFullState() {
 //  ROUTES
 // ═══════════════════════════════════════════════════════════════
 
-// ── Auth ──────────────────────────────────────────────────────
 app.post('/api/auth/login', (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) return res.status(400).json({ error: 'Faltan campos' });
@@ -219,12 +230,14 @@ app.post('/api/auth/login', (req, res) => {
     [username.trim().toLowerCase()]);
   if (!user || !bcrypt.compareSync(password, user.password))
     return res.status(401).json({ error: 'Credenciales inválidas' });
+  // Add cache-buster to avatar
+  const avatarUrl = user.avatar_url ? `${user.avatar_url}?v=${Date.now()}` : null;
   res.json({
     token: signToken(user),
     user: {
       id: user.id, username: user.username, role: user.role,
       displayName: user.display_name || user.username,
-      avatarUrl: user.avatar_url || null,
+      avatarUrl,
       travelerId: user.traveler_id || null
     }
   });
@@ -234,18 +247,18 @@ app.get('/api/me', requireAuth, (req, res) => {
   const u = dbGet('SELECT id,username,role,active,display_name,avatar_url,traveler_id FROM users WHERE id=?',
     [req.user.id]);
   if (!u) return res.status(404).json({ error: 'No encontrado' });
+  const avatarUrl = u.avatar_url ? `${u.avatar_url}?v=${Date.now()}` : null;
   res.json({
     id: u.id, username: u.username, role: u.role,
     displayName: u.display_name || u.username,
-    avatarUrl: u.avatar_url || null,
+    avatarUrl,
     travelerId: u.traveler_id || null
   });
 });
 
-// ── State ─────────────────────────────────────────────────────
 app.get('/api/state', requireAuth, (req, res) => res.json(getFullState()));
 
-// ── Settings (admin only) ─────────────────────────────────────
+// Settings (admin only)
 app.put('/api/settings', requireAdmin, (req, res) => {
   const { installments, interest, darkMode, tripDate } = req.body;
   dbRun('UPDATE settings SET installments=?,interest=?,dark_mode=?,trip_date=?,updated_at=? WHERE id=1',
@@ -254,11 +267,12 @@ app.put('/api/settings', requireAdmin, (req, res) => {
   res.json({ ok: true });
 });
 
-// ── Travelers (admin: full CRUD) ──────────────────────────────
+// Travelers
 app.get('/api/travelers', requireAuth, (req, res) => {
   res.json(dbAll('SELECT * FROM travelers ORDER BY created_at').map(t => ({
     id: t.id, name: t.name, flight: t.flight,
-    firstPayDate: t.first_pay_date, avatarUrl: t.avatar_url || null
+    firstPayDate: t.first_pay_date,
+    avatarUrl: t.avatar_url ? `${t.avatar_url}?v=${Date.now()}` : null
   })));
 });
 
@@ -275,12 +289,10 @@ app.post('/api/travelers', requireAdmin, (req, res) => {
 
 app.put('/api/travelers/:id', requireAuth, (req, res) => {
   const tid = req.params.id;
-  // Participants can only edit their own linked traveler's name
   if (req.user.role !== 'admin') {
     const me = dbGet('SELECT traveler_id FROM users WHERE id=?', [req.user.id]);
     if (!me || me.traveler_id !== tid)
       return res.status(403).json({ error: 'Solo puedes editar tu propio perfil' });
-    // Participants can only change name
     const { name } = req.body;
     if (!name) return res.status(400).json({ error: 'Falta nombre' });
     dbRun('UPDATE travelers SET name=?,updated_at=? WHERE id=?', [name.trim(), now(), tid]);
@@ -288,7 +300,6 @@ app.put('/api/travelers/:id', requireAuth, (req, res) => {
     broadcast({ type: 'TRAVELER_UPDATED', data: { id: t.id, name: t.name, flight: t.flight, firstPayDate: t.first_pay_date, avatarUrl: t.avatar_url } });
     return res.json({ ok: true });
   }
-  // Admin: full edit
   const { name, flight, firstPayDate } = req.body;
   dbRun('UPDATE travelers SET name=?,flight=?,first_pay_date=?,updated_at=? WHERE id=?',
     [name.trim(), flight, firstPayDate, now(), tid]);
@@ -304,16 +315,51 @@ app.delete('/api/travelers/:id', requireAdmin, (req, res) => {
   res.json({ ok: true });
 });
 
-// ── Payments (admin only) ─────────────────────────────────────
-app.post('/api/payments', requireAdmin, (req, res) => {
+// ── PAYMENTS — FIX: participants can register their OWN payment ──
+app.post('/api/payments', requireAuth, (req, res) => {
   const { travelerId, cuota, date, value } = req.body;
   if (!travelerId || !cuota || !date || !value) return res.status(400).json({ error: 'Faltan campos' });
+
+  const isAdmin = req.user.role === 'admin';
+
+  if (!isAdmin) {
+    // Participant can only pay for their own traveler
+    const me = dbGet('SELECT traveler_id FROM users WHERE id=?', [req.user.id]);
+    if (!me || me.traveler_id !== travelerId)
+      return res.status(403).json({ error: 'Solo puedes registrar tu propio pago' });
+  }
+
+  // Check for duplicate
+  const exists = dbGet('SELECT id FROM payments WHERE traveler_id=? AND cuota=?', [travelerId, cuota]);
+  if (exists) return res.status(409).json({ error: 'Esa cuota ya fue registrada' });
+
   const id = uid();
-  dbRun('INSERT INTO payments (id,traveler_id,cuota,date,value) VALUES (?,?,?,?,?)',
-    [id, travelerId, cuota, date, value]);
-  const p = { id, travelerId, cuota, date, value };
+  // Admin payments are auto-approved; participant payments are pending
+  const approved = isAdmin ? 1 : 0;
+  const pending  = isAdmin ? 0 : 1;
+
+  dbRun('INSERT INTO payments (id,traveler_id,cuota,date,value,approved,pending_approval,submitted_by) VALUES (?,?,?,?,?,?,?,?)',
+    [id, travelerId, cuota, date, value, approved, pending, req.user.id]);
+
+  const p = { id, travelerId, cuota, date, value, approved: !!approved, pendingApproval: !!pending, submittedBy: req.user.id };
   broadcast({ type: 'PAYMENT_ADDED', data: p });
   res.status(201).json(p);
+});
+
+// Approve payment (admin only)
+app.put('/api/payments/:id/approve', requireAdmin, (req, res) => {
+  dbRun('UPDATE payments SET approved=1,pending_approval=0 WHERE id=?', [req.params.id]);
+  const p = dbGet('SELECT * FROM payments WHERE id=?', [req.params.id]);
+  if (!p) return res.status(404).json({ error: 'Pago no encontrado' });
+  broadcast({ type: 'PAYMENT_APPROVED', data: { id: p.id, travelerId: p.traveler_id, cuota: p.cuota, date: p.date, value: p.value, approved: true, pendingApproval: false } });
+  res.json({ ok: true });
+});
+
+// Reject payment (admin only)
+app.delete('/api/payments/:id/reject', requireAdmin, (req, res) => {
+  dbRun('DELETE FROM payments WHERE id=? AND pending_approval=1', [req.params.id]);
+  broadcast({ type: 'PAYMENT_DELETED', data: { id: req.params.id } });
+  res.json({ ok: true });
 });
 
 app.delete('/api/payments/:id', requireAdmin, (req, res) => {
@@ -322,8 +368,7 @@ app.delete('/api/payments/:id', requireAdmin, (req, res) => {
   res.json({ ok: true });
 });
 
-// ── Avatar upload ─────────────────────────────────────────────
-// Upload avatar for a traveler (admin for any, participant for their own)
+// ── AVATAR — with cache-busting ─────────────────────────────
 app.post('/api/travelers/:id/avatar', requireAuth, (req, res, next) => {
   const tid = req.params.id;
   if (req.user.role !== 'admin') {
@@ -334,16 +379,15 @@ app.post('/api/travelers/:id/avatar', requireAuth, (req, res, next) => {
   next();
 }, upload.single('avatar'), (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No se recibió imagen' });
-  const avatarUrl = `/uploads/${req.file.filename}`;
+  const avatarPath = `/uploads/${req.file.filename}`;
+  const avatarUrl  = `${avatarPath}?v=${Date.now()}`;
   const tid = req.params.id;
-  dbRun('UPDATE travelers SET avatar_url=?,updated_at=? WHERE id=?', [avatarUrl, now(), tid]);
-  // Also update linked user's avatar
-  dbRun('UPDATE users SET avatar_url=?,updated_at=? WHERE traveler_id=?', [avatarUrl, now(), tid]);
+  dbRun('UPDATE travelers SET avatar_url=?,updated_at=? WHERE id=?', [avatarPath, now(), tid]);
+  dbRun('UPDATE users SET avatar_url=?,updated_at=? WHERE traveler_id=?', [avatarPath, now(), tid]);
   broadcast({ type: 'AVATAR_UPDATED', data: { travelerId: tid, avatarUrl } });
   res.json({ avatarUrl });
 });
 
-// Upload avatar via base64 (alternative for mobile)
 app.post('/api/travelers/:id/avatar-base64', requireAuth, (req, res) => {
   const tid = req.params.id;
   if (req.user.role !== 'admin') {
@@ -356,15 +400,20 @@ app.post('/api/travelers/:id/avatar-base64', requireAuth, (req, res) => {
   const filename = `avatar_${tid}_${Date.now()}.${ext || 'jpg'}`;
   const filepath = path.join(UPLOADS_DIR, filename);
   const data = base64.replace(/^data:image\/\w+;base64,/, '');
-  fs.writeFileSync(filepath, Buffer.from(data, 'base64'));
-  const avatarUrl = `/uploads/${filename}`;
-  dbRun('UPDATE travelers SET avatar_url=?,updated_at=? WHERE id=?', [avatarUrl, now(), tid]);
-  dbRun('UPDATE users SET avatar_url=?,updated_at=? WHERE traveler_id=?', [avatarUrl, now(), tid]);
+  try {
+    fs.writeFileSync(filepath, Buffer.from(data, 'base64'));
+  } catch(e) {
+    return res.status(500).json({ error: 'Error guardando imagen' });
+  }
+  const avatarPath = `/uploads/${filename}`;
+  const avatarUrl  = `${avatarPath}?v=${Date.now()}`;
+  dbRun('UPDATE travelers SET avatar_url=?,updated_at=? WHERE id=?', [avatarPath, now(), tid]);
+  dbRun('UPDATE users SET avatar_url=?,updated_at=? WHERE traveler_id=?', [avatarPath, now(), tid]);
   broadcast({ type: 'AVATAR_UPDATED', data: { travelerId: tid, avatarUrl } });
   res.json({ avatarUrl });
 });
 
-// ── Users (admin: full CRUD) ──────────────────────────────────
+// ── USERS ─────────────────────────────────────────────────────
 app.get('/api/users', requireAdmin, (req, res) => {
   res.json(dbAll('SELECT id,username,role,active,display_name,avatar_url,traveler_id,created_at FROM users ORDER BY created_at'));
 });
@@ -372,7 +421,7 @@ app.get('/api/users', requireAdmin, (req, res) => {
 app.post('/api/users', requireAdmin, (req, res) => {
   const { username, password, role, displayName, travelerId } = req.body;
   if (!username || !password || !['admin','participant'].includes(role))
-    return res.status(400).json({ error: 'Campos inválidos. Rol debe ser admin o participant' });
+    return res.status(400).json({ error: 'Campos inválidos' });
   if (password.length < 6) return res.status(400).json({ error: 'Contraseña mínimo 6 caracteres' });
   const exists = dbGet('SELECT id FROM users WHERE username=?', [username.trim().toLowerCase()]);
   if (exists) return res.status(409).json({ error: 'Usuario ya existe' });
@@ -383,7 +432,6 @@ app.post('/api/users', requireAdmin, (req, res) => {
   res.status(201).json({ id, username: username.trim().toLowerCase(), role, active: 1, displayName, travelerId });
 });
 
-// Self-update (participant: only displayName)
 app.put('/api/users/me', requireAuth, (req, res) => {
   const { displayName } = req.body;
   if (!displayName) return res.status(400).json({ error: 'Falta nombre' });
@@ -400,10 +448,9 @@ app.put('/api/users/:id', requireAdmin, (req, res) => {
     dbRun('UPDATE users SET password=?,updated_at=? WHERE id=?',
       [bcrypt.hashSync(password, SALT_ROUNDS), now(), req.params.id]);
   }
-  // Keep existing display_name if not provided
-  const existing = dbGet('SELECT display_name, username FROM users WHERE id=?', [req.params.id]);
-  const finalName = (displayName && displayName.trim()) || existing?.display_name || existing?.username || '';
-  const finalTid  = (travelerId !== undefined) ? (travelerId || null) : (existing?.traveler_id || null);
+  const existing = dbGet('SELECT display_name,traveler_id FROM users WHERE id=?', [req.params.id]);
+  const finalName = (displayName && displayName.trim()) || existing?.display_name || '';
+  const finalTid  = travelerId !== undefined ? (travelerId || null) : (existing?.traveler_id || null);
   dbRun('UPDATE users SET role=?,active=?,display_name=?,traveler_id=?,updated_at=? WHERE id=?',
     [role, active ? 1 : 0, finalName, finalTid, now(), req.params.id]);
   res.json({ ok: true });
@@ -440,7 +487,6 @@ setInterval(() => {
   });
 }, 30000);
 
-// ── Start ─────────────────────────────────────────────────────
 initDB().then(() => {
   server.listen(PORT, () => {
     console.log(`🚀 Cartagena 2026 → http://localhost:${PORT}`);

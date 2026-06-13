@@ -333,17 +333,103 @@ img{max-width:100%;display:block}
 .section-title{font-size:20px;font-weight:700;letter-spacing:-0.4px}
 .section-sub{font-size:13px;color:var(--text-2);margin-top:2px}
 
-/* ── COUNTDOWN HERO ── */
+/* ── COUNTDOWN PREMIUM ── */
 .countdown-hero{
-  background:linear-gradient(135deg,#050d1a 0%,#0a1e3a 40%,#0e2a4a 70%,#0d3a5c 100%);
-  border-radius:24px;padding:44px 24px 36px;
+  border-radius:28px;padding:48px 24px 40px;
   text-align:center;position:relative;overflow:hidden;
   margin-bottom:36px;
-  box-shadow:0 20px 60px rgba(0,0,0,0.5),0 0 0 1px rgba(56,189,248,0.08);
+  background:linear-gradient(135deg,
+    #0a1628 0%,
+    #0d2240 25%,
+    #0a3855 50%,
+    #0d4a6e 75%,
+    #0a5a7a 100%);
+  box-shadow:
+    0 24px 64px rgba(0,0,0,0.6),
+    0 0 0 1px rgba(56,189,248,0.1),
+    inset 0 1px 0 rgba(255,255,255,0.05);
 }
-.countdown-hero::after{
-  content:'🌊';position:absolute;bottom:-10px;right:20px;
-  font-size:80px;opacity:0.06;transform:rotate(-10deg);
+
+/* Animated wave background */
+.cd-bg-waves{
+  position:absolute;inset:0;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120'%3E%3Cpath d='M0,60 C150,100 350,0 600,60 C850,120 1050,20 1200,60 L1200,120 L0,120 Z' fill='rgba(56,189,248,0.04)'/%3E%3C/svg%3E") bottom/200% auto repeat-x;
+  animation:waveMove 8s linear infinite;
+  pointer-events:none;
+}
+@keyframes waveMove{0%{background-position:0 bottom}100%{background-position:200% bottom}}
+
+/* Glow orbs */
+.cd-bg-glow{
+  position:absolute;border-radius:50%;filter:blur(60px);pointer-events:none;
+  animation:glowPulse 6s ease-in-out infinite alternate;
+}
+.cd-bg-glow1{width:300px;height:300px;top:-80px;left:-60px;background:rgba(0,194,255,0.12)}
+.cd-bg-glow2{width:250px;height:250px;bottom:-60px;right:-40px;background:rgba(0,255,180,0.08);animation-delay:-3s}
+.cd-bg-glow3{width:200px;height:200px;top:20%;left:50%;transform:translateX(-50%);background:rgba(56,189,248,0.06);animation-delay:-1.5s}
+@keyframes glowPulse{0%{opacity:0.5;transform:scale(1)}100%{opacity:1;transform:scale(1.3)}}
+
+/* Particles */
+.cd-particles{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.cd-particle{
+  position:absolute;border-radius:50%;
+  background:rgba(255,255,255,0.6);
+  animation:particleFloat var(--dur,8s) ease-in-out infinite;
+  opacity:0;
+}
+@keyframes particleFloat{
+  0%{opacity:0;transform:translateY(100%) scale(0)}
+  20%{opacity:0.8}
+  80%{opacity:0.4}
+  100%{opacity:0;transform:translateY(-120px) scale(1.5)}
+}
+
+.cd-content{position:relative;z-index:2}
+
+.cd-badge-dot{
+  display:inline-block;width:6px;height:6px;border-radius:50%;
+  background:#38bdf8;margin-right:6px;
+  animation:badgePulse 2s ease-in-out infinite;
+  box-shadow:0 0 8px #38bdf8;
+}
+@keyframes badgePulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.8)}}
+
+/* Glass unit cards */
+.cd-unit-glass{
+  background:rgba(255,255,255,0.06);
+  backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,0.12);
+  border-radius:20px;
+  padding:20px 16px 14px;
+  position:relative;overflow:hidden;
+  box-shadow:
+    0 8px 32px rgba(0,0,0,0.3),
+    inset 0 1px 0 rgba(255,255,255,0.1),
+    inset 0 -1px 0 rgba(0,0,0,0.2);
+  transition:transform 0.3s,box-shadow 0.3s;
+}
+.cd-unit-glass::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:50%;
+  background:linear-gradient(to bottom,rgba(255,255,255,0.08),transparent);
+  border-radius:20px 20px 0 0;
+}
+.countdown-unit:hover .cd-unit-glass{
+  transform:translateY(-4px);
+  box-shadow:0 16px 48px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.15);
+}
+.cd-separator{
+  font-size:40px;font-weight:900;color:rgba(56,189,248,0.6);
+  display:flex;align-items:center;padding:0 4px;
+  animation:sepBlink 1s step-end infinite;
+  margin-bottom:20px;
+}
+@keyframes sepBlink{0%,100%{opacity:1}50%{opacity:0.2}}
+
+.cd-unit-reflection{
+  height:8px;margin-top:4px;border-radius:0 0 8px 8px;
+  background:linear-gradient(to bottom,rgba(56,189,248,0.15),transparent);
+  filter:blur(4px);
 }
 .countdown-badge{
   display:inline-flex;align-items:center;gap:6px;
@@ -369,14 +455,17 @@ img{max-width:100%;display:block}
 }
 .countdown-unit:hover{transform:translateY(-2px);border-color:rgba(56,189,248,0.3)}
 .countdown-num{
-  font-size:36px;font-weight:900;
-  background:linear-gradient(180deg,#fff 0%,rgba(56,189,248,0.9) 100%);
+  font-size:38px;font-weight:900;
+  background:linear-gradient(180deg,#ffffff 0%,#7dd3fc 60%,#38bdf8 100%);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
   font-variant-numeric:tabular-nums;line-height:1;
   display:block;letter-spacing:-2px;
-  text-shadow:none;
+  position:relative;z-index:1;
+  animation:numPop 0.15s ease-out;
 }
-@media(min-width:400px){.countdown-num{font-size:44px}}
+@keyframes numPop{from{transform:scale(1.15)}to{transform:scale(1)}}
+@media(min-width:400px){.countdown-num{font-size:48px}}
+@media(min-width:640px){.countdown-num{font-size:56px}}
 .countdown-label{font-size:10px;font-weight:600;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.8px;margin-top:6px;display:block}
 .countdown-trip-info{
   display:flex;align-items:center;justify-content:center;gap:16px;
@@ -812,6 +901,11 @@ body.viewer-mode .admin-only-inline{display:none!important}
 }
 .lb-nav button:hover{background:rgba(255,255,255,0.3)}
 
+
+.pending-pay-row td { background: rgba(245,158,11,0.06) !important; }
+.pill-pending { display:inline-block;background:rgba(245,158,11,0.15);color:#f59e0b;font-size:10px;font-weight:700;border-radius:6px;padding:1px 6px;margin-left:4px; }
+.pill-rejected { display:inline-block;background:rgba(239,68,68,0.15);color:#ef4444;font-size:10px;font-weight:700;border-radius:6px;padding:1px 6px;margin-left:4px; }
+
 </style>
 </head>
 <body>
@@ -984,39 +1078,64 @@ body.viewer-mode .admin-only-inline{display:none!important}
     <div class="alerts-wrap" id="alerts-wrap"></div>
   </div>
 
-  <!-- COUNTDOWN -->
+  <!-- COUNTDOWN PREMIUM -->
   <div class="countdown-hero" id="countdown-hero">
-    <div style="position:absolute;inset:0;overflow:hidden;border-radius:24px;pointer-events:none">
-      <div style="position:absolute;top:-40%;left:-20%;width:80%;height:120%;background:radial-gradient(ellipse,rgba(56,189,248,0.12) 0%,transparent 70%);animation:cdGlow 6s ease-in-out infinite alternate"></div>
-      <div style="position:absolute;bottom:-40%;right:-20%;width:70%;height:110%;background:radial-gradient(ellipse,rgba(13,148,136,0.1) 0%,transparent 70%);animation:cdGlow 8s ease-in-out infinite alternate-reverse"></div>
-    </div>
-    <style>@keyframes cdGlow{0%{transform:scale(1)}100%{transform:scale(1.2)}}</style>
-    <div style="position:relative;z-index:1">
-      <div class="countdown-badge">Cartagena 2026 · Viaje grupal</div>
-      <div class="countdown-message" id="cd-message">Cargando cuenta regresiva...</div>
+    <!-- Animated tropical background -->
+    <div class="cd-bg-waves"></div>
+    <div class="cd-bg-glow cd-bg-glow1"></div>
+    <div class="cd-bg-glow cd-bg-glow2"></div>
+    <div class="cd-bg-glow cd-bg-glow3"></div>
+    
+    <!-- Floating particles -->
+    <div class="cd-particles" id="cd-particles"></div>
+
+    <div class="cd-content">
+      <div class="countdown-badge">
+        <span class="cd-badge-dot"></span>
+        Cartagena 2026 · Viaje grupal
+      </div>
+      
+      <div class="countdown-message" id="cd-message">Cargando...</div>
       <div class="countdown-sub-msg" id="cd-submsg"></div>
+
       <div class="countdown-grid">
         <div class="countdown-unit">
-          <span class="countdown-num" id="cd-days">00</span>
-          <span class="countdown-label">Días</span>
+          <div class="cd-unit-glass">
+            <span class="countdown-num" id="cd-days">00</span>
+            <span class="countdown-label">Días</span>
+          </div>
+          <div class="cd-unit-reflection"></div>
         </div>
+        <div class="cd-separator">:</div>
         <div class="countdown-unit">
-          <span class="countdown-num" id="cd-hours">00</span>
-          <span class="countdown-label">Horas</span>
+          <div class="cd-unit-glass">
+            <span class="countdown-num" id="cd-hours">00</span>
+            <span class="countdown-label">Horas</span>
+          </div>
+          <div class="cd-unit-reflection"></div>
         </div>
+        <div class="cd-separator">:</div>
         <div class="countdown-unit">
-          <span class="countdown-num" id="cd-mins">00</span>
-          <span class="countdown-label">Min</span>
+          <div class="cd-unit-glass">
+            <span class="countdown-num" id="cd-mins">00</span>
+            <span class="countdown-label">Min</span>
+          </div>
+          <div class="cd-unit-reflection"></div>
         </div>
+        <div class="cd-separator">:</div>
         <div class="countdown-unit">
-          <span class="countdown-num" id="cd-secs">00</span>
-          <span class="countdown-label">Seg</span>
+          <div class="cd-unit-glass">
+            <span class="countdown-num" id="cd-secs">00</span>
+            <span class="countdown-label">Seg</span>
+          </div>
+          <div class="cd-unit-reflection"></div>
         </div>
       </div>
+
       <div class="countdown-trip-info">
-        <span class="countdown-info-pill">12–15 Nov 2026</span>
-        <span class="countdown-info-pill">Bogotá → Cartagena</span>
-        <span class="countdown-info-pill" id="cd-traveler-count">0 viajeros</span>
+        <span class="countdown-info-pill">📅 12–15 Nov 2026</span>
+        <span class="countdown-info-pill">✈️ Bogotá → Cartagena</span>
+        <span class="countdown-info-pill" id="cd-traveler-count">👥 0 viajeros</span>
       </div>
     </div>
   </div>
@@ -1684,10 +1803,10 @@ function applyState(s) {
    COUNTDOWN
 ═══════════════════════════════════════════════════ */
 const messages = [
-  d => `Faltan ${d} días para nuestra aventura en Cartagena 🌴`,
-  d => `¡Sólo ${d} días para el paraíso! ☀️`,
-  d => `En ${d} días estaremos en la Ciudad Amurallada ✈️`,
-  d => `${d} días y partimos hacia Cartagena 🌊`,
+  d => d===0 ? '¡HOY ES EL DÍA! ¡A Cartagena! 🎉' : `🌴 Faltan ${d} días para nuestra aventura`,
+  d => d===0 ? '¡El paraíso nos espera! 🏖️' : `☀️ ¡Solo ${d} días para el paraíso!`,
+  d => d===0 ? '¡Prepara la maleta! ✈️' : `✈️ En ${d} días estaremos en la Ciudad Amurallada`,
+  d => d===0 ? '¡El Caribe nos llama! 🌊' : `🌊 ${d} días y partimos hacia Cartagena`,
 ];
 const subMessages = [
   'Cada día estamos más cerca del paraíso ☀️',
@@ -1723,6 +1842,13 @@ function tickCountdown() {
   document.getElementById('cd-hours').textContent = pad(hours);
   document.getElementById('cd-mins').textContent  = pad(mins);
   document.getElementById('cd-secs').textContent  = pad(secs);
+  // Confetti & color change
+  if(typeof confettiFired!=='undefined'&&days<30&&!confettiFired){confettiFired=true;if(typeof launchConfetti==='function')launchConfetti();}
+  const hero=document.getElementById('countdown-hero');
+  if(hero){
+    if(days<=7) hero.style.background='linear-gradient(135deg,#4a0a0a,#7a1a1a 40%,#c0392b)';
+    else if(days<=30) hero.style.background='linear-gradient(135deg,#2d1a0a,#5a3a0a 40%,#d4851a)';
+  }
   document.getElementById('cd-message').textContent = messages[msgIdx](days);
   document.getElementById('cd-submsg').textContent  = subMessages[msgIdx%subMessages.length];
   document.getElementById('cd-traveler-count').textContent = `${state.travelers.length} viajero${state.travelers.length!==1?'s':''}`;
@@ -1880,7 +2006,8 @@ function renderTravelers() {
         <button class="btn btn-danger btn-xs" onclick="doConfirm('¿Eliminar a ${esc(t.name)}?',()=>deleteTraveler('${t.id}'))">Eliminar</button>
       `;
     } else if(isMyCard) {
-      actions=`<button class="btn btn-secondary btn-xs" onclick="openEdit('${t.id}')">✏️ Mi perfil</button>`;
+      actions=`<button class="btn btn-secondary btn-xs" onclick="openEdit('${t.id}')">✏️ Mi perfil</button>
+        <button class="btn btn-primary btn-xs" onclick="openPay('${t.id}')">Pagar mi cuota</button>`;
     }
 
     return `
@@ -2145,22 +2272,39 @@ document.getElementById('btn-save-pay').addEventListener('click', async ()=>{
     const t = state.travelers.find(x=>x.id===currentPayId);
     const tName = t ? t.name : 'Viajero';
     const fmt2 = v => new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',minimumFractionDigits:0}).format(v);
-    await api('POST','/api/payments',{travelerId:currentPayId,cuota,date,value});
-    toast('Pago registrado','success');
+    const result = await api('POST','/api/payments',{travelerId:currentPayId,cuota,date,value});
+    const isPending = result && result.pendingApproval;
+    toast(isPending ? 'Pago enviado — pendiente de aprobación' : 'Pago registrado','success');
     closeModal('modal-pay');
     // WhatsApp notification to card holder
     const waMsg = encodeURIComponent(`*Cartagena 2026*
 
-*${tName}* acabo de registrar el pago de la *Cuota ${cuota}* por *${fmt2(value)}*.
+*${tName}* registró el pago de la *Cuota ${cuota}* por *${fmt2(value)}*.
 
 Fecha: ${date}
-Estado: Pagado ✅`);
+Estado: ${isPending?'⏳ Pendiente de aprobación':'✅ Aprobado'}`);
     const waUrl = `https://wa.me/573154645928?text=${waMsg}`;
     const waLink = document.createElement('a');
     waLink.href = waUrl; waLink.target = '_blank'; waLink.rel = 'noopener';
     setTimeout(() => waLink.click(), 800);
   } catch(e){ toast(e.message,'error'); }
 });
+
+async function approvePay(id) {
+  try {
+    await api('PUT', `/api/payments/${id}/approve`, {});
+    toast('Pago aprobado','success');
+  } catch(e){ toast(e.message,'error'); }
+}
+
+async function rejectPay(id) {
+  doConfirm('¿Rechazar este pago?', async ()=>{
+    try {
+      await api('DELETE', `/api/payments/${id}/reject`);
+      toast('Pago rechazado','info');
+    } catch(e){ toast(e.message,'error'); }
+  });
+}
 
 async function deletePay(id) {
   try { await api('DELETE',`/api/payments/${id}`); toast('Pago eliminado','info'); }
@@ -2376,6 +2520,96 @@ function toast(msg, type='info') {
 function scrollToSection(id){ const el=document.getElementById(id); if(el) el.scrollIntoView({behavior:'smooth',block:'start'}); }
 
 window.matchMedia('(prefers-color-scheme:dark)').addEventListener('change',()=>setTimeout(renderCharts,50));
+
+/* ═══════════════════════════════════════════════════
+   COUNTDOWN PARTICLES
+═══════════════════════════════════════════════════ */
+(function initParticles(){
+  const container = document.getElementById('cd-particles');
+  if(!container) return;
+  for(let i=0;i<20;i++){
+    const p=document.createElement('div');
+    p.className='cd-particle';
+    const size=(Math.random()*4+1)+'px';
+    p.style.cssText=`
+      width:${size};height:${size};
+      left:${Math.random()*100}%;
+      bottom:${Math.random()*20}%;
+      --dur:${(Math.random()*6+6).toFixed(1)}s;
+      animation-delay:${(Math.random()*8).toFixed(1)}s;
+    `;
+    container.appendChild(p);
+  }
+})();
+
+/* ═══════════════════════════════════════════════════
+   CONFETTI (when < 30 days)
+═══════════════════════════════════════════════════ */
+function launchConfetti(){
+  const colors=['#38bdf8','#22d3ee','#34d399','#fbbf24','#f472b6','#a78bfa'];
+  for(let i=0;i<60;i++){
+    const el=document.createElement('div');
+    el.style.cssText=`
+      position:fixed;z-index:9000;pointer-events:none;
+      width:${Math.random()*10+4}px;height:${Math.random()*10+4}px;
+      border-radius:${Math.random()>0.5?'50%':'2px'};
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      left:${Math.random()*100}vw;top:-20px;
+      animation:confettiFall ${(Math.random()*2+1.5).toFixed(1)}s ease-in forwards;
+      animation-delay:${(Math.random()*1.5).toFixed(2)}s;
+      transform:rotate(${Math.random()*360}deg);
+    `;
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(), 4000);
+  }
+}
+
+const confettiStyle=document.createElement('style');
+confettiStyle.textContent=`
+@keyframes confettiFall{
+  to{transform:translateY(110vh) rotate(${Math.random()*720}deg);opacity:0}
+}`;
+document.head.appendChild(confettiStyle);
+
+/* ═══════════════════════════════════════════════════
+   VIDEO SUPPORT IN GALLERY
+═══════════════════════════════════════════════════ */
+// Add video items to bento grid on login screen
+const videoFiles = [
+  {src:'/fotos/94d3b2f4-2b23-4368-b373-10f72b2819d8.mp4', label:'El momento'},
+];
+(function addVideos(){
+  const grid = document.getElementById('bento-grid');
+  if(!grid) return;
+  videoFiles.forEach(v=>{
+    const div=document.createElement('div');
+    div.className='bento-item';
+    div.dataset.src=v.src;
+    div.dataset.type='video';
+    div.innerHTML=`
+      <video src="${v.src}" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover"></video>
+      <div class="bento-label">${v.label}</div>
+    `;
+    div.addEventListener('click',()=>{
+      // Open video in lightbox
+      const ov=document.getElementById('lb-overlay');
+      const img=document.getElementById('lb-img');
+      img.src='';img.style.display='none';
+      let vid=ov.querySelector('video.lb-video');
+      if(!vid){
+        vid=document.createElement('video');
+        vid.className='lb-video';
+        vid.controls=true;
+        vid.style.cssText='max-width:90vw;max-height:85vh;display:block;border-radius:12px';
+        document.querySelector('.lb-inner').insertBefore(vid, img.nextSibling);
+      }
+      vid.src=v.src;vid.style.display='block';
+      ov.classList.add('open');
+    });
+    grid.appendChild(div);
+  });
+})();
+
 </script>
 </body>
 </html>
