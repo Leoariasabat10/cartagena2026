@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <meta name="theme-color" content="#0a1628">
-<title>Cartagena 2026 ✈️</title>
+<title>Cartagena 2026</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -615,6 +615,42 @@ body.viewer-mode .admin-only-inline{display:none!important}
 ::-webkit-scrollbar{width:5px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:100px}
+
+/* ── CARTAGENA PHOTO STRIP ── */
+.ctg-strip{
+  margin:0 -16px 32px;overflow:hidden;
+  position:relative;
+}
+@media(min-width:640px){.ctg-strip{margin:0 -24px 32px}}
+.ctg-strip-inner{
+  display:flex;gap:4px;
+  animation:stripScroll 30s linear infinite;
+  width:max-content;
+}
+.ctg-strip-inner:hover{animation-play-state:paused}
+@keyframes stripScroll{
+  0%{transform:translateX(0)}
+  100%{transform:translateX(-50%)}
+}
+.ctg-photo{
+  width:240px;height:160px;flex-shrink:0;
+  border-radius:16px;overflow:hidden;
+  background-size:cover;background-position:center;
+  position:relative;cursor:pointer;
+  transition:transform 0.3s,box-shadow 0.3s;
+}
+@media(min-width:640px){.ctg-photo{width:320px;height:200px}}
+.ctg-photo:hover{transform:scale(1.03);box-shadow:0 12px 40px rgba(0,0,0,0.3)}
+.ctg-photo::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(0,0,0,0.6) 0%,transparent 50%);
+}
+.ctg-photo-label{
+  position:absolute;bottom:12px;left:14px;z-index:1;
+  color:#fff;font-size:13px;font-weight:700;letter-spacing:0.3px;
+  text-shadow:0 1px 4px rgba(0,0,0,0.5);
+}
+
 </style>
 </head>
 <body>
@@ -629,7 +665,7 @@ body.viewer-mode .admin-only-inline{display:none!important}
 
   <!-- LEFT: Globe + Quote (desktop only) -->
   <div class="login-left">
-    <div class="login-route-badge">✈️ BOG &nbsp;→&nbsp; CTG &nbsp;·&nbsp; Nov 2026</div>
+    <div class="login-route-badge">BOG → CTG · Nov 2026</div>
     <div class="globe-wrap">
       <div class="globe-ring"></div>
       <div class="globe-ring2"></div>
@@ -642,7 +678,7 @@ body.viewer-mode .admin-only-inline{display:none!important}
     </div>
     <div class="login-quote">
       <div class="login-quote-text" id="login-left-typewriter"><span id="left-tw-text"></span><span class="tw-cursor">|</span></div>
-      <div class="login-quote-author">Cartagena 2026 🌴</div>
+      <div class="login-quote-author">Cartagena 2026</div>
     </div>
   </div>
 
@@ -661,25 +697,25 @@ body.viewer-mode .admin-only-inline{display:none!important}
       <div>
         <label class="login-label" for="li-user">Usuario</label>
         <div class="login-input-wrap">
-          <span class="login-input-icon">👤</span>
+          <span class="login-input-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
           <input class="login-input" id="li-user" type="text" placeholder="tu.usuario" autocomplete="username">
         </div>
       </div>
       <div>
         <label class="login-label" for="li-pass">Contraseña</label>
         <div class="login-input-wrap">
-          <span class="login-input-icon">🔒</span>
+          <span class="login-input-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
           <input class="login-input" id="li-pass" type="password" placeholder="••••••••" autocomplete="current-password">
         </div>
       </div>
 
       <div class="login-error" id="login-error"></div>
-      <button class="login-btn" id="btn-login">Entrar al viaje 🌊</button>
+      <button class="login-btn" id="btn-login">Entrar al viaje</button>
 
       <div class="login-badge-row">
-        <span class="login-badge">🔒 Seguro</span>
-        <span class="login-badge">⚡ Tiempo real</span>
-        <span class="login-badge">📱 Mobile-ready</span>
+        <span class="login-badge">Seguro</span>
+        <span class="login-badge">Tiempo real</span>
+        <span class="login-badge">Mobile</span>
       </div>
     </div>
   </div>
@@ -689,7 +725,7 @@ body.viewer-mode .admin-only-inline{display:none!important}
 <header class="header" id="app-header" style="display:none">
   <div class="container header-inner">
     <div class="header-brand">
-      <span class="header-logo">✈️</span>
+      <span class="header-logo">✦</span>
       <div>
         <div class="header-title">Cartagena 2026</div>
         <div class="header-sub">BOG → CTG</div>
@@ -700,12 +736,12 @@ body.viewer-mode .admin-only-inline{display:none!important}
         <span class="conn-dot" id="conn-dot"></span>
         <span class="conn-label" id="conn-label">En vivo</span>
       </div>
-      <button class="btn-icon admin-only" id="btn-alerts" title="Alertas">🔔<span class="badge-count" id="alert-badge" style="display:none">0</span></button>
-      <button class="btn-icon admin-only" id="btn-users" title="Usuarios">👥</button>
+      <button class="btn-icon admin-only" id="btn-alerts" title="Alertas"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="badge-count" id="alert-badge" style="display:none">0</span></button>
+      <button class="btn-icon admin-only" id="btn-users" title="Usuarios"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></button>
       <button class="btn-icon" id="btn-profile" title="Mi perfil">
         <div class="avatar-placeholder" id="header-avatar" style="width:28px;height:28px;font-size:11px">?</div>
       </button>
-      <button class="btn-icon" id="btn-dark">🌙</button>
+      <button class="btn-icon" id="btn-dark"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button>
     </div>
   </div>
 </header>
@@ -721,7 +757,7 @@ body.viewer-mode .admin-only-inline{display:none!important}
   <!-- Alerts (admin) -->
   <div id="alerts-section" style="margin-bottom:20px;display:none">
     <div class="section-header">
-      <div class="section-title">⚡ Alertas</div>
+      <div class="section-title">Alertas</div>
       <button class="btn btn-secondary btn-sm" id="btn-close-alerts">Cerrar</button>
     </div>
     <div class="alerts-wrap" id="alerts-wrap"></div>
@@ -735,7 +771,7 @@ body.viewer-mode .admin-only-inline{display:none!important}
     </div>
     <style>@keyframes cdGlow{0%{transform:scale(1)}100%{transform:scale(1.2)}}</style>
     <div style="position:relative;z-index:1">
-      <div class="countdown-badge">🌴 Viaje grupal · Cartagena 2026</div>
+      <div class="countdown-badge">Cartagena 2026 · Viaje grupal</div>
       <div class="countdown-message" id="cd-message">Cargando cuenta regresiva...</div>
       <div class="countdown-sub-msg" id="cd-submsg"></div>
       <div class="countdown-grid">
@@ -757,10 +793,27 @@ body.viewer-mode .admin-only-inline{display:none!important}
         </div>
       </div>
       <div class="countdown-trip-info">
-        <span class="countdown-info-pill">📅 12–15 Nov 2026</span>
-        <span class="countdown-info-pill">🛫 Bogotá → Cartagena</span>
-        <span class="countdown-info-pill" id="cd-traveler-count">👥 0 viajeros</span>
+        <span class="countdown-info-pill">12–15 Nov 2026</span>
+        <span class="countdown-info-pill">Bogotá → Cartagena</span>
+        <span class="countdown-info-pill" id="cd-traveler-count">0 viajeros</span>
       </div>
+    </div>
+  </div>
+
+  <!-- CARTAGENA PHOTO STRIP -->
+  <div class="ctg-strip">
+    <div class="ctg-strip-inner">
+      <div class="ctg-photo" style="background-image:url('https://images.unsplash.com/photo-1586956955672-79dbb8c4fd25?w=600&q=80')"><div class="ctg-photo-label">Ciudad Amurallada</div></div>
+      <div class="ctg-photo" style="background-image:url('https://images.unsplash.com/photo-1551918120-9739cb430c6d?w=600&q=80')"><div class="ctg-photo-label">Bocagrande</div></div>
+      <div class="ctg-photo" style="background-image:url('https://images.unsplash.com/photo-1533854775446-95c4609da544?w=600&q=80')"><div class="ctg-photo-label">Caribe</div></div>
+      <div class="ctg-photo" style="background-image:url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80')"><div class="ctg-photo-label">Atardecer</div></div>
+      <div class="ctg-photo" style="background-image:url('https://images.unsplash.com/photo-1506929562872-bb421503ef21?w=600&q=80')"><div class="ctg-photo-label">Playa</div></div>
+      <!-- Duplicate for seamless loop -->
+      <div class="ctg-photo" style="background-image:url('https://images.unsplash.com/photo-1586956955672-79dbb8c4fd25?w=600&q=80')"><div class="ctg-photo-label">Ciudad Amurallada</div></div>
+      <div class="ctg-photo" style="background-image:url('https://images.unsplash.com/photo-1551918120-9739cb430c6d?w=600&q=80')"><div class="ctg-photo-label">Bocagrande</div></div>
+      <div class="ctg-photo" style="background-image:url('https://images.unsplash.com/photo-1533854775446-95c4609da544?w=600&q=80')"><div class="ctg-photo-label">Caribe</div></div>
+      <div class="ctg-photo" style="background-image:url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80')"><div class="ctg-photo-label">Atardecer</div></div>
+      <div class="ctg-photo" style="background-image:url('https://images.unsplash.com/photo-1506929562872-bb421503ef21?w=600&q=80')"><div class="ctg-photo-label">Playa</div></div>
     </div>
   </div>
 
@@ -770,21 +823,21 @@ body.viewer-mode .admin-only-inline{display:none!important}
       <div><div class="section-title">Resumen</div><div class="section-sub">Actualizado en tiempo real</div></div>
     </div>
     <div class="kpi-grid">
-      <div class="kpi-card" style="animation-delay:0ms"><div class="kpi-icon">💰</div><div class="kpi-label">Total viaje</div><div class="kpi-value mono" id="kpi-total">$0</div><div class="kpi-bar"><div class="kpi-bar-fill ocean" style="width:100%"></div></div><div class="kpi-sub" id="kpi-total-sub">0 viajeros</div></div>
-      <div class="kpi-card" style="animation-delay:60ms"><div class="kpi-icon">✅</div><div class="kpi-label">Recaudado</div><div class="kpi-value mono" id="kpi-col">$0</div><div class="kpi-bar"><div class="kpi-bar-fill success" id="bar-col" style="width:0%"></div></div><div class="kpi-sub" id="kpi-col-sub">0%</div></div>
-      <div class="kpi-card" style="animation-delay:120ms"><div class="kpi-icon">⏳</div><div class="kpi-label">Pendiente</div><div class="kpi-value mono" id="kpi-pend">$0</div><div class="kpi-bar"><div class="kpi-bar-fill danger" id="bar-pend" style="width:100%"></div></div><div class="kpi-sub" id="kpi-pend-sub">100%</div></div>
-      <div class="kpi-card" style="animation-delay:180ms"><div class="kpi-icon">📊</div><div class="kpi-label">Progreso</div><div class="kpi-value mono" id="kpi-prog">0%</div><div class="kpi-bar"><div class="kpi-bar-fill warning" id="bar-prog" style="width:0%"></div></div><div class="kpi-sub" id="kpi-prog-sub">Completado</div></div>
+      <div class="kpi-card" style="animation-delay:0ms"><div class="kpi-icon">$</div><div class="kpi-label">Total viaje</div><div class="kpi-value mono" id="kpi-total">$0</div><div class="kpi-bar"><div class="kpi-bar-fill ocean" style="width:100%"></div></div><div class="kpi-sub" id="kpi-total-sub">0 viajeros</div></div>
+      <div class="kpi-card" style="animation-delay:60ms"><div class="kpi-icon">✓</div><div class="kpi-label">Recaudado</div><div class="kpi-value mono" id="kpi-col">$0</div><div class="kpi-bar"><div class="kpi-bar-fill success" id="bar-col" style="width:0%"></div></div><div class="kpi-sub" id="kpi-col-sub">0%</div></div>
+      <div class="kpi-card" style="animation-delay:120ms"><div class="kpi-icon">~</div><div class="kpi-label">Pendiente</div><div class="kpi-value mono" id="kpi-pend">$0</div><div class="kpi-bar"><div class="kpi-bar-fill danger" id="bar-pend" style="width:100%"></div></div><div class="kpi-sub" id="kpi-pend-sub">100%</div></div>
+      <div class="kpi-card" style="animation-delay:180ms"><div class="kpi-icon">%</div><div class="kpi-label">Progreso</div><div class="kpi-value mono" id="kpi-prog">0%</div><div class="kpi-bar"><div class="kpi-bar-fill warning" id="bar-prog" style="width:0%"></div></div><div class="kpi-sub" id="kpi-prog-sub">Completado</div></div>
     </div>
   </section>
 
   <!-- SETTINGS (admin) -->
   <section class="section admin-only" id="section-settings">
     <div class="section-header">
-      <div><div class="section-title">⚙️ Configuración</div><div class="section-sub">Plan de pagos global</div></div>
+      <div><div class="section-title">Configuración</div><div class="section-sub">Plan de pagos global</div></div>
     </div>
     <div class="settings-banner">
-      <div class="setting-field"><span class="setting-label">📅 Cuotas</span><input class="setting-input" id="inp-install" type="number" min="1" max="24" value="4"><span style="font-size:12px;color:var(--text-3)">máx 24</span></div>
-      <div class="setting-field"><span class="setting-label">📈 Interés %</span><input class="setting-input" id="inp-interest" type="number" min="0" max="20" step="0.1" value="3"></div>
+      <div class="setting-field"><span class="setting-label">Cuotas</span><input class="setting-input" id="inp-install" type="number" min="1" max="24" value="4"><span style="font-size:12px;color:var(--text-3)">máx 24</span></div>
+      <div class="setting-field"><span class="setting-label">Interés %</span><input class="setting-input" id="inp-interest" type="number" min="0" max="20" step="0.1" value="3"></div>
       <button class="btn btn-primary btn-sm" id="btn-apply-settings">Aplicar</button>
     </div>
   </section>
@@ -792,7 +845,7 @@ body.viewer-mode .admin-only-inline{display:none!important}
   <!-- ADD TRAVELER (admin) -->
   <section class="section admin-only" id="section-add">
     <div class="section-header">
-      <div><div class="section-title">➕ Agregar viajero</div><div class="section-sub" id="sub-formula">Interés 3% · 4 cuotas</div></div>
+      <div><div class="section-title">Agregar viajero</div><div class="section-sub" id="sub-formula">Interés 3% · 4 cuotas</div></div>
     </div>
     <div class="form-card">
       <div class="form-row form-row-3">
@@ -801,7 +854,7 @@ body.viewer-mode .admin-only-inline{display:none!important}
         <div class="form-group"><label class="form-label">Fecha primer pago</label><input class="form-input" id="inp-date" type="date"></div>
       </div>
       <div style="display:flex;justify-content:flex-end;margin-top:4px">
-        <button class="btn btn-primary" id="btn-add">＋ Agregar viajero</button>
+        <button class="btn btn-primary" id="btn-add">Agregar viajero</button>
       </div>
     </div>
   </section>
@@ -809,7 +862,7 @@ body.viewer-mode .admin-only-inline{display:none!important}
   <!-- TRAVELERS -->
   <section class="section" id="section-travelers">
     <div class="section-header">
-      <div><div class="section-title">👥 Viajeros</div><div class="section-sub" id="travelers-count-label">0 viajeros</div></div>
+      <div><div class="section-title">Viajeros</div><div class="section-sub" id="travelers-count-label">0 viajeros</div></div>
     </div>
     <div class="search-row">
       <input class="search-input" id="search-inp" type="text" placeholder="🔍 Buscar...">
@@ -824,7 +877,7 @@ body.viewer-mode .admin-only-inline{display:none!important}
 
   <!-- CHARTS -->
   <section class="section" id="section-charts">
-    <div class="section-header"><div class="section-title">📈 Análisis</div></div>
+    <div class="section-header"><div class="section-title">Análisis</div></div>
     <div class="charts-grid">
       <div class="chart-card"><div class="chart-title">Distribución</div><div class="chart-sub">Recaudado vs pendiente</div><div class="chart-wrap"><canvas id="chart-donut"></canvas></div></div>
       <div class="chart-card"><div class="chart-title">Comparativo</div><div class="chart-sub">Por persona</div><div class="chart-wrap"><canvas id="chart-bar"></canvas></div></div>
@@ -834,11 +887,11 @@ body.viewer-mode .admin-only-inline{display:none!important}
 
   <!-- HISTORY -->
   <section class="section" id="section-history">
-    <div class="section-header"><div class="section-title">📋 Historial de pagos</div></div>
+    <div class="section-header"><div class="section-title">Historial de pagos</div></div>
     <div class="history-wrap">
       <div class="history-header">
         <div style="font-size:13px;color:var(--text-2)" id="history-summary">Sin registros</div>
-        <button class="btn btn-secondary btn-sm admin-only" id="btn-whatsapp">💬 Compartir</button>
+        <button class="btn btn-secondary btn-sm admin-only" id="btn-whatsapp">Compartir</button>
       </div>
       <div class="table-scroll">
         <table><thead><tr><th>Fecha</th><th>Viajero</th><th>Cuota</th><th>Valor</th><th class="admin-only">—</th></tr></thead>
@@ -849,11 +902,11 @@ body.viewer-mode .admin-only-inline{display:none!important}
 
   <!-- EXPORTS (admin) -->
   <section class="section admin-only" id="section-exports">
-    <div class="section-header"><div class="section-title">📤 Exportar</div></div>
+    <div class="section-header"><div class="section-title">Exportar</div></div>
     <div class="export-row">
-      <button class="btn btn-secondary" id="btn-excel">📊 Excel</button>
-      <button class="btn btn-secondary" id="btn-pdf">📄 PDF</button>
-      <button class="btn btn-secondary" id="btn-whatsapp2">💬 WhatsApp</button>
+      <button class="btn btn-secondary" id="btn-excel">Excel</button>
+      <button class="btn btn-secondary" id="btn-pdf">PDF</button>
+      <button class="btn btn-secondary" id="btn-whatsapp2">WhatsApp</button>
     </div>
   </section>
 
@@ -863,9 +916,9 @@ body.viewer-mode .admin-only-inline{display:none!important}
 <!-- BOTTOM NAV (mobile) -->
 <nav class="bottom-nav" id="bottom-nav" style="display:none">
   <div class="bottom-nav-item active" onclick="scrollToSection('countdown-hero')"><span class="bottom-nav-icon">⏳</span>Cuenta</div>
-  <div class="bottom-nav-item" onclick="scrollToSection('section-travelers')"><span class="bottom-nav-icon">👥</span>Viajeros</div>
-  <div class="bottom-nav-item" onclick="scrollToSection('section-charts')"><span class="bottom-nav-icon">📈</span>Análisis</div>
-  <div class="bottom-nav-item" onclick="scrollToSection('section-history')"><span class="bottom-nav-icon">📋</span>Pagos</div>
+  <div class="bottom-nav-item" onclick="scrollToSection('section-travelers')"><span class="bottom-nav-icon">Viajeros</span></div>
+  <div class="bottom-nav-item" onclick="scrollToSection('section-charts')"><span class="bottom-nav-icon">Análisis</span></div>
+  <div class="bottom-nav-item" onclick="scrollToSection('section-history')"><span class="bottom-nav-icon">Pagos</span></div>
 </nav>
 
 <!-- PAYMENT MODAL -->
@@ -902,7 +955,7 @@ body.viewer-mode .admin-only-inline{display:none!important}
           <div class="avatar-placeholder" id="edit-avatar-preview" style="width:64px;height:64px;font-size:22px;border-radius:50%">?</div>
           <div>
             <input type="file" id="edit-avatar-file" accept="image/*" style="display:none" onchange="previewAvatar(this)">
-            <button class="btn btn-secondary btn-sm" onclick="document.getElementById('edit-avatar-file').click()">📷 Cambiar foto</button>
+            <button class="btn btn-secondary btn-sm" onclick="document.getElementById('edit-avatar-file').click()">Cambiar foto</button>
             <div style="font-size:11px;color:var(--text-3);margin-top:4px">JPG, PNG o WebP · máx 5MB</div>
           </div>
         </div>
@@ -916,7 +969,7 @@ body.viewer-mode .admin-only-inline{display:none!important}
 <div class="modal-overlay" id="modal-users">
   <div class="modal" style="max-width:620px">
     <span class="modal-handle"></span>
-    <div class="modal-header"><div class="modal-title">👥 Gestión de usuarios</div><button class="modal-close" onclick="closeModal('modal-users')">×</button></div>
+    <div class="modal-header"><div class="modal-title">Gestión de usuarios</div><button class="modal-close" onclick="closeModal('modal-users')">×</button></div>
     <div class="modal-body">
       <div style="margin-bottom:20px">
         <div style="font-size:14px;font-weight:700;margin-bottom:12px">Crear usuario</div>
@@ -962,7 +1015,7 @@ body.viewer-mode .admin-only-inline{display:none!important}
       <div class="profile-hero">
         <div class="profile-avatar-wrap">
           <div class="avatar-placeholder" id="profile-avatar-big" style="width:80px;height:80px;font-size:28px;border-radius:50%;margin:0 auto 10px"></div>
-          <button class="avatar-upload-btn" onclick="document.getElementById('profile-avatar-file').click()" style="width:28px;height:28px;font-size:14px">📷</button>
+          <button class="avatar-upload-btn" onclick="document.getElementById('profile-avatar-file').click()" style="width:28px;height:28px;font-size:14px">+</button>
           <input type="file" id="profile-avatar-file" accept="image/*" style="display:none" onchange="uploadMyAvatar(this)">
         </div>
         <div style="font-size:18px;font-weight:700" id="profile-display-name">—</div>
@@ -979,7 +1032,7 @@ body.viewer-mode .admin-only-inline{display:none!important}
         <div style="font-size:14px;font-weight:700;margin-bottom:10px">Mi estado de pago</div>
         <div id="my-payment-status"></div>
       </div>
-      <button class="btn btn-danger btn-sm" style="width:100%;justify-content:center;margin-top:16px" id="btn-logout">🚪 Cerrar sesión</button>
+      <button class="btn btn-danger btn-sm" style="width:100%;justify-content:center;margin-top:16px" id="btn-logout">Cerrar sesión</button>
     </div>
   </div>
 </div>
@@ -987,7 +1040,7 @@ body.viewer-mode .admin-only-inline{display:none!important}
 <!-- CONFIRM -->
 <div class="confirm-overlay" id="confirm-overlay">
   <div class="confirm-box">
-    <div class="confirm-icon">⚠️</div>
+    <div class="confirm-icon">!</div>
     <div class="confirm-title">¿Confirmar acción?</div>
     <div class="confirm-msg" id="confirm-msg">Esta acción no se puede deshacer.</div>
     <div class="confirm-btns">
@@ -1299,7 +1352,7 @@ function tickCountdown() {
   document.getElementById('cd-secs').textContent  = pad(secs);
   document.getElementById('cd-message').textContent = messages[msgIdx](days);
   document.getElementById('cd-submsg').textContent  = subMessages[msgIdx%subMessages.length];
-  document.getElementById('cd-traveler-count').textContent = `👥 ${state.travelers.length} viajero${state.travelers.length!==1?'s':''}`;
+  document.getElementById('cd-traveler-count').textContent = `${state.travelers.length} viajero${state.travelers.length!==1?'s':''}`;
 }
 
 /* ═══════════════════════════════════════════════════
@@ -1358,7 +1411,7 @@ function applyDark(on) {
   document.documentElement.setAttribute('data-theme', on?'dark':'light');
   state.settings.darkMode = on;
   const btn=document.getElementById('btn-dark');
-  if(btn) btn.textContent=on?'☀️':'🌙';
+  if(btn) btn.innerHTML=on?'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>':'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
 }
 document.getElementById('btn-dark').addEventListener('click', async ()=>{
   const next=!state.settings.darkMode;
@@ -1451,7 +1504,7 @@ function renderTravelers() {
       actions=`
         <button class="btn btn-secondary btn-xs" onclick="openEdit('${t.id}')">✏️ Editar</button>
         <button class="btn btn-success btn-xs" onclick="openPay('${t.id}')">💳 Pagar</button>
-        <button class="btn btn-danger btn-xs" onclick="doConfirm('¿Eliminar a ${esc(t.name)}?',()=>deleteTraveler('${t.id}'))">🗑️</button>
+        <button class="btn btn-danger btn-xs" onclick="doConfirm('¿Eliminar a ${esc(t.name)}?',()=>deleteTraveler('${t.id}'))">Eliminar</button>
       `;
     } else if(isMyCard) {
       actions=`<button class="btn btn-secondary btn-xs" onclick="openEdit('${t.id}')">✏️ Mi perfil</button>`;
@@ -1462,7 +1515,7 @@ function renderTravelers() {
       <div class="traveler-card-header">
         <div style="position:relative;width:48px;height:48px;flex-shrink:0">
           ${avatarHTML(t.avatarUrl, t.name, 48, 18)}
-          ${(isAdmin||isMyCard)?`<button class="avatar-upload-btn" style="font-size:11px;width:20px;height:20px" onclick="quickAvatarUpload('${t.id}')">📷</button>`:''}
+          ${(isAdmin||isMyCard)?`<button class="avatar-upload-btn" style="font-size:11px;width:20px;height:20px" onclick="quickAvatarUpload('${t.id}')">+</button>`:''}
         </div>
         <div class="traveler-card-info">
           <div class="traveler-name">${esc(t.name)}</div>
@@ -1500,7 +1553,7 @@ function renderHistory() {
   document.getElementById('history-summary').textContent=`${sorted.length} pago${sorted.length!==1?'s':''} · Total: ${fmt(total)}`;
   tbody.innerHTML=sorted.map(p=>{
     const t=state.travelers.find(x=>x.id===p.travelerId);
-    const del=isAdmin?`<td><button class="btn btn-danger btn-xs" onclick="doConfirm('¿Eliminar este pago?',()=>deletePay('${p.id}'))">🗑️</button></td>`:`<td></td>`;
+    const del=isAdmin?`<td><button class="btn btn-danger btn-xs" onclick="doConfirm('¿Eliminar este pago?',()=>deletePay('${p.id}'))">Eliminar</button></td>`:`<td></td>`;
     return `<tr><td>${fmtD(new Date(p.date))}</td><td><strong>${esc(t?t.name:'Eliminado')}</strong></td><td><span class="cuota-badge">${p.cuota}</span></td><td class="mono"><strong>${fmt(p.value)}</strong></td>${del}</tr>`;
   }).join('');
 }
@@ -1531,7 +1584,7 @@ function generateAlerts() {
         if(due){
           const diff=(due-today)/86400000;
           if(diff<0) alerts.push({type:'red',icon:'🔴',title:`${t.name} — Cuota ${i} vencida`,body:`${Math.abs(Math.round(diff))} días de retraso. Pendiente: ${fmt(c.pending)}`});
-          else if(diff<=5) alerts.push({type:'yellow',icon:'⚠️',title:`${t.name} — Cuota ${i} vence en ${Math.round(diff)} días`,body:`Vence ${fmtD(due)} · Valor: ${fmt(c.instAmt)}`});
+          else if(diff<=5) alerts.push({type:'yellow',icon:'!',title:`${t.name} — Cuota ${i} vence en ${Math.round(diff)} días`,body:`Vence ${fmtD(due)} · Valor: ${fmt(c.instAmt)}`});
         }
       }
     }
@@ -1540,7 +1593,7 @@ function generateAlerts() {
   });
   let total=0,col=0; state.travelers.forEach(t=>{const c=calcTraveler(t);total+=c.total;col+=c.paid;});
   const pct=total>0?col/total*100:0;
-  if(pct>=100&&state.travelers.length>0) alerts.push({type:'green',icon:'🎉',title:'¡Todos los vuelos pagados!',body:'El grupo completó los pagos. ¡A Cartagena! 🌴'});
+  if(pct>=100&&state.travelers.length>0) alerts.push({type:'green',icon:'★',title:'¡Todos los vuelos pagados!',body:'El grupo completó los pagos. ¡A Cartagena! 🌴'});
   if(!alerts.length) alerts.push({type:'green',icon:'✅',title:'Todo en orden',body:'No hay alertas activas.'});
   return alerts;
 }
@@ -1716,9 +1769,23 @@ document.getElementById('btn-save-pay').addEventListener('click', async ()=>{
   if(!date) return toast('Falta fecha','error');
   if(!value||value<=0) return toast('Valor inválido','error');
   try {
+    const t = state.travelers.find(x=>x.id===currentPayId);
+    const tName = t ? t.name : 'Viajero';
+    const fmt2 = v => new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',minimumFractionDigits:0}).format(v);
     await api('POST','/api/payments',{travelerId:currentPayId,cuota,date,value});
-    toast('Pago registrado ✅','success');
+    toast('Pago registrado','success');
     closeModal('modal-pay');
+    // WhatsApp notification to card holder
+    const waMsg = encodeURIComponent(`*Cartagena 2026*
+
+*${tName}* acabo de registrar el pago de la *Cuota ${cuota}* por *${fmt2(value)}*.
+
+Fecha: ${date}
+Estado: Pagado ✅`);
+    const waUrl = `https://wa.me/573154645928?text=${waMsg}`;
+    const waLink = document.createElement('a');
+    waLink.href = waUrl; waLink.target = '_blank'; waLink.rel = 'noopener';
+    setTimeout(() => waLink.click(), 800);
   } catch(e){ toast(e.message,'error'); }
 });
 
@@ -1748,11 +1815,11 @@ async function loadUsers() {
           <div class="user-name">${esc(u.display_name||u.username)}</div>
           <div class="user-username">@${esc(u.username)}</div>
         </div>
-        <span class="pill pill-${u.role}">${u.role==='admin'?'⚙️ Admin':'🏄 Participante'}</span>
+        <span class="pill pill-${u.role}">${u.role==='admin'?'Admin':'Participante'}</span>
         <div class="user-actions">
           <span style="font-size:11px;font-weight:600;color:${u.active?'var(--success)':'var(--danger)'}">${u.active?'●':'○'}</span>
-          <button class="btn btn-secondary btn-xs" onclick="openEditUser('${u.id}','${esc(u.username)}','${u.role}',${u.active},'${esc(u.display_name||'')}','${u.traveler_id||''}')">✏️</button>
-          ${u.id!==me.id?`<button class="btn btn-danger btn-xs" onclick="doConfirm('¿Eliminar a ${esc(u.username)}?',async()=>{await api('DELETE','/api/users/${u.id}');await loadUsers();toast('Usuario eliminado','info')})">🗑️</button>`:''}
+          <button class="btn btn-secondary btn-xs" onclick="openEditUser('${u.id}','${esc(u.username)}','${u.role}',${u.active},'${esc(u.display_name||'')}','${u.traveler_id||''}')">Editar</button>
+          ${u.id!==me.id?`<button class="btn btn-danger btn-xs" onclick="doConfirm('¿Eliminar a ${esc(u.username)}?',async()=>{await api('DELETE','/api/users/${u.id}');await loadUsers();toast('Usuario eliminado','info')})">Eliminar</button>`:''}
         </div>
       </div>`).join('');
   } catch(e){ list.innerHTML=`<div class="table-empty">${e.message}</div>`; }
@@ -1815,7 +1882,7 @@ document.getElementById('btn-profile').addEventListener('click', openProfile);
 function openProfile() {
   document.getElementById('profile-display-name').textContent = me.displayName||me.username;
   document.getElementById('profile-username-label').textContent = '@'+me.username;
-  document.getElementById('profile-role-pill').innerHTML = `<span class="pill pill-${me.role}">${me.role==='admin'?'⚙️ Administrador':'🏄 Participante'}</span>`;
+  document.getElementById('profile-role-pill').innerHTML = `<span class="pill pill-${me.role}">${me.role==='admin'?'Administrador':'Participante'}</span>`;
   document.getElementById('profile-display-inp').value = me.displayName||me.username;
   document.getElementById('profile-avatar-big').innerHTML = avatarHTML(me.avatarUrl, me.displayName||me.username, 80, 28);
   // My payment status
