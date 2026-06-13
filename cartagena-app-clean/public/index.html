@@ -1,0 +1,1583 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cartagena 2026 · Viaje Grupal</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   CSS VARIABLES + THEMES
+============================================================ */
+:root{
+  --bg:#f5f5f7;--bg-card:rgba(255,255,255,0.85);--bg-card-solid:#fff;
+  --bg-glass:rgba(255,255,255,0.6);--bg-modal:rgba(255,255,255,0.97);
+  --border:rgba(0,0,0,0.08);--border-strong:rgba(0,0,0,0.14);
+  --text:#1d1d1f;--text-2:#6e6e73;--text-3:#a0a0a5;
+  --green:#28a745;--green-bg:rgba(40,167,69,0.1);
+  --yellow:#f0a500;--yellow-bg:rgba(240,165,0,0.1);
+  --red:#dc3545;--red-bg:rgba(220,53,69,0.1);
+  --blue:#0071e3;--blue-bg:rgba(0,113,227,0.1);
+  --purple:#7c3aed;--purple-bg:rgba(124,58,237,0.1);
+  --teal:#0d9488;--teal-bg:rgba(13,148,136,0.1);
+  --shadow-sm:0 1px 3px rgba(0,0,0,0.06);
+  --shadow:0 4px 24px rgba(0,0,0,0.08),0 1px 3px rgba(0,0,0,0.05);
+  --shadow-lg:0 20px 60px rgba(0,0,0,0.12),0 4px 12px rgba(0,0,0,0.06);
+  --radius:20px;--radius-sm:12px;--radius-xs:8px;
+  --font:'DM Sans',sans-serif;--font-mono:'DM Mono',monospace;
+  --transition:0.2s cubic-bezier(0.4,0,0.2,1);
+}
+[data-theme="dark"]{
+  --bg:#000;--bg-card:rgba(28,28,30,0.9);--bg-card-solid:#1c1c1e;
+  --bg-glass:rgba(28,28,30,0.7);--bg-modal:rgba(28,28,30,0.98);
+  --border:rgba(255,255,255,0.08);--border-strong:rgba(255,255,255,0.14);
+  --text:#f5f5f7;--text-2:#98989d;--text-3:#636366;
+  --green:#32d74b;--green-bg:rgba(50,215,75,0.1);
+  --yellow:#ffd60a;--yellow-bg:rgba(255,214,10,0.1);
+  --red:#ff453a;--red-bg:rgba(255,69,58,0.1);
+  --blue:#0a84ff;--blue-bg:rgba(10,132,255,0.1);
+  --purple:#a78bfa;--purple-bg:rgba(167,139,250,0.1);
+  --teal:#2dd4bf;--teal-bg:rgba(45,212,191,0.1);
+  --shadow-sm:0 1px 3px rgba(0,0,0,0.3);
+  --shadow:0 4px 24px rgba(0,0,0,0.4);
+  --shadow-lg:0 20px 60px rgba(0,0,0,0.6);
+}
+/* ── Reset ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-tap-highlight-color:transparent}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;transition:background var(--transition),color var(--transition)}
+button{cursor:pointer;border:none;background:none;font-family:var(--font)}
+input,select,textarea{font-family:var(--font)}
+
+/* ── Layout ── */
+.container{max-width:1100px;margin:0 auto;padding:0 20px}
+
+/* ============================================================
+   LOGIN SCREEN
+============================================================ */
+#login-screen{
+  position:fixed;inset:0;z-index:999;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--bg);padding:20px;
+}
+.login-card{
+  width:100%;max-width:380px;
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:40px 32px;
+  box-shadow:var(--shadow-lg);backdrop-filter:blur(20px);
+  animation:fadeUp 0.4s ease both;
+}
+.login-logo{font-size:36px;text-align:center;margin-bottom:8px}
+.login-title{font-size:22px;font-weight:700;letter-spacing:-0.5px;text-align:center;margin-bottom:4px}
+.login-sub{font-size:13px;color:var(--text-2);text-align:center;margin-bottom:28px}
+.login-group{margin-bottom:14px}
+.login-label{font-size:12px;font-weight:500;color:var(--text-2);text-transform:uppercase;letter-spacing:0.4px;display:block;margin-bottom:6px}
+.login-input{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-xs);padding:11px 14px;font-size:15px;color:var(--text);outline:none;transition:border-color var(--transition),box-shadow var(--transition)}
+.login-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-bg)}
+.login-error{font-size:13px;color:var(--red);text-align:center;margin-top:10px;min-height:18px}
+.login-btn{width:100%;background:var(--text);color:var(--bg);border-radius:100px;padding:13px;font-size:15px;font-weight:600;margin-top:20px;transition:opacity var(--transition),transform var(--transition)}
+.login-btn:hover{opacity:0.85}
+.login-btn:active{transform:scale(0.98)}
+
+/* ── Viewer badge ── */
+.viewer-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--purple-bg);color:var(--purple);
+  border:1px solid var(--purple);border-radius:100px;
+  padding:4px 12px;font-size:12px;font-weight:600;
+}
+.admin-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--blue-bg);color:var(--blue);
+  border:1px solid var(--blue);border-radius:100px;
+  padding:4px 12px;font-size:12px;font-weight:600;
+}
+
+/* ── Live indicator ── */
+.live-dot{
+  width:8px;height:8px;border-radius:50%;background:var(--green);
+  display:inline-block;animation:pulse-live 2s infinite;
+}
+@keyframes pulse-live{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.8)}}
+.live-label{font-size:11px;color:var(--green);font-weight:600;text-transform:uppercase;letter-spacing:0.4px}
+.offline-dot{background:var(--red);animation:none}
+.offline-label{color:var(--red)}
+
+/* ============================================================
+   HEADER
+============================================================ */
+.header{position:sticky;top:0;z-index:100;background:var(--bg-glass);backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid var(--border);padding:14px 0}
+.header-inner{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.header-left{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.header-brand{display:flex;flex-direction:column;gap:2px}
+.header-title{font-size:17px;font-weight:600;letter-spacing:-0.3px}
+.header-meta{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-2)}
+.route-badge{display:inline-flex;align-items:center;gap:5px;background:var(--bg-card);border:1px solid var(--border);border-radius:100px;padding:3px 10px;font-size:12px;font-weight:500}
+.route-dot{width:5px;height:5px;border-radius:50%;background:var(--text-2)}
+.header-actions{display:flex;align-items:center;gap:8px}
+.btn-icon{width:36px;height:36px;border-radius:50%;background:var(--bg-card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:16px;transition:all var(--transition)}
+.btn-icon:hover{background:var(--bg-card-solid);transform:scale(1.05)}
+
+/* ============================================================
+   COMMON
+============================================================ */
+.main{padding:32px 0 80px}
+.section{margin-bottom:40px}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.section-title{font-size:20px;font-weight:600;letter-spacing:-0.4px}
+.section-sub{font-size:13px;color:var(--text-2);margin-top:2px}
+
+.btn{display:inline-flex;align-items:center;gap:6px;padding:11px 20px;border-radius:100px;font-size:14px;font-weight:600;transition:all var(--transition);white-space:nowrap}
+.btn-primary{background:var(--text);color:var(--bg)}
+.btn-primary:hover{opacity:0.85;transform:scale(0.98)}
+.btn-secondary{background:var(--bg-card);border:1px solid var(--border);color:var(--text)}
+.btn-secondary:hover{border-color:var(--border-strong);transform:scale(0.98)}
+.btn-danger{background:var(--red-bg);color:var(--red)}
+.btn-danger:hover{background:var(--red);color:#fff}
+.btn-teal{background:var(--teal-bg);color:var(--teal);border:1px solid transparent}
+.btn-teal:hover{background:var(--teal);color:#fff}
+.btn-purple{background:var(--purple-bg);color:var(--purple);border:1px solid transparent}
+.btn-purple:hover{background:var(--purple);color:#fff}
+.btn-sm{padding:7px 14px;font-size:12px}
+
+/* KPI */
+.kpi-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+@media(min-width:600px){.kpi-grid{grid-template-columns:repeat(4,1fr)}}
+.kpi-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;backdrop-filter:blur(20px);transition:transform var(--transition),box-shadow var(--transition);animation:fadeUp 0.4s ease both}
+.kpi-card:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.kpi-label{font-size:12px;color:var(--text-2);font-weight:500;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}
+.kpi-value{font-size:26px;font-weight:700;letter-spacing:-1px;line-height:1;margin-bottom:8px;font-variant-numeric:tabular-nums}
+.kpi-bar{height:4px;background:var(--border);border-radius:100px;overflow:hidden}
+.kpi-bar-fill{height:100%;border-radius:100px;background:var(--text);transition:width 0.8s cubic-bezier(0.4,0,0.2,1)}
+.kpi-card.green .kpi-bar-fill{background:var(--green)}
+.kpi-card.red .kpi-bar-fill{background:var(--red)}
+.kpi-pct{font-size:11px;color:var(--text-3);margin-top:4px;font-variant-numeric:tabular-nums}
+
+/* Settings */
+.settings-banner{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:18px 22px;backdrop-filter:blur(20px);display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.settings-field{display:flex;align-items:center;gap:10px;flex:1;min-width:180px}
+.settings-label{font-size:13px;color:var(--text-2);font-weight:500;white-space:nowrap}
+.settings-input{background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-xs);padding:8px 12px;font-size:14px;font-weight:600;color:var(--text);outline:none;width:80px;text-align:center;transition:border-color var(--transition)}
+.settings-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-bg)}
+.settings-input:disabled{opacity:0.5;cursor:not-allowed}
+.settings-hint{font-size:12px;color:var(--text-3)}
+
+/* Form */
+.form-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;backdrop-filter:blur(20px)}
+.form-grid{display:grid;grid-template-columns:1fr;gap:12px}
+@media(min-width:600px){.form-grid{grid-template-columns:repeat(3,1fr)}}
+.form-group{display:flex;flex-direction:column;gap:6px}
+.form-label{font-size:12px;font-weight:500;color:var(--text-2);text-transform:uppercase;letter-spacing:0.4px}
+.form-input{background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-xs);padding:11px 14px;font-size:14px;color:var(--text);outline:none;width:100%;transition:border-color var(--transition),box-shadow var(--transition)}
+.form-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-bg)}
+.form-input::placeholder{color:var(--text-3)}
+.form-input:disabled{opacity:0.5;cursor:not-allowed}
+.form-footer{display:flex;justify-content:flex-end;margin-top:16px}
+
+/* Search */
+.search-row{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.search-input{flex:1;min-width:200px;background:var(--bg-card);border:1.5px solid var(--border);border-radius:100px;padding:9px 16px;font-size:14px;color:var(--text);outline:none;transition:border-color var(--transition)}
+.search-input:focus{border-color:var(--border-strong)}
+.search-input::placeholder{color:var(--text-3)}
+.filter-select{background:var(--bg-card);border:1.5px solid var(--border);border-radius:100px;padding:9px 14px;font-size:13px;color:var(--text);outline:none;cursor:pointer}
+
+/* Traveler cards */
+.travelers-grid{display:grid;grid-template-columns:1fr;gap:14px}
+@media(min-width:700px){.travelers-grid{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1000px){.travelers-grid{grid-template-columns:repeat(3,1fr)}}
+.traveler-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:22px;backdrop-filter:blur(20px);transition:transform var(--transition),box-shadow var(--transition);animation:fadeUp 0.4s ease both}
+.traveler-card:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+.traveler-card-top{display:flex;align-items:flex-start;gap:14px;margin-bottom:18px}
+.traveler-avatar{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;flex-shrink:0;background:var(--text);color:var(--bg)}
+.traveler-info{flex:1;min-width:0}
+.traveler-name{font-size:16px;font-weight:600;letter-spacing:-0.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.traveler-status{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;padding:3px 9px;border-radius:100px;margin-top:4px}
+.status-ok{background:var(--green-bg);color:var(--green)}
+.status-warn{background:var(--yellow-bg);color:var(--yellow)}
+.status-late{background:var(--red-bg);color:var(--red)}
+.traveler-amounts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.amount-label{font-size:10px;color:var(--text-3);font-weight:500;text-transform:uppercase;letter-spacing:0.4px}
+.amount-value{font-size:15px;font-weight:600;letter-spacing:-0.4px;font-variant-numeric:tabular-nums;margin-top:2px}
+.amount-value.green{color:var(--green)}
+.amount-value.red{color:var(--red)}
+.amount-value.blue{color:var(--blue)}
+.progress-track{height:6px;background:var(--border);border-radius:100px;overflow:hidden}
+.progress-fill{height:100%;border-radius:100px;background:var(--green);transition:width 0.8s cubic-bezier(0.4,0,0.2,1)}
+.progress-label{display:flex;justify-content:space-between;font-size:11px;color:var(--text-3);margin-top:5px;margin-bottom:14px}
+.next-payment{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-2);margin-bottom:14px;padding:8px 12px;background:var(--bg);border-radius:var(--radius-xs)}
+.traveler-actions{display:flex;gap:6px;flex-wrap:wrap}
+
+/* Alerts */
+.alerts-panel{display:flex;flex-direction:column;gap:10px}
+.alert-item{display:flex;align-items:flex-start;gap:12px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;animation:fadeUp 0.3s ease both}
+.alert-item.alert-red{border-left:3px solid var(--red);background:var(--red-bg)}
+.alert-item.alert-yellow{border-left:3px solid var(--yellow);background:var(--yellow-bg)}
+.alert-item.alert-green{border-left:3px solid var(--green);background:var(--green-bg)}
+.alert-item.alert-blue{border-left:3px solid var(--blue);background:var(--blue-bg)}
+.alert-icon{font-size:18px;flex-shrink:0}
+.alert-content{flex:1}
+.alert-title{font-size:14px;font-weight:600;margin-bottom:2px}
+.alert-body{font-size:12px;color:var(--text-2);line-height:1.4}
+
+/* Fund */
+.fund-hero{background:linear-gradient(135deg,var(--teal) 0%,var(--blue) 100%);border-radius:var(--radius);padding:28px;color:#fff;margin-bottom:16px;position:relative;overflow:hidden}
+.fund-hero::before{content:'🏖️';position:absolute;right:20px;top:50%;transform:translateY(-50%);font-size:72px;opacity:0.2}
+.fund-hero-title{font-size:22px;font-weight:700;letter-spacing:-0.5px;margin-bottom:4px}
+.fund-hero-sub{font-size:14px;opacity:0.85;margin-bottom:20px}
+.fund-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.fund-stat-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;opacity:0.75;margin-bottom:4px}
+.fund-stat-value{font-size:20px;font-weight:700;letter-spacing:-0.5px;font-variant-numeric:tabular-nums}
+.fund-progress-bar{height:8px;background:rgba(255,255,255,0.25);border-radius:100px;overflow:hidden;margin-top:8px}
+.fund-progress-fill{height:100%;border-radius:100px;background:#fff;transition:width 0.8s cubic-bezier(0.4,0,0.2,1)}
+.fund-progress-label{display:flex;justify-content:space-between;font-size:12px;opacity:0.85;margin-top:5px}
+.fund-config{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:22px;backdrop-filter:blur(20px);margin-bottom:16px}
+.fund-cat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px}
+@media(min-width:600px){.fund-cat-grid{grid-template-columns:repeat(3,1fr)}}
+.fund-cat-item{background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:14px;text-align:center;transition:all var(--transition)}
+.fund-cat-item.editable{cursor:pointer}
+.fund-cat-item.editable:hover{border-color:var(--teal);transform:translateY(-1px)}
+.fund-cat-emoji{font-size:24px;margin-bottom:6px}
+.fund-cat-name{font-size:12px;font-weight:600;color:var(--text-2);text-transform:uppercase;letter-spacing:0.3px}
+.fund-cat-amount{font-size:15px;font-weight:700;margin-top:3px;font-variant-numeric:tabular-nums}
+.fund-cat-input{width:100%;background:var(--bg-card);border:1.5px solid var(--border);border-radius:var(--radius-xs);padding:8px 10px;font-size:13px;color:var(--text);outline:none;margin-top:6px;text-align:center;transition:border-color var(--transition)}
+.fund-cat-input:focus{border-color:var(--teal);box-shadow:0 0 0 3px var(--teal-bg)}
+.fund-cat-input:disabled{opacity:0.5;cursor:not-allowed}
+.fund-members{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:22px;backdrop-filter:blur(20px)}
+.fund-member-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
+.fund-member-row:last-child{border-bottom:none}
+.fund-member-avatar{width:36px;height:36px;border-radius:50%;background:var(--text);color:var(--bg);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}
+.fund-member-name{flex:1;font-size:14px;font-weight:500}
+.fund-pledge-input{width:120px;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-xs);padding:7px 12px;font-size:13px;font-weight:600;color:var(--text);outline:none;transition:border-color var(--transition)}
+.fund-pledge-input:focus{border-color:var(--teal);box-shadow:0 0 0 3px var(--teal-bg)}
+.fund-pledge-input:disabled{opacity:0.5;cursor:not-allowed}
+.fund-pledge-badge{font-size:11px;padding:3px 8px;border-radius:100px;font-weight:600;white-space:nowrap}
+.fund-pledge-ok{background:var(--green-bg);color:var(--green)}
+.fund-pledge-low{background:var(--red-bg);color:var(--red)}
+.fund-pledge-mid{background:var(--yellow-bg);color:var(--yellow)}
+
+/* Charts */
+.charts-grid{display:grid;grid-template-columns:1fr;gap:16px}
+@media(min-width:700px){.charts-grid{grid-template-columns:1fr 1fr}}
+@media(min-width:1000px){.charts-grid{grid-template-columns:repeat(3,1fr)}}
+.chart-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:22px;backdrop-filter:blur(20px)}
+.chart-title{font-size:14px;font-weight:600;margin-bottom:4px}
+.chart-sub{font-size:12px;color:var(--text-2);margin-bottom:16px}
+.chart-wrap{position:relative;height:200px}
+
+/* History */
+.history-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;backdrop-filter:blur(20px)}
+.history-header{padding:18px 22px;border-bottom:1px solid var(--border)}
+.history-table{width:100%;border-collapse:collapse}
+.history-table th{text-align:left;padding:12px 22px;font-size:11px;font-weight:600;color:var(--text-2);text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--border);background:var(--bg)}
+.history-table td{padding:13px 22px;font-size:13px;border-bottom:1px solid var(--border);font-variant-numeric:tabular-nums}
+.history-table tr:last-child td{border-bottom:none}
+.history-table tr:hover td{background:var(--bg)}
+.history-empty{text-align:center;padding:40px;color:var(--text-3);font-size:14px}
+.cuota-badge{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:var(--blue-bg);color:var(--blue);font-size:11px;font-weight:700}
+
+/* Users table */
+.users-table{width:100%;border-collapse:collapse}
+.users-table th{text-align:left;padding:10px 16px;font-size:11px;font-weight:600;color:var(--text-2);text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--border);background:var(--bg)}
+.users-table td{padding:12px 16px;font-size:13px;border-bottom:1px solid var(--border)}
+.users-table tr:last-child td{border-bottom:none}
+.role-pill{display:inline-flex;align-items:center;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600}
+.role-admin{background:var(--blue-bg);color:var(--blue)}
+.role-viewer{background:var(--purple-bg);color:var(--purple)}
+.active-pill{display:inline-flex;align-items:center;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600}
+.active-on{background:var(--green-bg);color:var(--green)}
+.active-off{background:var(--red-bg);color:var(--red)}
+
+/* Modal */
+.modal-overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.4);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity 0.25s ease}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--bg-modal);border:1px solid var(--border);border-radius:var(--radius);width:100%;max-width:460px;box-shadow:var(--shadow-lg);transform:scale(0.95) translateY(10px);transition:transform 0.25s cubic-bezier(0.4,0,0.2,1);max-height:90vh;overflow-y:auto}
+.modal-overlay.open .modal{transform:scale(1) translateY(0)}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:20px 22px;border-bottom:1px solid var(--border)}
+.modal-title{font-size:17px;font-weight:600;letter-spacing:-0.3px}
+.modal-close{width:28px;height:28px;border-radius:50%;background:var(--bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--text-2);line-height:1;transition:all var(--transition)}
+.modal-close:hover{background:var(--bg-card-solid);color:var(--text)}
+.modal-body{padding:22px}
+.modal-footer{padding:16px 22px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end}
+.modal-1col{grid-template-columns:1fr!important}
+
+/* Confirm */
+.confirm-overlay{position:fixed;inset:0;z-index:250;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity 0.2s}
+.confirm-overlay.open{opacity:1;pointer-events:all}
+.confirm-dialog{background:var(--bg-modal);border:1px solid var(--border);border-radius:var(--radius);max-width:340px;width:100%;padding:28px 24px;text-align:center;box-shadow:var(--shadow-lg);transform:scale(0.92);transition:transform 0.2s}
+.confirm-overlay.open .confirm-dialog{transform:scale(1)}
+.confirm-icon{font-size:36px;margin-bottom:12px}
+.confirm-title{font-size:17px;font-weight:700;margin-bottom:8px}
+.confirm-msg{font-size:14px;color:var(--text-2);margin-bottom:22px;line-height:1.5}
+.confirm-btns{display:flex;gap:10px;justify-content:center}
+
+/* Toast */
+.toast-container{position:fixed;bottom:24px;right:20px;z-index:300;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{display:flex;align-items:center;gap:10px;background:var(--bg-card-solid);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 16px;box-shadow:var(--shadow-lg);min-width:260px;font-size:14px;font-weight:500;transform:translateX(120%);transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);pointer-events:all}
+.toast.show{transform:translateX(0)}
+.toast.success{border-left:3px solid var(--green)}
+.toast.error{border-left:3px solid var(--red)}
+.toast.info{border-left:3px solid var(--blue)}
+.toast.warn{border-left:3px solid var(--yellow)}
+
+/* Empty */
+.empty-state{text-align:center;padding:60px 20px;color:var(--text-2)}
+.empty-icon{font-size:48px;margin-bottom:12px;opacity:0.5}
+.empty-title{font-size:17px;font-weight:600;margin-bottom:6px}
+.empty-sub{font-size:14px}
+
+/* Skeleton */
+.skeleton{background:linear-gradient(90deg,var(--border) 25%,var(--border-strong) 50%,var(--border) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:var(--radius-xs)}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.mono{font-family:var(--font-mono)}
+.table-scroll{overflow-x:auto}
+.export-row{display:flex;gap:10px;flex-wrap:wrap}
+
+/* Viewer: hide all edit UI */
+body.viewer-mode .admin-only{display:none!important}
+
+/* Syncing flash */
+@keyframes syncFlash{0%,100%{opacity:1}50%{opacity:0.3}}
+.syncing{animation:syncFlash 0.6s ease}
+
+/* Readonly banner */
+.readonly-banner{background:var(--purple-bg);border:1px solid var(--purple);border-radius:var(--radius-sm);padding:12px 18px;display:flex;align-items:center;gap:10px;font-size:13px;color:var(--purple);font-weight:500;margin-bottom:24px}
+</style>
+</head>
+<body>
+
+<!-- ===== LOGIN ===== -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">✈️</div>
+    <div class="login-title">Cartagena 2026</div>
+    <div class="login-sub">Bogotá → Cartagena · 12–15 Nov 2026</div>
+    <div class="login-group">
+      <label class="login-label" for="li-user">Usuario</label>
+      <input class="login-input" id="li-user" type="text" placeholder="Ingresa tu usuario" autocomplete="username">
+    </div>
+    <div class="login-group">
+      <label class="login-label" for="li-pass">Contraseña</label>
+      <input class="login-input" id="li-pass" type="password" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <div class="login-error" id="login-error"></div>
+    <button class="login-btn" id="btn-login">Entrar</button>
+  </div>
+</div>
+
+<!-- ===== HEADER ===== -->
+<header class="header" id="app-header" style="display:none">
+  <div class="container header-inner">
+    <div class="header-left">
+      <div class="header-brand">
+        <div class="header-title">✈️ Cartagena 2026</div>
+        <div class="header-meta">
+          <span class="route-badge"><span>BOG</span><span class="route-dot"></span><span>CTG</span></span>
+          <span style="opacity:.4">·</span>
+          <span>12–15 Nov</span>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <span class="live-dot" id="conn-dot"></span>
+        <span class="live-label" id="conn-label">En vivo</span>
+      </div>
+    </div>
+    <div class="header-actions">
+      <span id="role-badge"></span>
+      <button class="btn-icon admin-only" id="btn-users" title="Gestionar usuarios">👥</button>
+      <button class="btn-icon admin-only" id="btn-alerts" title="Alertas">🔔</button>
+      <button class="btn-icon" id="btn-dark" title="Modo oscuro">🌙</button>
+      <button class="btn-icon" id="btn-whatsapp" title="WhatsApp">💬</button>
+      <button class="btn-icon" id="btn-logout" title="Cerrar sesión">🚪</button>
+    </div>
+  </div>
+</header>
+
+<!-- ===== MAIN ===== -->
+<main class="main" id="app-main" style="display:none">
+<div class="container">
+
+  <!-- Viewer banner -->
+  <div class="readonly-banner" id="viewer-banner" style="display:none">
+    👁️ <strong>Modo visualización</strong> — Estás viendo los datos en tiempo real. Solo el administrador puede hacer cambios.
+  </div>
+
+  <!-- Alerts (collapsable) -->
+  <div id="alerts-section" style="margin-bottom:24px;display:none">
+    <div class="section-header">
+      <div><div class="section-title">⚡ Alertas activas</div></div>
+      <button class="btn btn-secondary btn-sm" id="btn-close-alerts">Cerrar</button>
+    </div>
+    <div class="alerts-panel" id="alerts-panel"></div>
+  </div>
+
+  <!-- KPI Dashboard -->
+  <section class="section">
+    <div class="section-header">
+      <div><div class="section-title">Resumen del viaje</div><div class="section-sub">Actualizado en tiempo real</div></div>
+    </div>
+    <div class="kpi-grid">
+      <div class="kpi-card" style="animation-delay:0ms">
+        <div class="kpi-label">Total viaje</div>
+        <div class="kpi-value mono" id="kpi-total">$0</div>
+        <div class="kpi-bar"><div class="kpi-bar-fill" style="width:100%"></div></div>
+        <div class="kpi-pct" id="kpi-total-count">0 viajeros</div>
+      </div>
+      <div class="kpi-card green" style="animation-delay:60ms">
+        <div class="kpi-label">Recaudado</div>
+        <div class="kpi-value mono" id="kpi-collected">$0</div>
+        <div class="kpi-bar"><div class="kpi-bar-fill" id="bar-collected" style="width:0%"></div></div>
+        <div class="kpi-pct" id="kpi-collected-pct">0%</div>
+      </div>
+      <div class="kpi-card red" style="animation-delay:120ms">
+        <div class="kpi-label">Pendiente</div>
+        <div class="kpi-value mono" id="kpi-pending">$0</div>
+        <div class="kpi-bar"><div class="kpi-bar-fill" id="bar-pending" style="width:100%"></div></div>
+        <div class="kpi-pct" id="kpi-pending-pct">100%</div>
+      </div>
+      <div class="kpi-card" style="animation-delay:180ms">
+        <div class="kpi-label">Progreso</div>
+        <div class="kpi-value mono" id="kpi-progress">0%</div>
+        <div class="kpi-bar"><div class="kpi-bar-fill" id="bar-progress" style="width:0%"></div></div>
+        <div class="kpi-pct" id="kpi-progress-sub">Completado</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Settings (admin only) -->
+  <section class="section admin-only">
+    <div class="section-header">
+      <div><div class="section-title">Configuración del plan</div><div class="section-sub">Se aplica a todos los viajeros</div></div>
+    </div>
+    <div class="settings-banner">
+      <div class="settings-field">
+        <span class="settings-label">📅 Cuotas</span>
+        <input class="settings-input" id="inp-installments" type="number" min="1" max="24" value="4">
+        <span class="settings-hint">máx. 24</span>
+      </div>
+      <div class="settings-field">
+        <span class="settings-label">📈 Interés %</span>
+        <input class="settings-input" id="inp-interest" type="number" min="0" max="20" step="0.1" value="3">
+        <span class="settings-hint">mensual compuesto</span>
+      </div>
+      <button class="btn btn-primary btn-sm" id="btn-apply-settings">Aplicar cambios</button>
+    </div>
+  </section>
+
+  <!-- Add traveler (admin only) -->
+  <section class="section admin-only">
+    <div class="section-header">
+      <div><div class="section-title">Agregar viajero</div><div class="section-sub" id="sub-formula">Interés compuesto 3% · 4 cuotas</div></div>
+    </div>
+    <div class="form-card">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Nombre</label>
+          <input class="form-input" id="inp-name" type="text" placeholder="Ej: María García">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Valor del vuelo (COP)</label>
+          <input class="form-input" id="inp-flight" type="number" placeholder="Ej: 350000" min="0">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Fecha primer pago</label>
+          <input class="form-input" id="inp-date" type="date">
+        </div>
+      </div>
+      <div class="form-footer">
+        <button class="btn btn-primary" id="btn-add">＋ Agregar viajero</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Travelers list -->
+  <section class="section">
+    <div class="section-header">
+      <div><div class="section-title">Viajeros</div><div class="section-sub" id="travelers-count">0 viajeros</div></div>
+    </div>
+    <div class="search-row">
+      <input class="search-input" id="search-input" type="text" placeholder="🔍 Buscar viajero...">
+      <select class="filter-select" id="filter-select">
+        <option value="all">Todos</option>
+        <option value="ok">Al día</option>
+        <option value="warn">Próximo pago</option>
+        <option value="late">Atrasados</option>
+      </select>
+      <select class="filter-select" id="sort-select">
+        <option value="name">Nombre A-Z</option>
+        <option value="pending-desc">Mayor pendiente</option>
+        <option value="progress-desc">Mayor avance</option>
+      </select>
+    </div>
+    <div class="travelers-grid" id="travelers-grid">
+      <div class="kpi-card skeleton" style="height:260px"></div>
+      <div class="kpi-card skeleton" style="height:260px;animation-delay:100ms"></div>
+    </div>
+  </section>
+
+  <!-- Fund -->
+  <section class="section">
+    <div class="section-header">
+      <div><div class="section-title">🏖️ Fondo de gastos</div><div class="section-sub">Ahorro grupal para los gastos en Cartagena</div></div>
+    </div>
+    <div class="fund-hero">
+      <div class="fund-hero-title">Plan de ahorro grupal</div>
+      <div class="fund-hero-sub">Meta estimada de gastos en destino</div>
+      <div class="fund-stats">
+        <div><div class="fund-stat-label">Meta total</div><div class="fund-stat-value mono" id="fund-goal">$0</div></div>
+        <div><div class="fund-stat-label">Por persona</div><div class="fund-stat-value mono" id="fund-per-person">$0</div></div>
+        <div><div class="fund-stat-label">Ahorro/mes/persona</div><div class="fund-stat-value mono" id="fund-monthly">$0</div></div>
+      </div>
+      <div style="margin-top:16px">
+        <div style="font-size:12px;opacity:.85">Comprometido por el grupo</div>
+        <div class="fund-progress-bar"><div class="fund-progress-fill" id="fund-prog-fill" style="width:0%"></div></div>
+        <div class="fund-progress-label"><span id="fund-prog-pct">0%</span><span id="fund-prog-total">$0 / $0</span></div>
+      </div>
+    </div>
+    <div class="fund-config">
+      <div style="font-size:16px;font-weight:600;margin-bottom:16px">📋 Presupuesto por categoría</div>
+      <div class="fund-cat-grid" id="fund-cat-grid"></div>
+      <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:8px">
+        <span style="font-size:13px;color:var(--text-2);align-self:center">Total estimado:</span>
+        <span class="mono" style="font-size:16px;font-weight:700" id="fund-total-budget">$0</span>
+      </div>
+    </div>
+    <div class="fund-members">
+      <div style="font-size:16px;font-weight:600;margin-bottom:4px">💰 ¿Cuánto puede ahorrar cada uno?</div>
+      <div style="font-size:13px;color:var(--text-2);margin-bottom:16px">Compromiso de ahorro mensual por persona</div>
+      <div id="fund-members-list"></div>
+      <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <div style="font-size:13px;color:var(--text-2)">Total aportado por el grupo / mes</div>
+        <div class="mono" style="font-size:18px;font-weight:700;color:var(--teal)" id="fund-total-pledge">$0</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Charts -->
+  <section class="section">
+    <div class="section-header"><div class="section-title">Análisis</div></div>
+    <div class="charts-grid">
+      <div class="chart-card"><div class="chart-title">Distribución</div><div class="chart-sub">Recaudado vs pendiente</div><div class="chart-wrap"><canvas id="chart-doughnut"></canvas></div></div>
+      <div class="chart-card"><div class="chart-title">Comparativo</div><div class="chart-sub">Pagado vs pendiente por persona</div><div class="chart-wrap"><canvas id="chart-bar"></canvas></div></div>
+      <div class="chart-card"><div class="chart-title">Evolución</div><div class="chart-sub">Recaudo acumulado</div><div class="chart-wrap"><canvas id="chart-line"></canvas></div></div>
+    </div>
+  </section>
+
+  <!-- History -->
+  <section class="section">
+    <div class="section-header"><div class="section-title">Historial de pagos</div></div>
+    <div class="history-card">
+      <div class="history-header"><div style="font-size:13px;color:var(--text-2)" id="history-summary">Sin registros</div></div>
+      <div class="table-scroll">
+        <table class="history-table">
+          <thead><tr><th>Fecha</th><th>Persona</th><th>Cuota</th><th>Valor</th><th class="admin-only">Acción</th></tr></thead>
+          <tbody id="history-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Exports -->
+  <section class="section">
+    <div class="section-header"><div class="section-title">Exportar</div></div>
+    <div class="export-row">
+      <button class="btn btn-secondary" id="btn-excel">📊 Excel</button>
+      <button class="btn btn-secondary" id="btn-pdf">📄 PDF</button>
+      <button class="btn btn-secondary" id="btn-whatsapp2">💬 Compartir</button>
+    </div>
+  </section>
+
+</div>
+</main>
+
+<!-- PAYMENT MODAL -->
+<div class="modal-overlay" id="modal-payment">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title" id="modal-payment-title">Registrar pago</div><button class="modal-close" id="modal-payment-close">×</button></div>
+    <div class="modal-body">
+      <div class="form-grid modal-1col">
+        <div class="form-group"><label class="form-label">Viajero</label><input class="form-input" id="pay-name" type="text" disabled></div>
+        <div class="form-group"><label class="form-label">Número de cuota</label><select class="form-input" id="pay-cuota"></select></div>
+        <div class="form-group"><label class="form-label">Fecha de pago</label><input class="form-input" id="pay-date" type="date"></div>
+        <div class="form-group"><label class="form-label">Valor (COP)</label><input class="form-input" id="pay-value" type="number" placeholder="Valor pagado" min="0"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary btn-sm" id="modal-payment-cancel">Cancelar</button>
+      <button class="btn btn-primary btn-sm" id="modal-payment-save">Guardar pago</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT TRAVELER MODAL -->
+<div class="modal-overlay" id="modal-edit">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">Editar viajero</div><button class="modal-close" id="modal-edit-close">×</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="edit-id">
+      <div class="form-grid modal-1col">
+        <div class="form-group"><label class="form-label">Nombre</label><input class="form-input" id="edit-name" type="text"></div>
+        <div class="form-group"><label class="form-label">Valor del vuelo (COP)</label><input class="form-input" id="edit-flight" type="number" min="0"></div>
+        <div class="form-group"><label class="form-label">Fecha primer pago</label><input class="form-input" id="edit-date" type="date"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary btn-sm" id="modal-edit-cancel">Cancelar</button>
+      <button class="btn btn-primary btn-sm" id="modal-edit-save">Guardar cambios</button>
+    </div>
+  </div>
+</div>
+
+<!-- USER MANAGEMENT MODAL -->
+<div class="modal-overlay" id="modal-users">
+  <div class="modal" style="max-width:640px">
+    <div class="modal-header"><div class="modal-title">👥 Gestión de usuarios</div><button class="modal-close" id="modal-users-close">×</button></div>
+    <div class="modal-body">
+      <div style="margin-bottom:20px">
+        <div style="font-size:14px;font-weight:600;margin-bottom:12px">Crear nuevo usuario</div>
+        <div class="form-grid" style="grid-template-columns:1fr 1fr">
+          <div class="form-group"><label class="form-label">Usuario</label><input class="form-input" id="nu-user" type="text" placeholder="nombre.usuario"></div>
+          <div class="form-group"><label class="form-label">Contraseña</label><input class="form-input" id="nu-pass" type="password" placeholder="Mínimo 6 caracteres"></div>
+          <div class="form-group"><label class="form-label">Rol</label>
+            <select class="form-input" id="nu-role">
+              <option value="viewer">👁️ Visualizador</option>
+              <option value="admin">⚙️ Administrador</option>
+            </select>
+          </div>
+          <div class="form-group" style="justify-content:flex-end">
+            <label class="form-label">&nbsp;</label>
+            <button class="btn btn-primary btn-sm" id="btn-create-user" style="align-self:flex-end">Crear usuario</button>
+          </div>
+        </div>
+      </div>
+      <div style="font-size:14px;font-weight:600;margin-bottom:12px">Usuarios existentes</div>
+      <div class="table-scroll">
+        <table class="users-table" id="users-table">
+          <thead><tr><th>Usuario</th><th>Rol</th><th>Estado</th><th>Acciones</th></tr></thead>
+          <tbody id="users-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT USER MODAL -->
+<div class="modal-overlay" id="modal-edit-user">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">Editar usuario</div><button class="modal-close" id="modal-edit-user-close">×</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="eu-id">
+      <div class="form-grid modal-1col">
+        <div class="form-group"><label class="form-label">Usuario</label><input class="form-input" id="eu-username" type="text" disabled></div>
+        <div class="form-group"><label class="form-label">Rol</label>
+          <select class="form-input" id="eu-role">
+            <option value="viewer">👁️ Visualizador</option>
+            <option value="admin">⚙️ Administrador</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">Estado</label>
+          <select class="form-input" id="eu-active">
+            <option value="1">✅ Activo</option>
+            <option value="0">🔴 Desactivado</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">Nueva contraseña (opcional)</label><input class="form-input" id="eu-pass" type="password" placeholder="Dejar vacío para no cambiar"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary btn-sm" id="modal-edit-user-cancel">Cancelar</button>
+      <button class="btn btn-primary btn-sm" id="modal-edit-user-save">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM -->
+<div class="confirm-overlay" id="confirm-overlay">
+  <div class="confirm-dialog">
+    <div class="confirm-icon">🗑️</div>
+    <div class="confirm-title">¿Confirmar acción?</div>
+    <div class="confirm-msg" id="confirm-msg">Esta acción no se puede deshacer.</div>
+    <div class="confirm-btns">
+      <button class="btn btn-secondary btn-sm" id="confirm-cancel">Cancelar</button>
+      <button class="btn btn-danger btn-sm" id="confirm-ok">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+
+<!-- ============================================================
+     JAVASCRIPT — CLIENT
+============================================================ -->
+<script>
+/* ── Config ─────────────────────────────────────────────────── */
+const API   = '';           // same origin — backend serves this file
+const WS_URL = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}`;
+
+/* ── Auth state ─────────────────────────────────────────────── */
+let token    = localStorage.getItem('ctg_token') || null;
+let me       = JSON.parse(localStorage.getItem('ctg_me') || 'null');
+let isAdmin  = false;
+
+/* ── App state (mirrors DB) ─────────────────────────────────── */
+let state = {
+  settings:  { installments: 4, interest: 3, darkMode: false },
+  travelers: [],
+  payments:  [],
+  fund: { categories: [], pledges: {} }
+};
+
+let charts       = {};
+let ws           = null;
+let wsReconnectT = null;
+let pendingConfirmCb = null;
+let currentPaymentId = null;
+
+/* ============================================================
+   API HELPERS
+============================================================ */
+async function api(method, path, body) {
+  const res = await fetch(API + path, {
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { 'Authorization': 'Bearer ' + token } : {})
+    },
+    body: body ? JSON.stringify(body) : undefined
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+  return data;
+}
+
+/* ============================================================
+   AUTH
+============================================================ */
+async function login() {
+  const username = document.getElementById('li-user').value.trim();
+  const password = document.getElementById('li-pass').value;
+  const errEl    = document.getElementById('login-error');
+  errEl.textContent = '';
+  if (!username || !password) { errEl.textContent = 'Ingresa usuario y contraseña'; return; }
+  try {
+    const res = await api('POST', '/api/auth/login', { username, password });
+    token = res.token;
+    me    = res.user;
+    localStorage.setItem('ctg_token', token);
+    localStorage.setItem('ctg_me', JSON.stringify(me));
+    bootApp();
+  } catch(e) {
+    errEl.textContent = e.message || 'Error de autenticación';
+  }
+}
+
+function logout() {
+  localStorage.removeItem('ctg_token');
+  localStorage.removeItem('ctg_me');
+  token = null; me = null; isAdmin = false;
+  if (ws) ws.close();
+  location.reload();
+}
+
+document.getElementById('btn-login').addEventListener('click', login);
+document.getElementById('li-pass').addEventListener('keydown', e => { if(e.key==='Enter') login(); });
+document.getElementById('btn-logout').addEventListener('click', logout);
+
+/* ============================================================
+   BOOT APP
+============================================================ */
+async function bootApp() {
+  isAdmin = me && me.role === 'admin';
+
+  // Show/hide UI
+  document.getElementById('login-screen').style.display   = 'none';
+  document.getElementById('app-header').style.display     = '';
+  document.getElementById('app-main').style.display       = '';
+
+  // Role badge
+  document.getElementById('role-badge').innerHTML = isAdmin
+    ? '<span class="admin-badge">⚙️ Admin</span>'
+    : '<span class="viewer-badge">👁️ Viewer</span>';
+
+  // Viewer mode: CSS class hides .admin-only elements
+  if (!isAdmin) {
+    document.body.classList.add('viewer-mode');
+    document.getElementById('viewer-banner').style.display = 'flex';
+  }
+
+  // Apply dark mode preference
+  applyDarkMode(state.settings.darkMode);
+
+  // Load initial state
+  try {
+    const s = await api('GET', '/api/state');
+    applyState(s);
+  } catch(e) {
+    toast('Error cargando datos: ' + e.message, 'error');
+  }
+
+  // Connect WebSocket
+  connectWS();
+
+  // Default date
+  const d = new Date(); d.setMonth(d.getMonth()+1);
+  const el = document.getElementById('inp-date');
+  if (el) el.value = d.toISOString().slice(0,10);
+}
+
+/* ── Try auto-login from stored token ── */
+if (token && me) {
+  api('GET', '/api/me').then(u => {
+    if (u && u.active) bootApp();
+    else logout();
+  }).catch(logout);
+}
+
+/* ============================================================
+   WEBSOCKET — Real-time sync
+============================================================ */
+function connectWS() {
+  if (ws) ws.close();
+  ws = new WebSocket(WS_URL);
+
+  ws.onopen = () => {
+    setConnStatus(true);
+    ws.send(JSON.stringify({ type: 'AUTH', token }));
+    if (wsReconnectT) { clearTimeout(wsReconnectT); wsReconnectT = null; }
+  };
+
+  ws.onmessage = e => {
+    const msg = JSON.parse(e.data);
+    handleWSMessage(msg);
+  };
+
+  ws.onclose = () => {
+    setConnStatus(false);
+    wsReconnectT = setTimeout(connectWS, 3000);
+  };
+
+  ws.onerror = () => ws.close();
+}
+
+function setConnStatus(online) {
+  const dot   = document.getElementById('conn-dot');
+  const label = document.getElementById('conn-label');
+  if (!dot) return;
+  dot.className   = online ? 'live-dot' : 'live-dot offline-dot';
+  label.className = online ? 'live-label' : 'live-label offline-label';
+  label.textContent = online ? 'En vivo' : 'Sin conexión';
+}
+
+function handleWSMessage(msg) {
+  switch(msg.type) {
+
+    case 'AUTH_OK':
+      break;
+
+    case 'SETTINGS_UPDATED':
+      state.settings = { ...state.settings, ...msg.data };
+      applyDarkMode(state.settings.darkMode);
+      updateFormulaHint();
+      renderAll();
+      flashSync();
+      break;
+
+    case 'TRAVELER_ADDED':
+      if (!state.travelers.find(t => t.id === msg.data.id))
+        state.travelers.push(msg.data);
+      renderAll();
+      flashSync();
+      break;
+
+    case 'TRAVELER_UPDATED':
+      { const i = state.travelers.findIndex(t => t.id === msg.data.id);
+        if (i >= 0) state.travelers[i] = msg.data;
+        renderAll(); flashSync(); }
+      break;
+
+    case 'TRAVELER_DELETED':
+      state.travelers = state.travelers.filter(t => t.id !== msg.data.id);
+      state.payments  = state.payments.filter(p => p.travelerId !== msg.data.id);
+      delete state.fund.pledges[msg.data.id];
+      renderAll(); flashSync();
+      break;
+
+    case 'PAYMENT_ADDED':
+      if (!state.payments.find(p => p.id === msg.data.id))
+        state.payments.push(msg.data);
+      renderAll(); flashSync();
+      break;
+
+    case 'PAYMENT_DELETED':
+      state.payments = state.payments.filter(p => p.id !== msg.data.id);
+      renderAll(); flashSync();
+      break;
+
+    case 'FUND_CATEGORIES_UPDATED':
+      msg.data.categories.forEach(nc => {
+        const c = state.fund.categories.find(x => x.id === nc.id);
+        if (c) c.budget = nc.budget;
+      });
+      renderFund(); flashSync();
+      break;
+
+    case 'FUND_PLEDGES_UPDATED':
+      state.fund.pledges = { ...state.fund.pledges, ...msg.data.pledges };
+      renderFund(); flashSync();
+      break;
+  }
+}
+
+function applyState(s) {
+  state.settings  = s.settings  || state.settings;
+  state.travelers = s.travelers || [];
+  state.payments  = s.payments  || [];
+  state.fund      = s.fund      || { categories: [], pledges: {} };
+
+  document.getElementById('inp-installments').value = state.settings.installments;
+  document.getElementById('inp-interest').value     = state.settings.interest;
+  applyDarkMode(state.settings.darkMode);
+  updateFormulaHint();
+  renderAll();
+}
+
+function flashSync() {
+  const dot = document.getElementById('conn-dot');
+  if (dot) { dot.classList.add('syncing'); setTimeout(() => dot.classList.remove('syncing'), 700); }
+}
+
+/* ============================================================
+   CALCULATIONS
+============================================================ */
+function calcTraveler(t) {
+  const n = state.settings.installments;
+  const r = state.settings.interest / 100;
+  const totalFinal    = t.flight * Math.pow(1 + r, n);
+  const installmentAmt = totalFinal / n;
+  const payments      = state.payments.filter(p => p.travelerId === t.id);
+  const paid          = payments.reduce((s,p) => s + p.value, 0);
+  const pending       = Math.max(0, totalFinal - paid);
+  const interest      = totalFinal - t.flight;
+  const progress      = totalFinal > 0 ? Math.min(100, paid / totalFinal * 100) : 0;
+  return { totalFinal, installmentAmt, paid, pending, interest, progress };
+}
+
+function calcDueDate(t, num) {
+  if (!t.firstPayDate) return null;
+  const d = new Date(t.firstPayDate);
+  d.setMonth(d.getMonth() + (num - 1));
+  return d;
+}
+
+function getStatus(t) {
+  const c = calcTraveler(t);
+  if (c.pending <= 0) return 'ok';
+  const paidSet = new Set(state.payments.filter(p => p.travelerId === t.id).map(p => p.cuota));
+  const next = [...Array(state.settings.installments)].map((_,i)=>i+1).find(n=>!paidSet.has(n)) || state.settings.installments;
+  const due  = calcDueDate(t, next);
+  if (!due) return 'ok';
+  const diff = (due - new Date()) / 86400000;
+  if (diff < 0) return 'late';
+  if (diff <= 7) return 'warn';
+  return 'ok';
+}
+
+function monthsUntilTrip() {
+  return Math.max(1, Math.round((new Date('2026-11-12') - new Date()) / 2592000000));
+}
+
+/* ============================================================
+   FORMATS
+============================================================ */
+function fmt(n)      { return '$'+Math.round(n||0).toLocaleString('es-CO'); }
+function fmtDate(d)  { const dt=d instanceof Date?d:new Date(d); return isNaN(dt)?'—':dt.toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'numeric'}); }
+function initials(n) { return n.trim().split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2); }
+function esc(s)      { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function statusLabel(s) {
+  if(s==='ok')   return { cls:'status-ok',   text:'🟢 Al día' };
+  if(s==='warn') return { cls:'status-warn', text:'🟡 Próximo pago' };
+  return               { cls:'status-late',  text:'🔴 Atrasado' };
+}
+function updateFormulaHint() {
+  const el = document.getElementById('sub-formula');
+  if(el) el.textContent = `Interés compuesto ${state.settings.interest}% mensual · ${state.settings.installments} cuota${state.settings.installments!==1?'s':''}`;
+}
+
+/* ============================================================
+   DARK MODE
+============================================================ */
+function applyDarkMode(on) {
+  document.documentElement.setAttribute('data-theme', on ? 'dark' : 'light');
+  const btn = document.getElementById('btn-dark');
+  if(btn) btn.textContent = on ? '☀️' : '🌙';
+}
+
+document.getElementById('btn-dark').addEventListener('click', async () => {
+  const next = !state.settings.darkMode;
+  state.settings.darkMode = next;
+  applyDarkMode(next);
+  if (isAdmin) {
+    try {
+      await api('PUT', '/api/settings', { ...state.settings, darkMode: next });
+    } catch(e) { toast('Error guardando tema', 'error'); }
+  }
+  setTimeout(renderCharts, 50);
+});
+
+/* ============================================================
+   RENDER ALL
+============================================================ */
+function renderAll() {
+  renderDashboard();
+  renderTravelers();
+  renderHistory();
+  renderFund();
+  renderAlerts();
+  renderCharts();
+}
+
+/* ── Dashboard ── */
+function renderDashboard() {
+  let total=0, collected=0;
+  state.travelers.forEach(t => { const c=calcTraveler(t); total+=c.totalFinal; collected+=c.paid; });
+  const pct = total>0 ? collected/total*100 : 0;
+  animVal('kpi-total',     total);
+  animVal('kpi-collected', collected);
+  animVal('kpi-pending',   Math.max(0, total-collected));
+  document.getElementById('kpi-total-count').textContent  = `${state.travelers.length} viajero${state.travelers.length!==1?'s':''}`;
+  document.getElementById('kpi-collected-pct').textContent = `${pct.toFixed(1)}% del total`;
+  document.getElementById('kpi-pending-pct').textContent   = `${(100-pct).toFixed(1)}% restante`;
+  document.getElementById('kpi-progress').textContent      = `${pct.toFixed(1)}%`;
+  document.getElementById('kpi-progress-sub').textContent  = `de ${fmt(total)}`;
+  document.getElementById('bar-collected').style.width = pct+'%';
+  document.getElementById('bar-pending').style.width   = (100-pct)+'%';
+  document.getElementById('bar-progress').style.width  = pct+'%';
+}
+
+function animVal(id, val) {
+  const el  = document.getElementById(id);
+  const end = Math.round(val);
+  const dur = 600; const t0 = performance.now();
+  function step(now) {
+    const p = Math.min((now-t0)/dur, 1);
+    el.textContent = '$'+Math.round((1-Math.pow(1-p,3))*end).toLocaleString('es-CO');
+    if(p<1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+/* ── Travelers ── */
+function renderTravelers() {
+  const grid   = document.getElementById('travelers-grid');
+  const search = document.getElementById('search-input').value.toLowerCase();
+  const filter = document.getElementById('filter-select').value;
+  const sort   = document.getElementById('sort-select').value;
+  let list = [...state.travelers];
+  if(search) list = list.filter(t => t.name.toLowerCase().includes(search));
+  if(filter!=='all') list = list.filter(t => getStatus(t)===filter);
+  if(sort==='name') list.sort((a,b)=>a.name.localeCompare(b.name));
+  if(sort==='pending-desc') list.sort((a,b)=>calcTraveler(b).pending-calcTraveler(a).pending);
+  if(sort==='progress-desc') list.sort((a,b)=>calcTraveler(b).progress-calcTraveler(a).progress);
+  document.getElementById('travelers-count').textContent = `${state.travelers.length} viajero${state.travelers.length!==1?'s':''} registrado${state.travelers.length!==1?'s':''}`;
+
+  if(!list.length){
+    grid.innerHTML=`<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">🏖️</div><div class="empty-title">${state.travelers.length===0?'Aún no hay viajeros':'Sin resultados'}</div><div class="empty-sub">${state.travelers.length===0?'Agrega el primer viajero arriba':'Intenta con otro filtro'}</div></div>`;
+    return;
+  }
+
+  grid.innerHTML = list.map((t,i) => {
+    const c   = calcTraveler(t);
+    const st  = getStatus(t);
+    const sl  = statusLabel(st);
+    const paidSet = new Set(state.payments.filter(p=>p.travelerId===t.id).map(p=>p.cuota));
+    const nextN   = [...Array(state.settings.installments)].map((_,i)=>i+1).find(n=>!paidSet.has(n)) || state.settings.installments;
+    const nextDue = calcDueDate(t, nextN);
+    const actns   = isAdmin ? `
+      <button class="btn btn-secondary btn-sm" onclick="openEdit('${t.id}')">✏️ Editar</button>
+      <button class="btn btn-secondary btn-sm" onclick="openPayment('${t.id}')">💳 Pagar</button>
+      <button class="btn btn-danger btn-sm" onclick="doConfirm('¿Eliminar a ${esc(t.name)}? Se borrarán todos sus pagos.', ()=>deleteTraveler('${t.id}'))">🗑️</button>
+    ` : '';
+    return `
+    <div class="traveler-card" style="animation-delay:${i*50}ms">
+      <div class="traveler-card-top">
+        <div class="traveler-avatar">${initials(t.name)}</div>
+        <div class="traveler-info"><div class="traveler-name">${esc(t.name)}</div><div class="traveler-status ${sl.cls}">${sl.text}</div></div>
+      </div>
+      <div class="traveler-amounts">
+        <div><div class="amount-label">Vuelo</div><div class="amount-value mono">${fmt(t.flight)}</div></div>
+        <div><div class="amount-label">Intereses</div><div class="amount-value mono">${fmt(c.interest)}</div></div>
+        <div><div class="amount-label">Total deuda</div><div class="amount-value mono">${fmt(c.totalFinal)}</div></div>
+        <div><div class="amount-label">Cuota mensual</div><div class="amount-value mono blue">${fmt(c.installmentAmt)}</div></div>
+        <div><div class="amount-label">Total pagado</div><div class="amount-value mono green">${fmt(c.paid)}</div></div>
+        <div><div class="amount-label">Saldo pendiente</div><div class="amount-value mono red">${fmt(c.pending)}</div></div>
+      </div>
+      <div class="progress-track"><div class="progress-fill" style="width:${c.progress.toFixed(1)}%"></div></div>
+      <div class="progress-label"><span>${c.progress.toFixed(1)}% pagado</span><span>Cuota ${paidSet.size}/${state.settings.installments}</span></div>
+      ${c.pending>0?`<div class="next-payment">📅 <span>Vence: <strong>${fmtDate(nextDue)}</strong></span></div>`:'<div class="next-payment">🎉 <span><strong>¡Pagado completamente!</strong></span></div>'}
+      <div class="traveler-actions">${actns}</div>
+    </div>`;
+  }).join('');
+}
+
+/* ── History ── */
+function renderHistory() {
+  const tbody  = document.getElementById('history-tbody');
+  const sorted = [...state.payments].sort((a,b)=>new Date(b.date)-new Date(a.date));
+  if(!sorted.length){
+    tbody.innerHTML='<tr><td colspan="5" class="history-empty">Sin pagos registrados</td></tr>';
+    document.getElementById('history-summary').textContent='Sin registros';
+    return;
+  }
+  const total = sorted.reduce((s,p)=>s+p.value,0);
+  document.getElementById('history-summary').textContent=`${sorted.length} pago${sorted.length!==1?'s':''} · Total: ${fmt(total)}`;
+  tbody.innerHTML = sorted.map(p => {
+    const t = state.travelers.find(x=>x.id===p.travelerId);
+    const del = isAdmin ? `<td><button class="btn btn-danger btn-sm" onclick="doConfirm('¿Eliminar este pago?',()=>deletePayment('${p.id}'))">🗑️</button></td>` : '<td></td>';
+    return `<tr><td>${fmtDate(new Date(p.date))}</td><td><strong>${esc(t?t.name:'Eliminado')}</strong></td><td><span class="cuota-badge">${p.cuota}</span></td><td class="mono"><strong>${fmt(p.value)}</strong></td>${del}</tr>`;
+  }).join('');
+}
+
+/* ── Fund ── */
+function renderFund() {
+  const cats = state.fund.categories;
+  const totalBudget = cats.reduce((s,c)=>s+Number(c.budget||0), 0);
+  const n = state.travelers.length || 1;
+  const perPerson  = totalBudget / n;
+  const months     = monthsUntilTrip();
+  const monthlyPP  = perPerson / months;
+
+  document.getElementById('fund-goal').textContent       = fmt(totalBudget);
+  document.getElementById('fund-per-person').textContent = fmt(perPerson);
+  document.getElementById('fund-monthly').textContent    = fmt(monthlyPP);
+  document.getElementById('fund-total-budget').textContent = fmt(totalBudget);
+
+  // Categories grid
+  const catGrid = document.getElementById('fund-cat-grid');
+  catGrid.innerHTML = cats.map(cat => {
+    const inp = isAdmin
+      ? `<input class="fund-cat-input" type="number" min="0" step="10000" value="${cat.budget}" data-cat="${cat.id}" onchange="saveCatBudget('${cat.id}',this.value)">`
+      : `<div class="fund-cat-amount mono">${fmt(cat.budget)}</div>`;
+    return `<div class="fund-cat-item${isAdmin?' editable':''}"><div class="fund-cat-emoji">${cat.emoji}</div><div class="fund-cat-name">${cat.name}</div>${inp}</div>`;
+  }).join('');
+
+  // Members pledges
+  const membersList = document.getElementById('fund-members-list');
+  if(!state.travelers.length){
+    membersList.innerHTML='<div style="text-align:center;padding:24px;color:var(--text-3);font-size:14px">Agrega viajeros primero</div>';
+  } else {
+    membersList.innerHTML = state.travelers.map(t => {
+      const pledge = Number(state.fund.pledges[t.id]||0);
+      const pct    = monthlyPP>0 ? pledge/monthlyPP*100 : 0;
+      let bdgCls='fund-pledge-low', bdgTxt='Sin compromiso';
+      if(pledge>0 && pct>=100){ bdgCls='fund-pledge-ok';  bdgTxt='✓ Meta cubierta'; }
+      else if(pledge>0 && pct>=60){ bdgCls='fund-pledge-mid'; bdgTxt=`${pct.toFixed(0)}% de meta`; }
+      else if(pledge>0){ bdgTxt=`${pct.toFixed(0)}% de meta`; }
+      const inp = isAdmin
+        ? `<input class="fund-pledge-input" type="number" min="0" step="10000" value="${pledge}" onchange="savePledge('${t.id}',this.value)">`
+        : `<strong class="mono">${fmt(pledge)}/mes</strong>`;
+      return `<div class="fund-member-row"><div class="fund-member-avatar">${initials(t.name)}</div><div class="fund-member-name">${esc(t.name)}</div><div style="display:flex;align-items:center;gap:8px">${inp}<span class="fund-pledge-badge ${bdgCls}">${bdgTxt}</span></div></div>`;
+    }).join('');
+  }
+
+  const totalPledge   = state.travelers.reduce((s,t)=>s+Number(state.fund.pledges[t.id]||0), 0);
+  const projected     = totalPledge * months;
+  const progPct       = totalBudget>0 ? Math.min(100, projected/totalBudget*100) : 0;
+  document.getElementById('fund-total-pledge').textContent = fmt(totalPledge)+'/mes';
+  document.getElementById('fund-prog-fill').style.width   = progPct+'%';
+  document.getElementById('fund-prog-pct').textContent    = `${progPct.toFixed(0)}% comprometido (${months} meses)`;
+  document.getElementById('fund-prog-total').textContent  = `${fmt(projected)} / ${fmt(totalBudget)}`;
+}
+
+/* ── Alerts ── */
+function renderAlerts() {
+  const panel  = document.getElementById('alerts-panel');
+  const alerts = generateAlerts();
+  const btn    = document.getElementById('btn-alerts');
+  const urgent = alerts.filter(a=>a.type==='red'||a.type==='yellow').length;
+  if(btn) btn.textContent = urgent>0 ? `🔔 ${urgent}` : '🔔';
+  panel.innerHTML = alerts.map((a,i)=>`
+    <div class="alert-item alert-${a.type}" style="animation-delay:${i*40}ms">
+      <div class="alert-icon">${a.icon}</div>
+      <div class="alert-content"><div class="alert-title">${esc(a.title)}</div><div class="alert-body">${esc(a.body)}</div></div>
+    </div>`).join('');
+}
+
+function generateAlerts() {
+  const alerts = [];
+  const today  = new Date();
+  state.travelers.forEach(t => {
+    const c       = calcTraveler(t);
+    const paidSet = new Set(state.payments.filter(p=>p.travelerId===t.id).map(p=>p.cuota));
+    for(let i=1;i<=state.settings.installments;i++){
+      if(!paidSet.has(i)){
+        const due = calcDueDate(t,i);
+        if(due){
+          const diff = (due-today)/86400000;
+          if(diff<0) alerts.push({type:'red',icon:'🔴',title:`${t.name} — Cuota ${i} vencida`,body:`Venció el ${fmtDate(due)}. ${Math.abs(Math.round(diff))} días de retraso. Saldo: ${fmt(c.pending)}`});
+          else if(diff<=5) alerts.push({type:'yellow',icon:'⚠️',title:`${t.name} — Cuota ${i} vence pronto`,body:`Vence en ${Math.round(diff)} días (${fmtDate(due)}). Valor: ${fmt(c.installmentAmt)}`});
+        }
+      }
+    }
+    if(c.pending<=0 && state.payments.filter(p=>p.travelerId===t.id).length>0)
+      alerts.push({type:'green',icon:'✅',title:`${t.name} — ¡Deuda cancelada!`,body:`Pagó la totalidad: ${fmt(c.totalFinal)}`});
+  });
+  let total=0,col=0; state.travelers.forEach(t=>{const c=calcTraveler(t);total+=c.totalFinal;col+=c.paid;});
+  const pct=total>0?col/total*100:0;
+  if(pct>=100&&state.travelers.length>0) alerts.push({type:'green',icon:'🎉',title:'¡Vuelos completamente pagados!',body:'Todo el grupo pagó sus vuelos. ¡Nos vamos a Cartagena!'});
+  else if(pct>=50&&state.travelers.length>0) alerts.push({type:'blue',icon:'📈',title:`${pct.toFixed(0)}% del viaje recaudado`,body:`${fmt(col)} de ${fmt(total)} totales.`});
+  const fundGoal=state.fund.categories.reduce((s,c)=>s+Number(c.budget||0),0);
+  const totalPledge=state.travelers.reduce((s,t)=>s+Number(state.fund.pledges[t.id]||0),0);
+  if(state.travelers.length>0&&fundGoal>0){
+    const months=monthsUntilTrip();
+    const projected=totalPledge*months;
+    if(totalPledge===0) alerts.push({type:'blue',icon:'💰',title:'Configura el fondo de gastos',body:'No hay compromisos de ahorro definidos aún.'});
+    else if(projected<fundGoal) alerts.push({type:'yellow',icon:'💸',title:`Fondo insuficiente — Faltan ${fmt(fundGoal-projected)}`,body:`Con ${fmt(totalPledge)}/mes en ${months} meses: ${fmt(projected)} (meta: ${fmt(fundGoal)})`});
+    else alerts.push({type:'green',icon:'🎯',title:'¡Meta del fondo alcanzable!',body:`Con ${fmt(totalPledge)}/mes en ${months} meses: ${fmt(projected)}. Meta ${fmt(fundGoal)} cubierta.`});
+  }
+  if(!alerts.length) alerts.push({type:'green',icon:'✅',title:'Todo en orden',body:'No hay alertas activas.'});
+  return alerts;
+}
+
+/* ── Charts ── */
+function getCC() {
+  const dark = document.documentElement.getAttribute('data-theme')==='dark';
+  return { text2:dark?'#98989d':'#6e6e73', border:dark?'rgba(255,255,255,0.08)':'rgba(0,0,0,0.08)', green:dark?'#32d74b':'#28a745', red:dark?'#ff453a':'#dc3545', blue:dark?'#0a84ff':'#0071e3' };
+}
+
+function renderCharts() {
+  const cc=getCC();
+  let total=0,collected=0;
+  state.travelers.forEach(t=>{const c=calcTraveler(t);total+=c.totalFinal;collected+=c.paid;});
+
+  const c1=document.getElementById('chart-doughnut').getContext('2d');
+  if(charts.doughnut) charts.doughnut.destroy();
+  charts.doughnut=new Chart(c1,{type:'doughnut',data:{labels:['Recaudado','Pendiente'],datasets:[{data:[collected,Math.max(0,total-collected)],backgroundColor:[cc.green,cc.red],borderWidth:0,hoverOffset:8}]},options:{responsive:true,maintainAspectRatio:false,cutout:'70%',plugins:{legend:{position:'bottom',labels:{color:cc.text2,padding:16,font:{family:"'DM Sans'",size:12}}},tooltip:{callbacks:{label:c=>` ${fmt(c.parsed)}`}}}}});
+
+  const c2=document.getElementById('chart-bar').getContext('2d');
+  if(charts.bar) charts.bar.destroy();
+  charts.bar=new Chart(c2,{type:'bar',data:{labels:state.travelers.map(t=>t.name.split(' ')[0]),datasets:[{label:'Pagado',data:state.travelers.map(t=>Math.round(calcTraveler(t).paid)),backgroundColor:cc.green,borderRadius:6,borderSkipped:false},{label:'Pendiente',data:state.travelers.map(t=>Math.round(calcTraveler(t).pending)),backgroundColor:cc.red,borderRadius:6,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:cc.text2,font:{family:"'DM Sans'",size:12}}},tooltip:{callbacks:{label:c=>` ${fmt(c.parsed)}`}}},scales:{x:{stacked:true,ticks:{color:cc.text2},grid:{color:cc.border}},y:{stacked:true,ticks:{color:cc.text2,callback:v=>'$'+(v/1000).toFixed(0)+'k'},grid:{color:cc.border}}}}});
+
+  const sp=[...state.payments].sort((a,b)=>new Date(a.date)-new Date(b.date));
+  let cum=0;const ll=[],ld=[];
+  sp.forEach(p=>{cum+=p.value;ll.push(fmtDate(new Date(p.date)));ld.push(Math.round(cum));});
+  if(!ll.length){ll.push('Inicio');ld.push(0);}
+  const c3=document.getElementById('chart-line').getContext('2d');
+  if(charts.line) charts.line.destroy();
+  charts.line=new Chart(c3,{type:'line',data:{labels:ll,datasets:[{label:'Recaudo acumulado',data:ld,borderColor:cc.blue,backgroundColor:cc.blue+'20',fill:true,tension:0.4,pointRadius:4,pointBackgroundColor:cc.blue}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:cc.text2,font:{family:"'DM Sans'",size:12}}},tooltip:{callbacks:{label:c=>` ${fmt(c.parsed)}`}}},scales:{x:{ticks:{color:cc.text2,font:{size:11}},grid:{color:cc.border}},y:{ticks:{color:cc.text2,callback:v=>'$'+(v/1000).toFixed(0)+'k'},grid:{color:cc.border}}}}});
+}
+
+/* ============================================================
+   ADMIN ACTIONS
+============================================================ */
+
+/* Settings */
+document.getElementById('btn-apply-settings').addEventListener('click', async () => {
+  const n = parseInt(document.getElementById('inp-installments').value);
+  const r = parseFloat(document.getElementById('inp-interest').value);
+  if(!n||n<1||n>24) return toast('Cuotas: 1–24','error');
+  if(isNaN(r)||r<0||r>20) return toast('Interés: 0–20%','error');
+  try {
+    await api('PUT','/api/settings',{installments:n,interest:r,darkMode:state.settings.darkMode});
+    state.settings.installments=n; state.settings.interest=r;
+    updateFormulaHint(); renderAll();
+    toast(`Plan: ${n} cuotas al ${r}%`,'success');
+  } catch(e){ toast(e.message,'error'); }
+});
+
+/* Add traveler */
+document.getElementById('btn-add').addEventListener('click', async () => {
+  const name   = document.getElementById('inp-name').value.trim();
+  const flight = parseFloat(document.getElementById('inp-flight').value);
+  const date   = document.getElementById('inp-date').value;
+  if(!name)          return toast('Ingresa el nombre','error');
+  if(!flight||flight<=0) return toast('Valor de vuelo inválido','error');
+  if(!date)          return toast('Selecciona la fecha','error');
+  try {
+    await api('POST','/api/travelers',{name,flight,firstPayDate:date});
+    document.getElementById('inp-name').value='';
+    document.getElementById('inp-flight').value='';
+    toast(`${name} agregado`,'success');
+  } catch(e){ toast(e.message,'error'); }
+});
+
+/* Edit traveler modal */
+function openEdit(id) {
+  const t=state.travelers.find(x=>x.id===id); if(!t) return;
+  document.getElementById('edit-id').value    = id;
+  document.getElementById('edit-name').value  = t.name;
+  document.getElementById('edit-flight').value= t.flight;
+  document.getElementById('edit-date').value  = t.firstPayDate;
+  document.getElementById('modal-edit').classList.add('open');
+}
+document.getElementById('modal-edit-close').addEventListener('click',()=>document.getElementById('modal-edit').classList.remove('open'));
+document.getElementById('modal-edit-cancel').addEventListener('click',()=>document.getElementById('modal-edit').classList.remove('open'));
+document.getElementById('modal-edit-save').addEventListener('click', async () => {
+  const id     = document.getElementById('edit-id').value;
+  const name   = document.getElementById('edit-name').value.trim();
+  const flight = parseFloat(document.getElementById('edit-flight').value);
+  const date   = document.getElementById('edit-date').value;
+  if(!name||!flight||!date) return toast('Completa todos los campos','error');
+  try {
+    await api('PUT',`/api/travelers/${id}`,{name,flight,firstPayDate:date});
+    toast('Viajero actualizado','success');
+    document.getElementById('modal-edit').classList.remove('open');
+  } catch(e){ toast(e.message,'error'); }
+});
+
+/* Delete traveler */
+async function deleteTraveler(id) {
+  try {
+    await api('DELETE',`/api/travelers/${id}`);
+    toast('Viajero eliminado','info');
+  } catch(e){ toast(e.message,'error'); }
+}
+
+/* Payment modal */
+function openPayment(id) {
+  currentPaymentId = id;
+  const t=state.travelers.find(x=>x.id===id); if(!t) return;
+  document.getElementById('pay-name').value = t.name;
+  document.getElementById('pay-date').value = new Date().toISOString().slice(0,10);
+  const paidSet=new Set(state.payments.filter(p=>p.travelerId===id).map(p=>p.cuota));
+  const sel=document.getElementById('pay-cuota'); sel.innerHTML='';
+  for(let i=1;i<=state.settings.installments;i++){
+    const o=document.createElement('option');
+    o.value=i; o.textContent=`Cuota ${i}${paidSet.has(i)?' ✓':''}`;
+    sel.appendChild(o);
+  }
+  const next=[...Array(state.settings.installments)].map((_,i)=>i+1).find(n=>!paidSet.has(n))||state.settings.installments;
+  sel.value=next;
+  document.getElementById('pay-value').value=Math.round(calcTraveler(t).installmentAmt);
+  document.getElementById('modal-payment-title').textContent=`Pago — ${t.name.split(' ')[0]}`;
+  document.getElementById('modal-payment').classList.add('open');
+}
+document.getElementById('modal-payment-close').addEventListener('click',()=>document.getElementById('modal-payment').classList.remove('open'));
+document.getElementById('modal-payment-cancel').addEventListener('click',()=>document.getElementById('modal-payment').classList.remove('open'));
+document.getElementById('modal-payment-save').addEventListener('click', async () => {
+  const cuota=parseInt(document.getElementById('pay-cuota').value);
+  const date =document.getElementById('pay-date').value;
+  const value=parseFloat(document.getElementById('pay-value').value);
+  if(!date)          return toast('Selecciona la fecha','error');
+  if(!value||value<=0) return toast('Valor inválido','error');
+  try {
+    await api('POST','/api/payments',{travelerId:currentPaymentId,cuota,date,value});
+    toast('Pago registrado','success');
+    document.getElementById('modal-payment').classList.remove('open');
+  } catch(e){ toast(e.message,'error'); }
+});
+
+/* Delete payment */
+async function deletePayment(id) {
+  try { await api('DELETE',`/api/payments/${id}`); toast('Pago eliminado','info'); }
+  catch(e){ toast(e.message,'error'); }
+}
+
+/* Fund — save category budget (debounced) */
+const catDebounce = {};
+function saveCatBudget(catId, val) {
+  const cat=state.fund.categories.find(c=>c.id===catId);
+  if(cat) cat.budget=Number(val)||0;
+  renderFund();
+  clearTimeout(catDebounce[catId]);
+  catDebounce[catId] = setTimeout(async () => {
+    try { await api('PUT','/api/fund/categories',{categories:state.fund.categories}); }
+    catch(e){ toast('Error guardando categoría','error'); }
+  }, 800);
+}
+
+/* Fund — save pledge (debounced) */
+const pledgeDebounce = {};
+function savePledge(tid, val) {
+  state.fund.pledges[tid]=Number(val)||0;
+  renderFund();
+  clearTimeout(pledgeDebounce[tid]);
+  pledgeDebounce[tid] = setTimeout(async () => {
+    try { await api('PUT','/api/fund/pledges',{pledges:state.fund.pledges}); }
+    catch(e){ toast('Error guardando compromiso','error'); }
+  }, 800);
+}
+
+/* ============================================================
+   USER MANAGEMENT
+============================================================ */
+document.getElementById('btn-users').addEventListener('click', async () => {
+  await loadUsers();
+  document.getElementById('modal-users').classList.add('open');
+});
+document.getElementById('modal-users-close').addEventListener('click',()=>document.getElementById('modal-users').classList.remove('open'));
+
+async function loadUsers() {
+  const tbody = document.getElementById('users-tbody');
+  try {
+    const users = await api('GET','/api/users');
+    tbody.innerHTML = users.map(u => `
+      <tr>
+        <td><strong>${esc(u.username)}</strong></td>
+        <td><span class="role-pill role-${u.role}">${u.role==='admin'?'⚙️ Admin':'👁️ Viewer'}</span></td>
+        <td><span class="active-pill ${u.active?'active-on':'active-off'}">${u.active?'Activo':'Desactivado'}</span></td>
+        <td><button class="btn btn-secondary btn-sm" onclick="openEditUser('${u.id}','${esc(u.username)}','${u.role}',${u.active})">✏️</button></td>
+      </tr>`).join('');
+  } catch(e){ toast(e.message,'error'); }
+}
+
+document.getElementById('btn-create-user').addEventListener('click', async () => {
+  const username=document.getElementById('nu-user').value.trim();
+  const password=document.getElementById('nu-pass').value;
+  const role    =document.getElementById('nu-role').value;
+  if(!username||!password) return toast('Completa usuario y contraseña','error');
+  if(password.length<6) return toast('Contraseña mínimo 6 caracteres','error');
+  try {
+    await api('POST','/api/users',{username,password,role});
+    toast(`Usuario ${username} creado`,'success');
+    document.getElementById('nu-user').value='';
+    document.getElementById('nu-pass').value='';
+    await loadUsers();
+  } catch(e){ toast(e.message,'error'); }
+});
+
+function openEditUser(id, username, role, active) {
+  document.getElementById('eu-id').value       = id;
+  document.getElementById('eu-username').value = username;
+  document.getElementById('eu-role').value     = role;
+  document.getElementById('eu-active').value   = active?'1':'0';
+  document.getElementById('eu-pass').value     = '';
+  document.getElementById('modal-edit-user').classList.add('open');
+}
+document.getElementById('modal-edit-user-close').addEventListener('click',()=>document.getElementById('modal-edit-user').classList.remove('open'));
+document.getElementById('modal-edit-user-cancel').addEventListener('click',()=>document.getElementById('modal-edit-user').classList.remove('open'));
+document.getElementById('modal-edit-user-save').addEventListener('click', async () => {
+  const id     = document.getElementById('eu-id').value;
+  const role   = document.getElementById('eu-role').value;
+  const active = document.getElementById('eu-active').value==='1';
+  const pass   = document.getElementById('eu-pass').value;
+  const body   = { role, active };
+  if(pass) { if(pass.length<6) return toast('Contraseña mínimo 6 caracteres','error'); body.password=pass; }
+  try {
+    await api('PUT',`/api/users/${id}`,body);
+    toast('Usuario actualizado','success');
+    document.getElementById('modal-edit-user').classList.remove('open');
+    await loadUsers();
+  } catch(e){ toast(e.message,'error'); }
+});
+
+/* ============================================================
+   CONFIRM DIALOG
+============================================================ */
+function doConfirm(msg, cb) {
+  pendingConfirmCb = cb;
+  document.getElementById('confirm-msg').textContent = msg;
+  document.getElementById('confirm-overlay').classList.add('open');
+}
+document.getElementById('confirm-cancel').addEventListener('click',()=>{
+  document.getElementById('confirm-overlay').classList.remove('open');
+  pendingConfirmCb=null;
+});
+document.getElementById('confirm-ok').addEventListener('click',()=>{
+  document.getElementById('confirm-overlay').classList.remove('open');
+  if(pendingConfirmCb){ pendingConfirmCb(); pendingConfirmCb=null; }
+});
+
+/* ============================================================
+   SEARCH / FILTER / SORT
+============================================================ */
+['search-input','filter-select','sort-select'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', renderTravelers);
+  document.getElementById(id).addEventListener('change', renderTravelers);
+});
+
+/* ============================================================
+   ALERTS
+============================================================ */
+document.getElementById('btn-alerts').addEventListener('click',()=>{
+  const s=document.getElementById('alerts-section');
+  s.style.display=s.style.display==='none'?'block':'none';
+  if(s.style.display!=='none') renderAlerts();
+});
+document.getElementById('btn-close-alerts').addEventListener('click',()=>{
+  document.getElementById('alerts-section').style.display='none';
+});
+
+/* ============================================================
+   WHATSAPP
+============================================================ */
+function shareWhatsApp() {
+  let total=0,col=0;
+  state.travelers.forEach(t=>{const c=calcTraveler(t);total+=c.totalFinal;col+=c.paid;});
+  const fundGoal=state.fund.categories.reduce((s,c)=>s+Number(c.budget||0),0);
+  const totalPledge=state.travelers.reduce((s,t)=>s+Number(state.fund.pledges[t.id]||0),0);
+  const lines=['✈️ *Viaje Cartagena 2026*','📍 Bogotá → Cartagena | 12–15 Nov 2026','',`💰 Total vuelos: ${fmt(total)}`,`✅ Recaudado: ${fmt(col)}`,`⏳ Pendiente: ${fmt(Math.max(0,total-col))}`,``,`🏖️ Fondo: Meta ${fmt(fundGoal)} | Ahorro/mes: ${fmt(totalPledge)}`,'','👥 *Estado:*'];
+  state.travelers.forEach(t=>{
+    const c=calcTraveler(t),st=getStatus(t);
+    const e=st==='ok'?'✅':st==='warn'?'⏰':'🔴';
+    const pledge=Number(state.fund.pledges[t.id]||0);
+    lines.push(`${e} ${t.name}: vuelo ${fmt(c.pending)} pend.${pledge>0?` | ahorra ${fmt(pledge)}/mes`:''}`);
+  });
+  lines.push('','🏖️ ¡Nos vemos en Cartagena!');
+  window.open('https://wa.me/?text='+encodeURIComponent(lines.join('\n')),'_blank');
+}
+document.getElementById('btn-whatsapp').addEventListener('click', shareWhatsApp);
+document.getElementById('btn-whatsapp2').addEventListener('click', shareWhatsApp);
+
+/* ============================================================
+   EXPORTS
+============================================================ */
+document.getElementById('btn-excel').addEventListener('click',()=>{
+  if(!window.XLSX) return toast('SheetJS no disponible','error');
+  const wb=XLSX.utils.book_new();
+  const tData=[['Nombre','Vuelo','Intereses','Total deuda','Pagado','Pendiente','Cuota mensual','% Avance']];
+  state.travelers.forEach(t=>{const c=calcTraveler(t);tData.push([t.name,t.flight,Math.round(c.interest),Math.round(c.totalFinal),Math.round(c.paid),Math.round(c.pending),Math.round(c.installmentAmt),c.progress.toFixed(1)+'%']);});
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(tData),'Viajeros');
+  const pData=[['Fecha','Viajero','Cuota','Valor']];
+  [...state.payments].sort((a,b)=>new Date(a.date)-new Date(b.date)).forEach(p=>{const t=state.travelers.find(x=>x.id===p.travelerId);pData.push([p.date,t?t.name:'?',p.cuota,p.value]);});
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(pData),'Pagos');
+  const fData=[['Categoría','Presupuesto']];
+  state.fund.categories.forEach(c=>fData.push([c.name,c.budget]));
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(fData),'Fondo');
+  XLSX.writeFile(wb,'Cartagena2026.xlsx');
+  toast('Excel exportado','success');
+});
+
+document.getElementById('btn-pdf').addEventListener('click',()=>{
+  if(!window.jspdf) return toast('jsPDF no disponible','error');
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  const W=210;let y=20;
+  doc.setFont('helvetica','bold');doc.setFontSize(22);doc.text('Viaje Cartagena 2026',W/2,y,{align:'center'});y+=8;
+  doc.setFontSize(11);doc.setFont('helvetica','normal');doc.setTextColor(100);doc.text('Bogotá → Cartagena  ·  12–15 Nov 2026',W/2,y,{align:'center'});y+=12;
+  let total=0,col=0;state.travelers.forEach(t=>{const c=calcTraveler(t);total+=c.totalFinal;col+=c.paid;});
+  doc.setFillColor(240,240,245);doc.roundedRect(15,y,W-30,22,4,4,'F');
+  doc.setTextColor(30);doc.setFont('helvetica','bold');doc.setFontSize(10);
+  doc.text('TOTAL',30,y+7);doc.text('RECAUDADO',80,y+7);doc.text('PENDIENTE',130,y+7);
+  doc.setFont('helvetica','normal');doc.setFontSize(13);
+  doc.text(fmt(total),30,y+17);doc.text(fmt(col),80,y+17);doc.text(fmt(Math.max(0,total-col)),130,y+17);y+=32;
+  doc.setFont('helvetica','bold');doc.setFontSize(10);doc.setTextColor(30);doc.text('VIAJEROS',15,y);y+=5;
+  const cols=[15,70,110,145,175];
+  doc.setFillColor(220,220,228);doc.rect(14,y,W-28,7,'F');
+  ['Nombre','Total','Pagado','Pendiente','%'].forEach((h,i)=>doc.text(h,cols[i]+1,y+5));y+=9;
+  doc.setFont('helvetica','normal');
+  state.travelers.forEach(t=>{const c=calcTraveler(t);if(y>270){doc.addPage();y=20;}[t.name,fmt(c.totalFinal),fmt(c.paid),fmt(c.pending),c.progress.toFixed(0)+'%'].forEach((v,i)=>doc.text(String(v),cols[i]+1,y+5));y+=8;});
+  doc.save('Cartagena2026.pdf');
+  toast('PDF generado','success');
+});
+
+/* ============================================================
+   TOAST
+============================================================ */
+function toast(msg, type='info') {
+  const icons={success:'✅',error:'❌',info:'ℹ️',warn:'⚠️'};
+  const el=document.createElement('div');
+  el.className=`toast ${type}`;
+  el.innerHTML=`<span class="toast-icon">${icons[type]||'ℹ️'}</span><span>${msg}</span>`;
+  document.getElementById('toast-container').appendChild(el);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('show')));
+  setTimeout(()=>{el.classList.remove('show');setTimeout(()=>el.remove(),350);},3200);
+}
+
+window.matchMedia('(prefers-color-scheme:dark)').addEventListener('change', ()=>setTimeout(renderCharts,50));
+</script>
+</body>
+</html>

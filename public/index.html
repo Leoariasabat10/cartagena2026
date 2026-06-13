@@ -1,0 +1,1941 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#0a1628">
+<title>Cartagena 2026 ✈️</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ── VARIABLES ── */
+:root {
+  --ocean-deep:#0a1628;--ocean:#0e2240;--ocean-mid:#1a3a5c;--ocean-light:#2d6a9f;
+  --sea:#38bdf8;--sea-light:#7dd3fc;--sand:#f5e6c8;--sand-dark:#e8c98a;
+  --coral:#ff6b6b;--coral-dark:#e55555;--sunset:#ff9f43;--palm:#2ecc71;
+  --white:#ffffff;--off-white:#f8fafc;--gray-50:#f1f5f9;--gray-100:#e2e8f0;
+  --gray-200:#cbd5e1;--gray-400:#94a3b8;--gray-600:#475569;--gray-800:#1e293b;
+  --bg:var(--off-white);--bg-card:#ffffff;--bg-glass:rgba(255,255,255,0.85);
+  --border:rgba(0,0,0,0.08);--border-strong:rgba(0,0,0,0.15);
+  --text:var(--gray-800);--text-2:var(--gray-600);--text-3:var(--gray-400);
+  --accent:var(--ocean-light);--success:#10b981;--warning:#f59e0b;--danger:#ef4444;
+  --success-bg:rgba(16,185,129,0.1);--warning-bg:rgba(245,158,11,0.1);--danger-bg:rgba(239,68,68,0.1);
+  --shadow-sm:0 1px 3px rgba(0,0,0,0.08);
+  --shadow:0 4px 20px rgba(0,0,0,0.10);
+  --shadow-lg:0 12px 40px rgba(0,0,0,0.15);
+  --shadow-xl:0 24px 60px rgba(0,0,0,0.20);
+  --r:16px;--r-sm:10px;--r-xs:8px;
+  --font:'DM Sans',sans-serif;--mono:'DM Mono',monospace;
+  --ease:cubic-bezier(0.4,0,0.2,1);--dur:0.2s;
+}
+[data-theme="dark"]{
+  --bg:#0d1117;--bg-card:#161b22;--bg-glass:rgba(22,27,34,0.9);
+  --border:rgba(255,255,255,0.08);--border-strong:rgba(255,255,255,0.15);
+  --text:#e6edf3;--text-2:#8b949e;--text-3:#484f58;
+  --shadow-sm:0 1px 3px rgba(0,0,0,0.4);
+  --shadow:0 4px 20px rgba(0,0,0,0.5);
+  --shadow-lg:0 12px 40px rgba(0,0,0,0.6);
+}
+
+/* ── RESET ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-tap-highlight-color:transparent;font-size:16px}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;transition:background var(--dur) var(--ease),color var(--dur) var(--ease);overflow-x:hidden}
+button{cursor:pointer;border:none;background:none;font-family:var(--font);font-size:inherit}
+input,select,textarea{font-family:var(--font);font-size:inherit}
+img{max-width:100%;display:block}
+
+/* ── LAYOUT ── */
+.container{max-width:1100px;margin:0 auto;padding:0 16px}
+@media(min-width:640px){.container{padding:0 24px}}
+
+/* ── LOGIN SCREEN ── */
+#login-screen{
+  position:fixed;inset:0;z-index:999;
+  display:flex;align-items:stretch;
+  min-height:100vh;overflow:auto;
+  background:#050d1a;
+}
+
+/* Shader animated background */
+.login-shader-bg{
+  position:fixed;inset:0;z-index:0;
+  background:#050d1a;overflow:hidden;
+}
+.login-shader-bg::before{
+  content:"";position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 50%,rgba(13,148,136,0.35) 0%,transparent 60%),
+    radial-gradient(ellipse 60% 80% at 80% 20%,rgba(56,189,248,0.25) 0%,transparent 55%),
+    radial-gradient(ellipse 70% 50% at 60% 80%,rgba(14,36,64,0.8) 0%,transparent 50%);
+  animation:shaderPulse 8s ease-in-out infinite alternate;
+}
+.login-shader-bg::after{
+  content:"";position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 40% 40% at 70% 40%,rgba(45,106,159,0.3) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 30% at 30% 70%,rgba(13,148,136,0.2) 0%,transparent 60%);
+  animation:shaderPulse2 12s ease-in-out infinite alternate;
+}
+@keyframes shaderPulse{
+  0%{transform:scale(1) translate(0,0)}
+  50%{transform:scale(1.08) translate(2%,-2%)}
+  100%{transform:scale(1.04) translate(-1%,3%)}
+}
+@keyframes shaderPulse2{
+  0%{transform:scale(1) translate(0,0);opacity:0.7}
+  100%{transform:scale(1.12) translate(-3%,2%);opacity:1}
+}
+
+/* Stars */
+.login-stars{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.login-star{
+  position:absolute;border-radius:50%;background:#fff;
+  animation:twinkle var(--t,3s) ease-in-out infinite;opacity:0;
+}
+@keyframes twinkle{0%,100%{opacity:0}50%{opacity:var(--op,0.8)}}
+
+/* Left panel */
+.login-left{
+  display:none;
+  position:relative;z-index:2;
+  flex:1;flex-direction:column;align-items:center;justify-content:center;
+  padding:60px 40px;
+}
+@media(min-width:900px){.login-left{display:flex}}
+
+/* Globe */
+.globe-wrap{position:relative;margin-bottom:48px}
+.globe{
+  width:220px;height:220px;border-radius:50%;overflow:hidden;position:relative;
+  box-shadow:
+    0 0 0 1px rgba(56,189,248,0.15),
+    -5px 0 12px rgba(195,244,255,0.6) inset,
+    15px 2px 30px rgba(0,0,0,0.8) inset,
+    -24px -2px 40px rgba(195,244,255,0.4) inset,
+    250px 0 60px rgba(0,0,0,0.5) inset,
+    150px 0 50px rgba(0,0,0,0.7) inset,
+    0 0 60px rgba(56,189,248,0.2);
+  background-image:url("https://pub-940ccf6255b54fa799a9b01050e6c227.r2.dev/globe.jpeg");
+  background-size:cover;background-position:left;
+  animation:earthRotate 30s linear infinite;
+}
+@keyframes earthRotate{0%{background-position:0 0}100%{background-position:400px 0}}
+.globe-ring{
+  position:absolute;inset:-14px;border-radius:50%;
+  border:1px solid rgba(56,189,248,0.15);
+  animation:ringPulse 4s ease-in-out infinite;
+}
+.globe-ring2{
+  position:absolute;inset:-28px;border-radius:50%;
+  border:1px solid rgba(56,189,248,0.08);
+  animation:ringPulse 4s ease-in-out infinite 1.5s;
+}
+@keyframes ringPulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.03);opacity:0.4}}
+.globe-orbit{
+  position:absolute;inset:-22px;border-radius:50%;
+  animation:orbitRotate 6s linear infinite;
+}
+.globe-orbit-dot{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--sea);position:absolute;top:0;left:50%;transform:translateX(-50%);
+  box-shadow:0 0 14px var(--sea),0 0 6px rgba(56,189,248,0.6);
+}
+@keyframes orbitRotate{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.globe-star-1{position:absolute;width:3px;height:3px;border-radius:50%;background:#fff;left:-8px;top:40%;animation:twinkle 3s ease-in-out infinite}
+.globe-star-2{position:absolute;width:2px;height:2px;border-radius:50%;background:#fff;right:-16px;top:20%;animation:twinkle 2s ease-in-out infinite 0.5s}
+.globe-star-3{position:absolute;width:3px;height:3px;border-radius:50%;background:#fff;bottom:-10px;left:30%;animation:twinkle 4s ease-in-out infinite 1s}
+.globe-star-4{position:absolute;width:2px;height:2px;border-radius:50%;background:#fff;top:-14px;right:25%;animation:twinkle 2.5s ease-in-out infinite 0.3s}
+
+.login-quote{text-align:center;max-width:300px}
+.login-quote-text{
+  font-size:19px;font-weight:300;color:rgba(255,255,255,0.88);
+  line-height:1.65;margin-bottom:14px;letter-spacing:-0.2px;font-style:italic;
+}
+.login-quote-author{font-size:12px;color:rgba(255,255,255,0.35);letter-spacing:1.2px;text-transform:uppercase}
+.login-route-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.18);
+  border-radius:100px;padding:7px 18px;margin-bottom:36px;
+  font-size:13px;color:var(--sea);font-weight:600;letter-spacing:0.4px;
+}
+
+/* Right panel */
+.login-right{
+  position:relative;z-index:2;
+  display:flex;align-items:center;justify-content:center;
+  flex:1;padding:40px 20px;min-height:100vh;
+}
+@media(min-width:900px){.login-right{flex:0 0 460px;padding:60px 48px}}
+
+.login-card{
+  width:100%;max-width:380px;
+  background:rgba(255,255,255,0.04);
+  backdrop-filter:blur(28px) saturate(160%);
+  border:1px solid rgba(255,255,255,0.09);
+  border-radius:28px;padding:44px 32px;
+  box-shadow:0 40px 90px rgba(0,0,0,0.7),0 0 0 1px rgba(255,255,255,0.04);
+  animation:loginFadeIn 0.7s var(--ease) both;
+}
+@keyframes loginFadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+/* Mobile globe */
+.login-mobile-globe{display:flex;flex-direction:column;align-items:center;margin-bottom:20px}
+@media(min-width:900px){.login-mobile-globe{display:none}}
+.globe-sm{
+  width:90px;height:90px;border-radius:50%;overflow:hidden;
+  box-shadow:-3px 0 6px rgba(195,244,255,0.5) inset,8px 2px 16px rgba(0,0,0,0.8) inset,0 0 24px rgba(56,189,248,0.3);
+  background-image:url("https://pub-940ccf6255b54fa799a9b01050e6c227.r2.dev/globe.jpeg");
+  background-size:cover;background-position:left;
+  animation:earthRotate 30s linear infinite;
+  margin-bottom:12px;
+}
+
+.login-title{font-size:26px;font-weight:800;color:#fff;text-align:center;letter-spacing:-0.8px;margin-bottom:4px}
+.login-sub{font-size:13px;color:rgba(255,255,255,0.45);text-align:center;margin-bottom:8px}
+
+.login-typewriter{
+  min-height:22px;font-size:12px;color:rgba(56,189,248,0.75);
+  text-align:center;margin-bottom:26px;font-weight:500;letter-spacing:0.3px;
+}
+.tw-cursor{display:inline-block;animation:blink 1s step-end infinite;color:var(--sea)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+.login-label{display:block;font-size:11px;font-weight:700;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:0.9px;margin-bottom:7px}
+.login-input-wrap{position:relative;margin-bottom:14px}
+.login-input-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none;opacity:0.4}
+.login-input{
+  width:100%;background:rgba(255,255,255,0.05);
+  border:1.5px solid rgba(255,255,255,0.1);
+  border-radius:14px;padding:13px 16px 13px 42px;
+  font-size:15px;color:#fff;outline:none;
+  transition:all var(--dur) var(--ease);
+}
+.login-input::placeholder{color:rgba(255,255,255,0.25)}
+.login-input:focus{border-color:rgba(56,189,248,0.45);background:rgba(56,189,248,0.05);box-shadow:0 0 0 3px rgba(56,189,248,0.1)}
+.login-error{font-size:13px;color:#fca5a5;text-align:center;min-height:20px;margin-bottom:8px}
+.login-btn{
+  width:100%;
+  background:linear-gradient(135deg,#1a4a6e,#2d6a9f 45%,#38bdf8);
+  color:#fff;border-radius:14px;padding:15px;
+  font-size:15px;font-weight:700;letter-spacing:0.3px;
+  margin-top:4px;transition:all 0.3s var(--ease);
+  box-shadow:0 6px 28px rgba(56,189,248,0.3);
+  position:relative;overflow:hidden;
+}
+.login-btn::before{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,0.12),transparent);
+  opacity:0;transition:opacity 0.3s;
+}
+.login-btn:hover::before{opacity:1}
+.login-btn:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(56,189,248,0.45)}
+.login-btn:active{transform:translateY(0)}
+.login-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none}
+.login-badge-row{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:18px}
+.login-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);
+  border-radius:100px;padding:3px 10px;font-size:10px;color:rgba(255,255,255,0.3);
+}
+.login-bg-waves{display:none}
+
+/* ── HEADER ── */
+.header{
+  position:sticky;top:0;z-index:100;
+  background:var(--bg-glass);
+  backdrop-filter:blur(20px) saturate(180%);
+  border-bottom:1px solid var(--border);
+  padding:12px 0;
+}
+.header-inner{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.header-brand{display:flex;align-items:center;gap:10px}
+.header-logo{font-size:22px}
+.header-title{font-size:17px;font-weight:700;letter-spacing:-0.3px}
+.header-sub{font-size:11px;color:var(--text-2);margin-top:1px}
+.header-right{display:flex;align-items:center;gap:8px}
+.conn-indicator{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600}
+.conn-dot{width:7px;height:7px;border-radius:50%;background:var(--success);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.conn-dot.offline{background:var(--danger);animation:none}
+.conn-label{color:var(--success);text-transform:uppercase;letter-spacing:0.4px}
+.conn-label.offline{color:var(--danger)}
+.btn-icon{
+  width:36px;height:36px;border-radius:50%;
+  background:var(--bg-card);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;transition:all var(--dur) var(--ease);
+  position:relative;
+}
+.btn-icon:hover{background:var(--gray-50);transform:scale(1.05)}
+.badge-count{
+  position:absolute;top:-3px;right:-3px;
+  min-width:17px;height:17px;border-radius:10px;
+  background:var(--danger);color:#fff;
+  font-size:10px;font-weight:700;padding:0 4px;
+  display:flex;align-items:center;justify-content:center;
+}
+
+/* ── AVATAR ── */
+.avatar{
+  border-radius:50%;object-fit:cover;
+  background:linear-gradient(135deg,var(--ocean-light),var(--sea));
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-weight:700;flex-shrink:0;overflow:hidden;
+}
+.avatar-placeholder{
+  border-radius:50%;
+  background:linear-gradient(135deg,var(--ocean-light),var(--sea));
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-weight:700;flex-shrink:0;
+}
+.avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+
+/* ── ROLE PILLS ── */
+.pill{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px}
+.pill-admin{background:rgba(56,189,248,0.15);color:var(--ocean-light)}
+.pill-participant{background:rgba(46,204,113,0.15);color:var(--palm)}
+.pill-viewer{background:rgba(148,163,184,0.15);color:var(--gray-600)}
+
+/* ── BTN SYSTEM ── */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:10px 18px;border-radius:100px;font-size:14px;font-weight:600;transition:all var(--dur) var(--ease);white-space:nowrap;cursor:pointer}
+.btn-primary{background:linear-gradient(135deg,var(--ocean-light),var(--sea));color:#fff;box-shadow:0 4px 15px rgba(45,106,159,0.3)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(45,106,159,0.4)}
+.btn-secondary{background:var(--bg-card);border:1.5px solid var(--border);color:var(--text)}
+.btn-secondary:hover{border-color:var(--border-strong);transform:scale(0.98)}
+.btn-danger{background:var(--danger-bg);color:var(--danger)}
+.btn-danger:hover{background:var(--danger);color:#fff}
+.btn-success{background:var(--success-bg);color:var(--success)}
+.btn-success:hover{background:var(--success);color:#fff}
+.btn-ocean{background:linear-gradient(135deg,var(--ocean-deep),var(--ocean-mid));color:#fff}
+.btn-sm{padding:6px 14px;font-size:12px}
+.btn-xs{padding:4px 10px;font-size:11px}
+.btn:disabled{opacity:0.5;cursor:not-allowed;transform:none!important}
+
+/* ── FORM ── */
+.form-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r);padding:24px;box-shadow:var(--shadow-sm)}
+.form-group{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.form-label{font-size:12px;font-weight:600;color:var(--text-2);text-transform:uppercase;letter-spacing:0.4px}
+.form-input{background:var(--bg);border:1.5px solid var(--border);border-radius:var(--r-xs);padding:11px 14px;font-size:14px;color:var(--text);outline:none;width:100%;transition:all var(--dur) var(--ease)}
+.form-input:focus{border-color:var(--ocean-light);box-shadow:0 0 0 3px rgba(45,106,159,0.15)}
+.form-input::placeholder{color:var(--text-3)}
+.form-input:disabled{opacity:0.5;cursor:not-allowed}
+.form-row{display:grid;grid-template-columns:1fr;gap:12px}
+@media(min-width:500px){.form-row-2{grid-template-columns:1fr 1fr}}
+@media(min-width:700px){.form-row-3{grid-template-columns:repeat(3,1fr)}}
+
+/* ── SECTIONS ── */
+.section{margin-bottom:36px}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:12px;flex-wrap:wrap}
+.section-title{font-size:20px;font-weight:700;letter-spacing:-0.4px}
+.section-sub{font-size:13px;color:var(--text-2);margin-top:2px}
+
+/* ── COUNTDOWN HERO ── */
+.countdown-hero{
+  background:linear-gradient(135deg,#050d1a 0%,#0a1e3a 40%,#0e2a4a 70%,#0d3a5c 100%);
+  border-radius:24px;padding:44px 24px 36px;
+  text-align:center;position:relative;overflow:hidden;
+  margin-bottom:36px;
+  box-shadow:0 20px 60px rgba(0,0,0,0.5),0 0 0 1px rgba(56,189,248,0.08);
+}
+.countdown-hero::after{
+  content:'🌊';position:absolute;bottom:-10px;right:20px;
+  font-size:80px;opacity:0.06;transform:rotate(-10deg);
+}
+.countdown-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(56,189,248,0.1);border:1px solid rgba(56,189,248,0.2);
+  border-radius:100px;padding:6px 16px;
+  font-size:11px;font-weight:700;color:var(--sea);
+  margin-bottom:18px;text-transform:uppercase;letter-spacing:0.8px;
+}
+.countdown-message{
+  font-size:19px;font-weight:700;color:#fff;margin-bottom:6px;line-height:1.35;
+  text-shadow:0 2px 20px rgba(56,189,248,0.3);
+}
+@media(min-width:500px){.countdown-message{font-size:23px}}
+.countdown-sub-msg{font-size:14px;color:rgba(255,255,255,0.6);margin-bottom:28px}
+.countdown-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;max-width:480px;margin:0 auto}
+.countdown-unit{
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(56,189,248,0.15);
+  border-radius:18px;padding:18px 8px 14px;
+  backdrop-filter:blur(16px);
+  transition:transform 0.1s ease,border-color 0.3s;
+  box-shadow:0 4px 20px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.05);
+}
+.countdown-unit:hover{transform:translateY(-2px);border-color:rgba(56,189,248,0.3)}
+.countdown-num{
+  font-size:36px;font-weight:900;
+  background:linear-gradient(180deg,#fff 0%,rgba(56,189,248,0.9) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  font-variant-numeric:tabular-nums;line-height:1;
+  display:block;letter-spacing:-2px;
+  text-shadow:none;
+}
+@media(min-width:400px){.countdown-num{font-size:44px}}
+.countdown-label{font-size:10px;font-weight:600;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.8px;margin-top:6px;display:block}
+.countdown-trip-info{
+  display:flex;align-items:center;justify-content:center;gap:16px;
+  margin-top:24px;flex-wrap:wrap;
+}
+.countdown-info-pill{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);
+  border-radius:100px;padding:6px 14px;font-size:12px;
+  color:rgba(255,255,255,0.65);font-weight:500;
+  backdrop-filter:blur(8px);
+}
+
+/* ── KPI CARDS ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+@media(min-width:500px){.kpi-grid{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:900px){.kpi-grid{grid-template-columns:repeat(4,1fr)}}
+.kpi-card{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:20px;padding:20px;
+  box-shadow:var(--shadow-sm);
+  animation:fadeUp 0.4s var(--ease) both;
+  transition:transform 0.25s var(--ease),box-shadow 0.25s var(--ease);
+}
+.kpi-card:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+.kpi-icon{font-size:22px;margin-bottom:8px}
+.kpi-label{font-size:11px;font-weight:600;color:var(--text-2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px}
+.kpi-value{font-size:24px;font-weight:800;letter-spacing:-1px;line-height:1;font-variant-numeric:tabular-nums;margin-bottom:8px}
+.kpi-bar{height:4px;background:var(--border);border-radius:100px;overflow:hidden}
+.kpi-bar-fill{height:100%;border-radius:100px;transition:width 0.8s var(--ease)}
+.kpi-bar-fill.ocean{background:linear-gradient(90deg,var(--ocean-light),var(--sea))}
+.kpi-bar-fill.success{background:var(--success)}
+.kpi-bar-fill.danger{background:var(--danger)}
+.kpi-bar-fill.warning{background:var(--warning)}
+.kpi-sub{font-size:11px;color:var(--text-3);margin-top:4px;font-variant-numeric:tabular-nums}
+
+/* ── TRAVELER CARDS ── */
+.travelers-grid{display:grid;grid-template-columns:1fr;gap:14px}
+@media(min-width:600px){.travelers-grid{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:900px){.travelers-grid{grid-template-columns:repeat(3,1fr)}}
+.traveler-card{
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:20px;padding:22px;
+  box-shadow:var(--shadow-sm);
+  animation:fadeUp 0.4s var(--ease) both;
+  transition:transform 0.25s var(--ease),box-shadow 0.25s var(--ease),border-color 0.25s;
+  position:relative;overflow:hidden;
+}
+.traveler-card::before{
+  content:"";position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--ocean-light),var(--sea),var(--palm));
+  opacity:0;transition:opacity 0.25s;
+}
+.traveler-card:hover{transform:translateY(-4px);box-shadow:var(--shadow),0 0 0 1px rgba(56,189,248,0.1)}
+.traveler-card:hover::before{opacity:1}
+.traveler-card-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.traveler-card-info{flex:1;min-width:0}
+.traveler-name{font-size:16px;font-weight:700;letter-spacing:-0.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.traveler-status-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 9px;border-radius:100px;margin-top:3px}
+.status-ok{background:var(--success-bg);color:var(--success)}
+.status-warn{background:var(--warning-bg);color:var(--warning)}
+.status-late{background:var(--danger-bg);color:var(--danger)}
+.amounts-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.amount-item{}
+.amount-label{font-size:10px;color:var(--text-3);font-weight:600;text-transform:uppercase;letter-spacing:0.4px}
+.amount-value{font-size:14px;font-weight:700;font-variant-numeric:tabular-nums;margin-top:2px}
+.amount-value.success{color:var(--success)}
+.amount-value.danger{color:var(--danger)}
+.amount-value.ocean{color:var(--ocean-light)}
+.prog-wrap{margin-bottom:12px}
+.prog-track{height:6px;background:var(--border);border-radius:100px;overflow:hidden}
+.prog-fill{height:100%;border-radius:100px;background:linear-gradient(90deg,var(--success),#34d399);transition:width 0.8s var(--ease)}
+.prog-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--text-3);margin-top:4px}
+.next-pay-row{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-2);padding:7px 10px;background:var(--gray-50);border-radius:var(--r-xs);margin-bottom:12px}
+.traveler-actions{display:flex;gap:6px;flex-wrap:wrap}
+
+/* ── AVATAR UPLOAD ── */
+.avatar-upload-wrap{position:relative;display:inline-block;cursor:pointer}
+.avatar-upload-btn{
+  position:absolute;bottom:0;right:0;
+  width:24px;height:24px;border-radius:50%;
+  background:var(--ocean-light);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;box-shadow:var(--shadow-sm);
+  border:2px solid var(--bg-card);
+  transition:all var(--dur) var(--ease);
+}
+.avatar-upload-btn:hover{background:var(--sea);transform:scale(1.1)}
+.avatar-upload-input{display:none}
+
+/* ── CHARTS ── */
+.charts-grid{display:grid;grid-template-columns:1fr;gap:16px}
+@media(min-width:700px){.charts-grid{grid-template-columns:1fr 1fr}}
+@media(min-width:1000px){.charts-grid{grid-template-columns:repeat(3,1fr)}}
+.chart-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r);padding:20px;box-shadow:var(--shadow-sm)}
+.chart-title{font-size:14px;font-weight:700;margin-bottom:2px}
+.chart-sub{font-size:12px;color:var(--text-2);margin-bottom:14px}
+.chart-wrap{position:relative;height:190px}
+
+/* ── HISTORY TABLE ── */
+.history-wrap{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow-sm)}
+.history-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;min-width:480px}
+th{text-align:left;padding:10px 20px;font-size:11px;font-weight:700;color:var(--text-2);text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--border);background:var(--gray-50);white-space:nowrap}
+td{padding:12px 20px;font-size:13px;border-bottom:1px solid var(--border);font-variant-numeric:tabular-nums}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--gray-50)}
+.cuota-badge{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:rgba(45,106,159,0.1);color:var(--ocean-light);font-size:11px;font-weight:700}
+.table-empty{text-align:center;padding:36px;color:var(--text-3);font-size:14px}
+
+/* ── SEARCH BAR ── */
+.search-row{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.search-input{flex:1;min-width:160px;background:var(--bg-card);border:1.5px solid var(--border);border-radius:100px;padding:9px 16px;font-size:14px;color:var(--text);outline:none;transition:border-color var(--dur) var(--ease)}
+.search-input:focus{border-color:var(--ocean-light)}
+.search-input::placeholder{color:var(--text-3)}
+.filter-sel{background:var(--bg-card);border:1.5px solid var(--border);border-radius:100px;padding:9px 12px;font-size:13px;color:var(--text);outline:none;cursor:pointer}
+
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.5);backdrop-filter:blur(6px);display:flex;align-items:flex-end;justify-content:center;padding:0;opacity:0;pointer-events:none;transition:opacity 0.25s var(--ease)}
+@media(min-width:600px){.modal-overlay{align-items:center;padding:20px}}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--bg-card);border:1px solid var(--border);border-radius:24px 24px 0 0;width:100%;max-width:500px;box-shadow:var(--shadow-xl);transform:translateY(100%);transition:transform 0.3s var(--ease);max-height:92vh;overflow-y:auto}
+@media(min-width:600px){.modal{border-radius:var(--r);transform:scale(0.95) translateY(10px)}}
+.modal-overlay.open .modal{transform:translateY(0)}
+@media(min-width:600px){.modal-overlay.open .modal{transform:scale(1) translateY(0)}}
+.modal-handle{width:36px;height:4px;border-radius:2px;background:var(--border-strong);margin:10px auto 0;display:block}
+@media(min-width:600px){.modal-handle{display:none}}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:20px 22px 0;gap:12px}
+.modal-title{font-size:18px;font-weight:700;letter-spacing:-0.3px}
+.modal-close{width:30px;height:30px;border-radius:50%;background:var(--gray-100);display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--text-2);transition:all var(--dur) var(--ease)}
+.modal-close:hover{background:var(--border-strong)}
+.modal-body{padding:20px 22px}
+.modal-footer{padding:0 22px 22px;display:flex;gap:8px;justify-content:flex-end}
+
+/* ── CONFIRM ── */
+.confirm-overlay{position:fixed;inset:0;z-index:250;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity 0.2s}
+.confirm-overlay.open{opacity:1;pointer-events:all}
+.confirm-box{background:var(--bg-card);border:1px solid var(--border);border-radius:20px;max-width:340px;width:100%;padding:28px 24px;text-align:center;box-shadow:var(--shadow-xl);transform:scale(0.9);transition:transform 0.2s var(--ease)}
+.confirm-overlay.open .confirm-box{transform:scale(1)}
+.confirm-icon{font-size:40px;margin-bottom:12px}
+.confirm-title{font-size:18px;font-weight:700;margin-bottom:8px}
+.confirm-msg{font-size:14px;color:var(--text-2);margin-bottom:24px;line-height:1.5}
+.confirm-btns{display:flex;gap:10px;justify-content:center}
+
+/* ── TOAST ── */
+.toast-wrap{position:fixed;bottom:20px;right:16px;z-index:300;display:flex;flex-direction:column;gap:8px;pointer-events:none;max-width:calc(100vw - 32px)}
+.toast{display:flex;align-items:center;gap:10px;background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:12px 16px;box-shadow:var(--shadow-lg);min-width:240px;font-size:13px;font-weight:500;transform:translateX(120%);transition:transform 0.3s var(--ease);pointer-events:all}
+.toast.show{transform:translateX(0)}
+.toast.success{border-left:3px solid var(--success)}
+.toast.error{border-left:3px solid var(--danger)}
+.toast.info{border-left:3px solid var(--ocean-light)}
+.toast.warn{border-left:3px solid var(--warning)}
+
+/* ── ALERTS ── */
+.alerts-wrap{display:flex;flex-direction:column;gap:8px}
+.alert-item{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border-radius:var(--r-sm);animation:fadeUp 0.3s var(--ease) both;border-left:3px solid transparent}
+.alert-red{background:var(--danger-bg);border-color:var(--danger)}
+.alert-yellow{background:var(--warning-bg);border-color:var(--warning)}
+.alert-green{background:var(--success-bg);border-color:var(--success)}
+.alert-blue{background:rgba(45,106,159,0.1);border-color:var(--ocean-light)}
+.alert-icon{font-size:16px;flex-shrink:0;margin-top:1px}
+.alert-title{font-size:13px;font-weight:700;margin-bottom:2px}
+.alert-body{font-size:12px;color:var(--text-2);line-height:1.4}
+
+/* ── USER PANEL ── */
+.users-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow-sm)}
+.user-row{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border)}
+.user-row:last-child{border-bottom:none}
+.user-info{flex:1;min-width:0}
+.user-name{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-username{font-size:12px;color:var(--text-2)}
+.user-actions{display:flex;gap:6px;align-items:center;flex-shrink:0}
+
+/* ── SETTINGS BANNER ── */
+.settings-banner{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;box-shadow:var(--shadow-sm);display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.setting-field{display:flex;align-items:center;gap:8px}
+.setting-label{font-size:13px;color:var(--text-2);font-weight:500;white-space:nowrap}
+.setting-input{background:var(--bg);border:1.5px solid var(--border);border-radius:var(--r-xs);padding:7px 12px;font-size:14px;font-weight:700;color:var(--text);outline:none;width:70px;text-align:center;transition:border-color var(--dur) var(--ease)}
+.setting-input:focus{border-color:var(--ocean-light)}
+.setting-input:disabled{opacity:0.4;cursor:not-allowed}
+
+/* ── EMPTY STATE ── */
+.empty{text-align:center;padding:48px 20px;color:var(--text-2)}
+.empty-icon{font-size:44px;opacity:0.4;margin-bottom:10px}
+.empty-title{font-size:16px;font-weight:600;margin-bottom:4px}
+.empty-sub{font-size:13px}
+
+/* ── PROFILE MODAL (participant self-edit) ── */
+.profile-hero{
+  background:linear-gradient(135deg,var(--ocean-deep),var(--ocean-mid));
+  border-radius:14px;padding:24px;text-align:center;margin-bottom:20px;
+  color:#fff;
+}
+.profile-avatar-wrap{position:relative;display:inline-block;margin-bottom:12px}
+
+/* ── VIEWER BANNER ── */
+.viewer-banner{
+  display:flex;align-items:center;gap:10px;
+  background:rgba(45,106,159,0.08);
+  border:1px solid rgba(45,106,159,0.2);
+  border-radius:var(--r-sm);padding:10px 16px;
+  margin-bottom:20px;font-size:13px;color:var(--ocean-light);font-weight:500;
+}
+
+/* ── MISC ── */
+.skeleton{background:linear-gradient(90deg,var(--border) 25%,var(--gray-100) 50%,var(--border) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:var(--r-xs)}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.mono{font-family:var(--mono)}
+.divider{height:1px;background:var(--border);margin:24px 0}
+.export-row{display:flex;gap:8px;flex-wrap:wrap}
+.main{padding:24px 0 80px}
+@media(min-width:640px){.main{padding:32px 0 80px}}
+
+/* ── MOBILE NAV (bottom) ── */
+.bottom-nav{
+  display:none;
+  position:fixed;bottom:0;left:0;right:0;
+  background:var(--bg-glass);backdrop-filter:blur(20px);
+  border-top:1px solid var(--border);
+  padding:8px 0 env(safe-area-inset-bottom,8px);
+  z-index:90;
+}
+@media(max-width:639px){.bottom-nav{display:flex}}
+.bottom-nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 0;font-size:10px;font-weight:600;color:var(--text-3);transition:color var(--dur) var(--ease);cursor:pointer}
+.bottom-nav-item.active,.bottom-nav-item:hover{color:var(--ocean-light)}
+.bottom-nav-icon{font-size:20px}
+
+/* admin-only hidden for non-admins */
+body.viewer-mode .admin-only{display:none!important}
+body.viewer-mode .admin-only-inline{display:none!important}
+/* participant can see their own edit btn */
+
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:100px}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <!-- Shader BG -->
+  <div class="login-shader-bg"></div>
+
+  <!-- Stars -->
+  <div class="login-stars" id="login-stars"></div>
+
+  <!-- LEFT: Globe + Quote (desktop only) -->
+  <div class="login-left">
+    <div class="login-route-badge">✈️ BOG &nbsp;→&nbsp; CTG &nbsp;·&nbsp; Nov 2026</div>
+    <div class="globe-wrap">
+      <div class="globe-ring"></div>
+      <div class="globe-ring2"></div>
+      <div class="globe-orbit"><div class="globe-orbit-dot"></div></div>
+      <div class="globe"></div>
+      <div class="globe-star-1"></div>
+      <div class="globe-star-2"></div>
+      <div class="globe-star-3"></div>
+      <div class="globe-star-4"></div>
+    </div>
+    <div class="login-quote">
+      <div class="login-quote-text" id="login-left-typewriter"><span id="left-tw-text"></span><span class="tw-cursor">|</span></div>
+      <div class="login-quote-author">Cartagena 2026 🌴</div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Form -->
+  <div class="login-right">
+    <div class="login-card">
+      <!-- Mobile globe -->
+      <div class="login-mobile-globe">
+        <div class="globe-sm"></div>
+      </div>
+
+      <div class="login-title">Cartagena 2026</div>
+      <div class="login-sub">Bogotá → Cartagena · 12–15 Nov 2026</div>
+      <div class="login-typewriter"><span id="login-tw-text"></span><span class="tw-cursor">|</span></div>
+
+      <div>
+        <label class="login-label" for="li-user">Usuario</label>
+        <div class="login-input-wrap">
+          <span class="login-input-icon">👤</span>
+          <input class="login-input" id="li-user" type="text" placeholder="tu.usuario" autocomplete="username">
+        </div>
+      </div>
+      <div>
+        <label class="login-label" for="li-pass">Contraseña</label>
+        <div class="login-input-wrap">
+          <span class="login-input-icon">🔒</span>
+          <input class="login-input" id="li-pass" type="password" placeholder="••••••••" autocomplete="current-password">
+        </div>
+      </div>
+
+      <div class="login-error" id="login-error"></div>
+      <button class="login-btn" id="btn-login">Entrar al viaje 🌊</button>
+
+      <div class="login-badge-row">
+        <span class="login-badge">🔒 Seguro</span>
+        <span class="login-badge">⚡ Tiempo real</span>
+        <span class="login-badge">📱 Mobile-ready</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<header class="header" id="app-header" style="display:none">
+  <div class="container header-inner">
+    <div class="header-brand">
+      <span class="header-logo">✈️</span>
+      <div>
+        <div class="header-title">Cartagena 2026</div>
+        <div class="header-sub">BOG → CTG</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="conn-indicator" id="conn-ind">
+        <span class="conn-dot" id="conn-dot"></span>
+        <span class="conn-label" id="conn-label">En vivo</span>
+      </div>
+      <button class="btn-icon admin-only" id="btn-alerts" title="Alertas">🔔<span class="badge-count" id="alert-badge" style="display:none">0</span></button>
+      <button class="btn-icon admin-only" id="btn-users" title="Usuarios">👥</button>
+      <button class="btn-icon" id="btn-profile" title="Mi perfil">
+        <div class="avatar-placeholder" id="header-avatar" style="width:28px;height:28px;font-size:11px">?</div>
+      </button>
+      <button class="btn-icon" id="btn-dark">🌙</button>
+    </div>
+  </div>
+</header>
+
+<main class="main" id="app-main" style="display:none">
+<div class="container">
+
+  <!-- Viewer banner -->
+  <div class="viewer-banner" id="viewer-banner" style="display:none">
+    👁️ <strong>Modo visualización</strong> — Ves los datos en tiempo real. Solo el administrador puede hacer cambios.
+  </div>
+
+  <!-- Alerts (admin) -->
+  <div id="alerts-section" style="margin-bottom:20px;display:none">
+    <div class="section-header">
+      <div class="section-title">⚡ Alertas</div>
+      <button class="btn btn-secondary btn-sm" id="btn-close-alerts">Cerrar</button>
+    </div>
+    <div class="alerts-wrap" id="alerts-wrap"></div>
+  </div>
+
+  <!-- COUNTDOWN -->
+  <div class="countdown-hero" id="countdown-hero">
+    <div style="position:absolute;inset:0;overflow:hidden;border-radius:24px;pointer-events:none">
+      <div style="position:absolute;top:-40%;left:-20%;width:80%;height:120%;background:radial-gradient(ellipse,rgba(56,189,248,0.12) 0%,transparent 70%);animation:cdGlow 6s ease-in-out infinite alternate"></div>
+      <div style="position:absolute;bottom:-40%;right:-20%;width:70%;height:110%;background:radial-gradient(ellipse,rgba(13,148,136,0.1) 0%,transparent 70%);animation:cdGlow 8s ease-in-out infinite alternate-reverse"></div>
+    </div>
+    <style>@keyframes cdGlow{0%{transform:scale(1)}100%{transform:scale(1.2)}}</style>
+    <div style="position:relative;z-index:1">
+      <div class="countdown-badge">🌴 Viaje grupal · Cartagena 2026</div>
+      <div class="countdown-message" id="cd-message">Cargando cuenta regresiva...</div>
+      <div class="countdown-sub-msg" id="cd-submsg"></div>
+      <div class="countdown-grid">
+        <div class="countdown-unit">
+          <span class="countdown-num" id="cd-days">00</span>
+          <span class="countdown-label">Días</span>
+        </div>
+        <div class="countdown-unit">
+          <span class="countdown-num" id="cd-hours">00</span>
+          <span class="countdown-label">Horas</span>
+        </div>
+        <div class="countdown-unit">
+          <span class="countdown-num" id="cd-mins">00</span>
+          <span class="countdown-label">Min</span>
+        </div>
+        <div class="countdown-unit">
+          <span class="countdown-num" id="cd-secs">00</span>
+          <span class="countdown-label">Seg</span>
+        </div>
+      </div>
+      <div class="countdown-trip-info">
+        <span class="countdown-info-pill">📅 12–15 Nov 2026</span>
+        <span class="countdown-info-pill">🛫 Bogotá → Cartagena</span>
+        <span class="countdown-info-pill" id="cd-traveler-count">👥 0 viajeros</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- KPI -->
+  <section class="section" id="section-dashboard">
+    <div class="section-header">
+      <div><div class="section-title">Resumen</div><div class="section-sub">Actualizado en tiempo real</div></div>
+    </div>
+    <div class="kpi-grid">
+      <div class="kpi-card" style="animation-delay:0ms"><div class="kpi-icon">💰</div><div class="kpi-label">Total viaje</div><div class="kpi-value mono" id="kpi-total">$0</div><div class="kpi-bar"><div class="kpi-bar-fill ocean" style="width:100%"></div></div><div class="kpi-sub" id="kpi-total-sub">0 viajeros</div></div>
+      <div class="kpi-card" style="animation-delay:60ms"><div class="kpi-icon">✅</div><div class="kpi-label">Recaudado</div><div class="kpi-value mono" id="kpi-col">$0</div><div class="kpi-bar"><div class="kpi-bar-fill success" id="bar-col" style="width:0%"></div></div><div class="kpi-sub" id="kpi-col-sub">0%</div></div>
+      <div class="kpi-card" style="animation-delay:120ms"><div class="kpi-icon">⏳</div><div class="kpi-label">Pendiente</div><div class="kpi-value mono" id="kpi-pend">$0</div><div class="kpi-bar"><div class="kpi-bar-fill danger" id="bar-pend" style="width:100%"></div></div><div class="kpi-sub" id="kpi-pend-sub">100%</div></div>
+      <div class="kpi-card" style="animation-delay:180ms"><div class="kpi-icon">📊</div><div class="kpi-label">Progreso</div><div class="kpi-value mono" id="kpi-prog">0%</div><div class="kpi-bar"><div class="kpi-bar-fill warning" id="bar-prog" style="width:0%"></div></div><div class="kpi-sub" id="kpi-prog-sub">Completado</div></div>
+    </div>
+  </section>
+
+  <!-- SETTINGS (admin) -->
+  <section class="section admin-only" id="section-settings">
+    <div class="section-header">
+      <div><div class="section-title">⚙️ Configuración</div><div class="section-sub">Plan de pagos global</div></div>
+    </div>
+    <div class="settings-banner">
+      <div class="setting-field"><span class="setting-label">📅 Cuotas</span><input class="setting-input" id="inp-install" type="number" min="1" max="24" value="4"><span style="font-size:12px;color:var(--text-3)">máx 24</span></div>
+      <div class="setting-field"><span class="setting-label">📈 Interés %</span><input class="setting-input" id="inp-interest" type="number" min="0" max="20" step="0.1" value="3"></div>
+      <button class="btn btn-primary btn-sm" id="btn-apply-settings">Aplicar</button>
+    </div>
+  </section>
+
+  <!-- ADD TRAVELER (admin) -->
+  <section class="section admin-only" id="section-add">
+    <div class="section-header">
+      <div><div class="section-title">➕ Agregar viajero</div><div class="section-sub" id="sub-formula">Interés 3% · 4 cuotas</div></div>
+    </div>
+    <div class="form-card">
+      <div class="form-row form-row-3">
+        <div class="form-group"><label class="form-label">Nombre</label><input class="form-input" id="inp-name" type="text" placeholder="Nombre del viajero"></div>
+        <div class="form-group"><label class="form-label">Valor vuelo (COP)</label><input class="form-input" id="inp-flight" type="number" placeholder="350000" min="0"></div>
+        <div class="form-group"><label class="form-label">Fecha primer pago</label><input class="form-input" id="inp-date" type="date"></div>
+      </div>
+      <div style="display:flex;justify-content:flex-end;margin-top:4px">
+        <button class="btn btn-primary" id="btn-add">＋ Agregar viajero</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRAVELERS -->
+  <section class="section" id="section-travelers">
+    <div class="section-header">
+      <div><div class="section-title">👥 Viajeros</div><div class="section-sub" id="travelers-count-label">0 viajeros</div></div>
+    </div>
+    <div class="search-row">
+      <input class="search-input" id="search-inp" type="text" placeholder="🔍 Buscar...">
+      <select class="filter-sel" id="filter-sel"><option value="all">Todos</option><option value="ok">Al día</option><option value="warn">Próximo pago</option><option value="late">Atrasados</option></select>
+      <select class="filter-sel" id="sort-sel"><option value="name">Nombre A-Z</option><option value="pend-desc">Mayor pendiente</option><option value="prog-desc">Mayor avance</option></select>
+    </div>
+    <div class="travelers-grid" id="travelers-grid">
+      <div class="kpi-card skeleton" style="height:240px"></div>
+      <div class="kpi-card skeleton" style="height:240px;animation-delay:80ms"></div>
+    </div>
+  </section>
+
+  <!-- CHARTS -->
+  <section class="section" id="section-charts">
+    <div class="section-header"><div class="section-title">📈 Análisis</div></div>
+    <div class="charts-grid">
+      <div class="chart-card"><div class="chart-title">Distribución</div><div class="chart-sub">Recaudado vs pendiente</div><div class="chart-wrap"><canvas id="chart-donut"></canvas></div></div>
+      <div class="chart-card"><div class="chart-title">Comparativo</div><div class="chart-sub">Por persona</div><div class="chart-wrap"><canvas id="chart-bar"></canvas></div></div>
+      <div class="chart-card"><div class="chart-title">Evolución</div><div class="chart-sub">Recaudo acumulado</div><div class="chart-wrap"><canvas id="chart-line"></canvas></div></div>
+    </div>
+  </section>
+
+  <!-- HISTORY -->
+  <section class="section" id="section-history">
+    <div class="section-header"><div class="section-title">📋 Historial de pagos</div></div>
+    <div class="history-wrap">
+      <div class="history-header">
+        <div style="font-size:13px;color:var(--text-2)" id="history-summary">Sin registros</div>
+        <button class="btn btn-secondary btn-sm admin-only" id="btn-whatsapp">💬 Compartir</button>
+      </div>
+      <div class="table-scroll">
+        <table><thead><tr><th>Fecha</th><th>Viajero</th><th>Cuota</th><th>Valor</th><th class="admin-only">—</th></tr></thead>
+        <tbody id="history-body"></tbody></table>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPORTS (admin) -->
+  <section class="section admin-only" id="section-exports">
+    <div class="section-header"><div class="section-title">📤 Exportar</div></div>
+    <div class="export-row">
+      <button class="btn btn-secondary" id="btn-excel">📊 Excel</button>
+      <button class="btn btn-secondary" id="btn-pdf">📄 PDF</button>
+      <button class="btn btn-secondary" id="btn-whatsapp2">💬 WhatsApp</button>
+    </div>
+  </section>
+
+</div>
+</main>
+
+<!-- BOTTOM NAV (mobile) -->
+<nav class="bottom-nav" id="bottom-nav" style="display:none">
+  <div class="bottom-nav-item active" onclick="scrollToSection('countdown-hero')"><span class="bottom-nav-icon">⏳</span>Cuenta</div>
+  <div class="bottom-nav-item" onclick="scrollToSection('section-travelers')"><span class="bottom-nav-icon">👥</span>Viajeros</div>
+  <div class="bottom-nav-item" onclick="scrollToSection('section-charts')"><span class="bottom-nav-icon">📈</span>Análisis</div>
+  <div class="bottom-nav-item" onclick="scrollToSection('section-history')"><span class="bottom-nav-icon">📋</span>Pagos</div>
+</nav>
+
+<!-- PAYMENT MODAL -->
+<div class="modal-overlay" id="modal-pay">
+  <div class="modal">
+    <span class="modal-handle"></span>
+    <div class="modal-header"><div class="modal-title" id="modal-pay-title">Registrar pago</div><button class="modal-close" onclick="closeModal('modal-pay')">×</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Viajero</label><input class="form-input" id="pay-name" disabled></div>
+      <div class="form-row form-row-2">
+        <div class="form-group"><label class="form-label">Cuota</label><select class="form-input" id="pay-cuota"></select></div>
+        <div class="form-group"><label class="form-label">Fecha</label><input class="form-input" id="pay-date" type="date"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Valor (COP)</label><input class="form-input" id="pay-value" type="number" min="0"></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modal-pay')">Cancelar</button><button class="btn btn-primary" id="btn-save-pay">Guardar pago</button></div>
+  </div>
+</div>
+
+<!-- EDIT TRAVELER MODAL -->
+<div class="modal-overlay" id="modal-edit">
+  <div class="modal">
+    <span class="modal-handle"></span>
+    <div class="modal-header"><div class="modal-title">Editar viajero</div><button class="modal-close" onclick="closeModal('modal-edit')">×</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="edit-id">
+      <div class="form-group"><label class="form-label">Nombre</label><input class="form-input" id="edit-name"></div>
+      <div class="form-group admin-only"><label class="form-label">Valor vuelo (COP)</label><input class="form-input" id="edit-flight" type="number" min="0"></div>
+      <div class="form-group admin-only"><label class="form-label">Fecha primer pago</label><input class="form-input" id="edit-date" type="date"></div>
+      <!-- Avatar upload -->
+      <div class="form-group">
+        <label class="form-label">Foto de perfil</label>
+        <div style="display:flex;align-items:center;gap:14px;margin-top:4px">
+          <div class="avatar-placeholder" id="edit-avatar-preview" style="width:64px;height:64px;font-size:22px;border-radius:50%">?</div>
+          <div>
+            <input type="file" id="edit-avatar-file" accept="image/*" style="display:none" onchange="previewAvatar(this)">
+            <button class="btn btn-secondary btn-sm" onclick="document.getElementById('edit-avatar-file').click()">📷 Cambiar foto</button>
+            <div style="font-size:11px;color:var(--text-3);margin-top:4px">JPG, PNG o WebP · máx 5MB</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modal-edit')">Cancelar</button><button class="btn btn-primary" id="btn-save-edit">Guardar</button></div>
+  </div>
+</div>
+
+<!-- USERS MODAL (admin) -->
+<div class="modal-overlay" id="modal-users">
+  <div class="modal" style="max-width:620px">
+    <span class="modal-handle"></span>
+    <div class="modal-header"><div class="modal-title">👥 Gestión de usuarios</div><button class="modal-close" onclick="closeModal('modal-users')">×</button></div>
+    <div class="modal-body">
+      <div style="margin-bottom:20px">
+        <div style="font-size:14px;font-weight:700;margin-bottom:12px">Crear usuario</div>
+        <div class="form-row form-row-2">
+          <div class="form-group"><label class="form-label">Usuario</label><input class="form-input" id="nu-user" placeholder="nombre.apellido"></div>
+          <div class="form-group"><label class="form-label">Contraseña</label><input class="form-input" id="nu-pass" type="password" placeholder="Mín 6 caracteres"></div>
+          <div class="form-group"><label class="form-label">Rol</label><select class="form-input" id="nu-role"><option value="participant">🏄 Participante</option><option value="admin">⚙️ Administrador</option></select></div>
+          <div class="form-group"><label class="form-label">Vinculado a viajero</label><select class="form-input" id="nu-traveler"><option value="">— ninguno —</option></select></div>
+        </div>
+        <div style="display:flex;justify-content:flex-end"><button class="btn btn-primary btn-sm" id="btn-create-user">Crear usuario</button></div>
+      </div>
+      <div style="font-size:14px;font-weight:700;margin-bottom:10px">Usuarios existentes</div>
+      <div class="users-card" id="users-list"><div class="table-empty">Cargando...</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT USER MODAL -->
+<div class="modal-overlay" id="modal-edit-user">
+  <div class="modal">
+    <span class="modal-handle"></span>
+    <div class="modal-header"><div class="modal-title">Editar usuario</div><button class="modal-close" onclick="closeModal('modal-edit-user')">×</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="eu-id">
+      <div class="form-group"><label class="form-label">Usuario</label><input class="form-input" id="eu-username" disabled></div>
+      <div class="form-row form-row-2">
+        <div class="form-group"><label class="form-label">Rol</label><select class="form-input" id="eu-role"><option value="participant">🏄 Participante</option><option value="admin">⚙️ Administrador</option></select></div>
+        <div class="form-group"><label class="form-label">Estado</label><select class="form-input" id="eu-active"><option value="1">✅ Activo</option><option value="0">🔴 Desactivado</option></select></div>
+      </div>
+      <div class="form-group"><label class="form-label">Vinculado a viajero</label><select class="form-input" id="eu-traveler"><option value="">— ninguno —</option></select></div>
+      <div class="form-group"><label class="form-label">Nueva contraseña (opcional)</label><input class="form-input" id="eu-pass" type="password" placeholder="Dejar vacío para no cambiar"></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modal-edit-user')">Cancelar</button><button class="btn btn-primary" id="btn-save-edit-user">Guardar</button></div>
+  </div>
+</div>
+
+<!-- PROFILE MODAL (all users) -->
+<div class="modal-overlay" id="modal-profile">
+  <div class="modal">
+    <span class="modal-handle"></span>
+    <div class="modal-header"><div class="modal-title">Mi perfil</div><button class="modal-close" onclick="closeModal('modal-profile')">×</button></div>
+    <div class="modal-body">
+      <div class="profile-hero">
+        <div class="profile-avatar-wrap">
+          <div class="avatar-placeholder" id="profile-avatar-big" style="width:80px;height:80px;font-size:28px;border-radius:50%;margin:0 auto 10px"></div>
+          <button class="avatar-upload-btn" onclick="document.getElementById('profile-avatar-file').click()" style="width:28px;height:28px;font-size:14px">📷</button>
+          <input type="file" id="profile-avatar-file" accept="image/*" style="display:none" onchange="uploadMyAvatar(this)">
+        </div>
+        <div style="font-size:18px;font-weight:700" id="profile-display-name">—</div>
+        <div style="font-size:13px;opacity:0.6;margin-top:2px" id="profile-username-label">@usuario</div>
+        <div style="margin-top:8px" id="profile-role-pill"></div>
+      </div>
+      <div class="form-group" id="profile-edit-name-wrap">
+        <label class="form-label">Nombre para mostrar</label>
+        <input class="form-input" id="profile-display-inp" placeholder="Tu nombre">
+        <button class="btn btn-primary btn-sm" style="margin-top:8px;align-self:flex-start" id="btn-save-display-name">Guardar nombre</button>
+      </div>
+      <div class="divider"></div>
+      <div id="my-traveler-info" style="display:none">
+        <div style="font-size:14px;font-weight:700;margin-bottom:10px">Mi estado de pago</div>
+        <div id="my-payment-status"></div>
+      </div>
+      <button class="btn btn-danger btn-sm" style="width:100%;justify-content:center;margin-top:16px" id="btn-logout">🚪 Cerrar sesión</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM -->
+<div class="confirm-overlay" id="confirm-overlay">
+  <div class="confirm-box">
+    <div class="confirm-icon">⚠️</div>
+    <div class="confirm-title">¿Confirmar acción?</div>
+    <div class="confirm-msg" id="confirm-msg">Esta acción no se puede deshacer.</div>
+    <div class="confirm-btns">
+      <button class="btn btn-secondary btn-sm" id="confirm-cancel">Cancelar</button>
+      <button class="btn btn-danger btn-sm" id="confirm-ok">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toast-wrap"></div>
+
+<script>
+/* ═══════════════════════════════════════════════════
+   CONFIG
+═══════════════════════════════════════════════════ */
+const WS_URL = `${location.protocol==='https:'?'wss':'ws'}://${location.host}`;
+let token = localStorage.getItem('ctg_token');
+let me    = JSON.parse(localStorage.getItem('ctg_me') || 'null');
+let isAdmin = false;
+let isParticipant = false;
+
+/* ═══════════════════════════════════════════════════
+   LOGIN VISUAL EFFECTS
+═══════════════════════════════════════════════════ */
+
+// Generate stars
+(function createStars(){
+  const container = document.getElementById('login-stars');
+  if(!container) return;
+  for(let i=0;i<60;i++){
+    const s=document.createElement('span');
+    s.className='login-star';
+    const size=Math.random()*2.5+0.5;
+    s.style.cssText=`
+      width:${size}px;height:${size}px;
+      left:${Math.random()*100}%;top:${Math.random()*100}%;
+      --t:${(Math.random()*4+1.5).toFixed(1)}s;
+      --op:${(Math.random()*0.7+0.2).toFixed(2)};
+      animation-delay:${(Math.random()*5).toFixed(1)}s;
+    `;
+    container.appendChild(s);
+  }
+})();
+
+// Typewriter engine
+function typewriter(el, texts, speed=60, pause=2200){
+  if(!el) return;
+  let ti=0, ci=0, deleting=false, timeout=null;
+  function tick(){
+    const txt=texts[ti];
+    if(!deleting){
+      el.textContent=txt.slice(0,ci+1);
+      ci++;
+      if(ci>=txt.length){ timeout=setTimeout(()=>{deleting=true;tick();},pause); return; }
+    } else {
+      el.textContent=txt.slice(0,ci-1);
+      ci--;
+      if(ci<=0){ deleting=false; ti=(ti+1)%texts.length; }
+    }
+    timeout=setTimeout(tick, deleting?30:speed);
+  }
+  tick();
+}
+
+// Login right panel typewriter
+typewriter(document.getElementById('login-tw-text'),[
+  'Prepara la maleta... ✈️',
+  'El Caribe nos espera 🌊',
+  'Cartagena en noviembre 🌴',
+  '¡Va a ser épico! 🎉',
+  'Pagos al día = vacaciones 💳',
+], 65, 2000);
+
+// Login left panel typewriter
+typewriter(document.getElementById('left-tw-text'),[
+  'El viaje más esperado del año.',
+  'Cartagena: ciudad de ensueño.',
+  'Playas, historia y amigos.',
+  'La aventura comienza aquí.',
+], 70, 2500);
+
+let state = {
+  settings:  { installments:4, interest:3, darkMode:false, tripDate:'2026-11-12' },
+  travelers: [],
+  payments:  []
+};
+
+let charts = {};
+let ws, wsTimer;
+let pendingConfirmCb = null;
+let currentPayId = null;
+let cdInterval = null;
+let editAvatarBase64 = null;
+
+/* ═══════════════════════════════════════════════════
+   API
+═══════════════════════════════════════════════════ */
+async function api(method, path, body) {
+  const r = await fetch(path, {
+    method,
+    headers: {
+      'Content-Type':'application/json',
+      ...(token ? {'Authorization':'Bearer '+token} : {})
+    },
+    body: body ? JSON.stringify(body) : undefined
+  });
+  const d = await r.json().catch(()=>({}));
+  if (!r.ok) throw new Error(d.error || `HTTP ${r.status}`);
+  return d;
+}
+
+async function apiUpload(path, formData) {
+  const r = await fetch(path, {
+    method:'POST',
+    headers: { ...(token ? {'Authorization':'Bearer '+token} : {}) },
+    body: formData
+  });
+  const d = await r.json().catch(()=>({}));
+  if (!r.ok) throw new Error(d.error || `HTTP ${r.status}`);
+  return d;
+}
+
+/* ═══════════════════════════════════════════════════
+   AUTH
+═══════════════════════════════════════════════════ */
+document.getElementById('btn-login').addEventListener('click', doLogin);
+document.getElementById('li-pass').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
+
+async function doLogin() {
+  const user = document.getElementById('li-user').value.trim();
+  const pass = document.getElementById('li-pass').value;
+  const errEl = document.getElementById('login-error');
+  errEl.textContent = '';
+  if (!user||!pass) { errEl.textContent='Ingresa usuario y contraseña'; return; }
+  document.getElementById('btn-login').textContent = 'Entrando...';
+  document.getElementById('btn-login').disabled = true;
+  try {
+    const res = await api('POST','/api/auth/login',{username:user,password:pass});
+    token = res.token; me = res.user;
+    localStorage.setItem('ctg_token', token);
+    localStorage.setItem('ctg_me', JSON.stringify(me));
+    bootApp();
+  } catch(e) {
+    errEl.textContent = e.message;
+    document.getElementById('btn-login').textContent = 'Entrar al viaje 🌊';
+    document.getElementById('btn-login').disabled = false;
+  }
+}
+
+function doLogout() {
+  localStorage.removeItem('ctg_token');
+  localStorage.removeItem('ctg_me');
+  if(ws) ws.close();
+  clearInterval(cdInterval);
+  location.reload();
+}
+document.getElementById('btn-logout').addEventListener('click', doLogout);
+
+/* ═══════════════════════════════════════════════════
+   BOOT
+═══════════════════════════════════════════════════ */
+async function bootApp() {
+  isAdmin       = me && me.role === 'admin';
+  isParticipant = me && me.role === 'participant';
+
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app-header').style.display   = '';
+  document.getElementById('app-main').style.display     = '';
+  document.getElementById('bottom-nav').style.display   = '';
+
+  if (!isAdmin) {
+    document.body.classList.add('viewer-mode');
+    document.getElementById('viewer-banner').style.display = 'flex';
+  }
+
+  updateHeaderAvatar();
+  applyDark(state.settings.darkMode);
+
+  try {
+    const s = await api('GET','/api/state');
+    applyState(s);
+  } catch(e) { toast('Error cargando datos','error'); }
+
+  connectWS();
+  startCountdown();
+
+  const d = new Date(); d.setMonth(d.getMonth()+1);
+  const di = document.getElementById('inp-date');
+  if(di) di.value = d.toISOString().slice(0,10);
+}
+
+// Auto-login if token stored
+if (token && me) {
+  api('GET','/api/me').then(u => {
+    if(u && u.active) { me = { ...me, ...u }; bootApp(); }
+    else doLogout();
+  }).catch(doLogout);
+}
+
+/* ═══════════════════════════════════════════════════
+   WEBSOCKET
+═══════════════════════════════════════════════════ */
+function connectWS() {
+  if(ws) ws.close();
+  ws = new WebSocket(WS_URL);
+  ws.onopen = () => {
+    setConn(true);
+    ws.send(JSON.stringify({ type:'AUTH', token }));
+    if(wsTimer) { clearTimeout(wsTimer); wsTimer=null; }
+  };
+  ws.onmessage = e => handleWS(JSON.parse(e.data));
+  ws.onclose = () => { setConn(false); wsTimer=setTimeout(connectWS,3000); };
+  ws.onerror = () => ws.close();
+}
+
+function setConn(on) {
+  const dot = document.getElementById('conn-dot');
+  const lbl = document.getElementById('conn-label');
+  if(!dot) return;
+  dot.className = 'conn-dot' + (on?'':' offline');
+  lbl.className = 'conn-label' + (on?'':' offline');
+  lbl.textContent = on ? 'En vivo' : 'Sin conexión';
+}
+
+function handleWS(msg) {
+  switch(msg.type) {
+    case 'SETTINGS_UPDATED':
+      state.settings = {...state.settings, ...msg.data};
+      applyDark(state.settings.darkMode);
+      updateFormulaHint();
+      renderAll(); break;
+    case 'TRAVELER_ADDED':
+      if(!state.travelers.find(t=>t.id===msg.data.id)) state.travelers.push(msg.data);
+      renderAll(); break;
+    case 'TRAVELER_UPDATED':
+      { const i=state.travelers.findIndex(t=>t.id===msg.data.id);
+        if(i>=0) state.travelers[i]=msg.data; renderAll(); } break;
+    case 'TRAVELER_DELETED':
+      state.travelers=state.travelers.filter(t=>t.id!==msg.data.id);
+      state.payments=state.payments.filter(p=>p.travelerId!==msg.data.id);
+      renderAll(); break;
+    case 'PAYMENT_ADDED':
+      if(!state.payments.find(p=>p.id===msg.data.id)) state.payments.push(msg.data);
+      renderAll(); break;
+    case 'PAYMENT_DELETED':
+      state.payments=state.payments.filter(p=>p.id!==msg.data.id);
+      renderAll(); break;
+    case 'AVATAR_UPDATED':
+      { const t=state.travelers.find(x=>x.id===msg.data.travelerId);
+        if(t) { t.avatarUrl=msg.data.avatarUrl; renderTravelers(); }
+        if(me && me.travelerId===msg.data.travelerId) updateHeaderAvatar(); }
+      break;
+  }
+}
+
+function applyState(s) {
+  state.settings  = s.settings  || state.settings;
+  state.travelers = s.travelers || [];
+  state.payments  = s.payments  || [];
+  document.getElementById('inp-install').value  = state.settings.installments;
+  document.getElementById('inp-interest').value = state.settings.interest;
+  applyDark(state.settings.darkMode);
+  updateFormulaHint();
+  renderAll();
+}
+
+/* ═══════════════════════════════════════════════════
+   COUNTDOWN
+═══════════════════════════════════════════════════ */
+const messages = [
+  d => `Faltan ${d} días para nuestra aventura en Cartagena 🌴`,
+  d => `¡Sólo ${d} días para el paraíso! ☀️`,
+  d => `En ${d} días estaremos en la Ciudad Amurallada ✈️`,
+  d => `${d} días y partimos hacia Cartagena 🌊`,
+];
+const subMessages = [
+  'Cada día estamos más cerca del paraíso ☀️',
+  'La cuenta regresiva ha comenzado ✈️',
+  'El Caribe nos espera con los brazos abiertos 🌊',
+  'Prepara la maleta, el momento se acerca 🧳',
+];
+let msgIdx = 0;
+
+function startCountdown() {
+  if(cdInterval) clearInterval(cdInterval);
+  tickCountdown();
+  cdInterval = setInterval(tickCountdown, 1000);
+  setInterval(() => { msgIdx=(msgIdx+1)%messages.length; tickCountdown(); }, 8000);
+}
+
+function tickCountdown() {
+  const tripDate = new Date(state.settings.tripDate + 'T00:00:00');
+  const now  = new Date();
+  const diff = tripDate - now;
+  if(diff <= 0) {
+    document.getElementById('cd-message').textContent = '🎉 ¡Ya estamos en Cartagena!';
+    document.getElementById('cd-submsg').textContent = 'Disfruta cada momento 🌴';
+    ['cd-days','cd-hours','cd-mins','cd-secs'].forEach(id=>document.getElementById(id).textContent='00');
+    return;
+  }
+  const days  = Math.floor(diff/86400000);
+  const hours = Math.floor((diff%86400000)/3600000);
+  const mins  = Math.floor((diff%3600000)/60000);
+  const secs  = Math.floor((diff%60000)/1000);
+  const pad = n=>String(n).padStart(2,'0');
+  document.getElementById('cd-days').textContent  = pad(days);
+  document.getElementById('cd-hours').textContent = pad(hours);
+  document.getElementById('cd-mins').textContent  = pad(mins);
+  document.getElementById('cd-secs').textContent  = pad(secs);
+  document.getElementById('cd-message').textContent = messages[msgIdx](days);
+  document.getElementById('cd-submsg').textContent  = subMessages[msgIdx%subMessages.length];
+  document.getElementById('cd-traveler-count').textContent = `👥 ${state.travelers.length} viajero${state.travelers.length!==1?'s':''}`;
+}
+
+/* ═══════════════════════════════════════════════════
+   CALCULATIONS
+═══════════════════════════════════════════════════ */
+function calcTraveler(t) {
+  const n = state.settings.installments;
+  const r = state.settings.interest/100;
+  const total   = t.flight * Math.pow(1+r, n);
+  const instAmt = total/n;
+  const pays    = state.payments.filter(p=>p.travelerId===t.id);
+  const paid    = pays.reduce((s,p)=>s+p.value, 0);
+  const pending = Math.max(0, total-paid);
+  return { total, instAmt, paid, pending, interest:total-t.flight, progress:total>0?Math.min(100,paid/total*100):0 };
+}
+
+function calcDueDate(t, n) {
+  if(!t.firstPayDate) return null;
+  const d = new Date(t.firstPayDate); d.setMonth(d.getMonth()+(n-1)); return d;
+}
+
+function getStatus(t) {
+  const c=calcTraveler(t);
+  if(c.pending<=0) return 'ok';
+  const paidSet=new Set(state.payments.filter(p=>p.travelerId===t.id).map(p=>p.cuota));
+  const next=[...Array(state.settings.installments)].map((_,i)=>i+1).find(n=>!paidSet.has(n))||state.settings.installments;
+  const due=calcDueDate(t,next);
+  if(!due) return 'ok';
+  const diff=(due-new Date())/86400000;
+  return diff<0?'late':diff<=7?'warn':'ok';
+}
+
+/* ═══════════════════════════════════════════════════
+   FORMAT
+═══════════════════════════════════════════════════ */
+const fmt  = n => '$'+Math.round(n||0).toLocaleString('es-CO');
+const fmtD = d => { const dt=d instanceof Date?d:new Date(d); return isNaN(dt)?'—':dt.toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'numeric'}); };
+const init = n => n.trim().split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2)||'?';
+const esc  = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+function statusLabel(s) {
+  if(s==='ok')   return { cls:'status-ok',   txt:'🟢 Al día' };
+  if(s==='warn') return { cls:'status-warn', txt:'🟡 Próximo pago' };
+  return               { cls:'status-late',  txt:'🔴 Atrasado' };
+}
+
+function updateFormulaHint() {
+  const el=document.getElementById('sub-formula');
+  if(el) el.textContent=`Interés ${state.settings.interest}% mensual · ${state.settings.installments} cuota${state.settings.installments!==1?'s':''}`;
+}
+
+/* ═══════════════════════════════════════════════════
+   DARK MODE
+═══════════════════════════════════════════════════ */
+function applyDark(on) {
+  document.documentElement.setAttribute('data-theme', on?'dark':'light');
+  state.settings.darkMode = on;
+  const btn=document.getElementById('btn-dark');
+  if(btn) btn.textContent=on?'☀️':'🌙';
+}
+document.getElementById('btn-dark').addEventListener('click', async ()=>{
+  const next=!state.settings.darkMode;
+  applyDark(next);
+  if(isAdmin) {
+    try{ await api('PUT','/api/settings',{...state.settings,darkMode:next}); }
+    catch{}
+  }
+  setTimeout(renderCharts,50);
+});
+
+/* ═══════════════════════════════════════════════════
+   AVATAR HELPERS
+═══════════════════════════════════════════════════ */
+function avatarHTML(src, name, size=36, fontSize=14) {
+  if(src) return `<img src="${esc(src)}" style="width:${size}px;height:${size}px;border-radius:50%;object-fit:cover" onerror="this.style.display='none'">`;
+  return `<div style="width:${size}px;height:${size}px;border-radius:50%;background:linear-gradient(135deg,#2d6a9f,#38bdf8);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:${fontSize}px;flex-shrink:0">${init(name||'?')}</div>`;
+}
+
+function updateHeaderAvatar() {
+  const el=document.getElementById('header-avatar');
+  if(!el||!me) return;
+  el.outerHTML = `<div class="avatar-placeholder" id="header-avatar" style="width:28px;height:28px;font-size:11px;border-radius:50%;overflow:hidden">${avatarHTML(me.avatarUrl, me.displayName||me.username, 28, 11)}</div>`;
+}
+
+/* ═══════════════════════════════════════════════════
+   RENDER ALL
+═══════════════════════════════════════════════════ */
+function renderAll() {
+  renderDashboard();
+  renderTravelers();
+  renderHistory();
+  renderCharts();
+  renderAlerts();
+}
+
+/* ── Dashboard ── */
+function renderDashboard() {
+  let total=0, col=0;
+  state.travelers.forEach(t=>{ const c=calcTraveler(t); total+=c.total; col+=c.paid; });
+  const pct=total>0?col/total*100:0;
+  animVal('kpi-total', total);
+  animVal('kpi-col',   col);
+  animVal('kpi-pend',  Math.max(0,total-col));
+  document.getElementById('kpi-total-sub').textContent = `${state.travelers.length} viajero${state.travelers.length!==1?'s':''}`;
+  document.getElementById('kpi-col-sub').textContent   = `${pct.toFixed(1)}% del total`;
+  document.getElementById('kpi-pend-sub').textContent  = `${(100-pct).toFixed(1)}% restante`;
+  document.getElementById('kpi-prog').textContent      = `${pct.toFixed(1)}%`;
+  document.getElementById('kpi-prog-sub').textContent  = `de ${fmt(total)}`;
+  document.getElementById('bar-col').style.width  = pct+'%';
+  document.getElementById('bar-pend').style.width = (100-pct)+'%';
+  document.getElementById('bar-prog').style.width = pct+'%';
+}
+
+function animVal(id, val) {
+  const el=document.getElementById(id), end=Math.round(val), dur=600, t0=performance.now();
+  const step=now=>{ const p=Math.min((now-t0)/dur,1),e=1-Math.pow(1-p,3); el.textContent='$'+Math.round(e*end).toLocaleString('es-CO'); if(p<1) requestAnimationFrame(step); };
+  requestAnimationFrame(step);
+}
+
+/* ── Travelers ── */
+function renderTravelers() {
+  const grid=document.getElementById('travelers-grid');
+  const search=document.getElementById('search-inp').value.toLowerCase();
+  const filter=document.getElementById('filter-sel').value;
+  const sort=document.getElementById('sort-sel').value;
+  let list=[...state.travelers];
+  if(search) list=list.filter(t=>t.name.toLowerCase().includes(search));
+  if(filter!=='all') list=list.filter(t=>getStatus(t)===filter);
+  if(sort==='name') list.sort((a,b)=>a.name.localeCompare(b.name));
+  if(sort==='pend-desc') list.sort((a,b)=>calcTraveler(b).pending-calcTraveler(a).pending);
+  if(sort==='prog-desc') list.sort((a,b)=>calcTraveler(b).progress-calcTraveler(a).progress);
+  document.getElementById('travelers-count-label').textContent=`${state.travelers.length} viajero${state.travelers.length!==1?'s':''}`;
+
+  if(!list.length){
+    grid.innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="empty-icon">${state.travelers.length===0?'🏖️':'🔍'}</div><div class="empty-title">${state.travelers.length===0?'Aún no hay viajeros':'Sin resultados'}</div><div class="empty-sub">${state.travelers.length===0?'El admin puede agregar viajeros arriba':'Cambia el filtro'}</div></div>`;
+    return;
+  }
+
+  grid.innerHTML = list.map((t,i)=>{
+    const c=calcTraveler(t), st=getStatus(t), sl=statusLabel(st);
+    const paidSet=new Set(state.payments.filter(p=>p.travelerId===t.id).map(p=>p.cuota));
+    const nextN=[...Array(state.settings.installments)].map((_,i)=>i+1).find(n=>!paidSet.has(n))||state.settings.installments;
+    const nextDue=calcDueDate(t,nextN);
+    const isMyCard = me && me.travelerId===t.id;
+
+    // Action buttons
+    let actions='';
+    if(isAdmin) {
+      actions=`
+        <button class="btn btn-secondary btn-xs" onclick="openEdit('${t.id}')">✏️ Editar</button>
+        <button class="btn btn-success btn-xs" onclick="openPay('${t.id}')">💳 Pagar</button>
+        <button class="btn btn-danger btn-xs" onclick="doConfirm('¿Eliminar a ${esc(t.name)}?',()=>deleteTraveler('${t.id}'))">🗑️</button>
+      `;
+    } else if(isMyCard) {
+      actions=`<button class="btn btn-secondary btn-xs" onclick="openEdit('${t.id}')">✏️ Mi perfil</button>`;
+    }
+
+    return `
+    <div class="traveler-card" style="animation-delay:${i*50}ms">
+      <div class="traveler-card-header">
+        <div style="position:relative;width:48px;height:48px;flex-shrink:0">
+          ${avatarHTML(t.avatarUrl, t.name, 48, 18)}
+          ${(isAdmin||isMyCard)?`<button class="avatar-upload-btn" style="font-size:11px;width:20px;height:20px" onclick="quickAvatarUpload('${t.id}')">📷</button>`:''}
+        </div>
+        <div class="traveler-card-info">
+          <div class="traveler-name">${esc(t.name)}</div>
+          <div class="traveler-status-badge ${sl.cls}">${sl.txt}</div>
+        </div>
+      </div>
+      <div class="amounts-grid">
+        <div class="amount-item"><div class="amount-label">Vuelo</div><div class="amount-value mono">${fmt(t.flight)}</div></div>
+        <div class="amount-item"><div class="amount-label">Intereses</div><div class="amount-value mono">${fmt(c.interest)}</div></div>
+        <div class="amount-item"><div class="amount-label">Total deuda</div><div class="amount-value mono">${fmt(c.total)}</div></div>
+        <div class="amount-item"><div class="amount-label">Cuota/mes</div><div class="amount-value mono ocean">${fmt(c.instAmt)}</div></div>
+        <div class="amount-item"><div class="amount-label">Pagado</div><div class="amount-value mono success">${fmt(c.paid)}</div></div>
+        <div class="amount-item"><div class="amount-label">Pendiente</div><div class="amount-value mono danger">${fmt(c.pending)}</div></div>
+      </div>
+      <div class="prog-wrap">
+        <div class="prog-track"><div class="prog-fill" style="width:${c.progress.toFixed(1)}%"></div></div>
+        <div class="prog-labels"><span>${c.progress.toFixed(1)}% pagado</span><span>Cuota ${paidSet.size}/${state.settings.installments}</span></div>
+      </div>
+      ${c.pending>0?`<div class="next-pay-row">📅 Próximo: <strong>${fmtD(nextDue)}</strong></div>`:`<div class="next-pay-row">🎉 <strong>¡Pagado completamente!</strong></div>`}
+      <div class="traveler-actions">${actions}</div>
+    </div>`;
+  }).join('');
+}
+
+/* ── History ── */
+function renderHistory() {
+  const tbody=document.getElementById('history-body');
+  const sorted=[...state.payments].sort((a,b)=>new Date(b.date)-new Date(a.date));
+  if(!sorted.length){
+    tbody.innerHTML=`<tr><td colspan="5" class="table-empty">Sin pagos registrados aún</td></tr>`;
+    document.getElementById('history-summary').textContent='Sin registros';
+    return;
+  }
+  const total=sorted.reduce((s,p)=>s+p.value,0);
+  document.getElementById('history-summary').textContent=`${sorted.length} pago${sorted.length!==1?'s':''} · Total: ${fmt(total)}`;
+  tbody.innerHTML=sorted.map(p=>{
+    const t=state.travelers.find(x=>x.id===p.travelerId);
+    const del=isAdmin?`<td><button class="btn btn-danger btn-xs" onclick="doConfirm('¿Eliminar este pago?',()=>deletePay('${p.id}'))">🗑️</button></td>`:`<td></td>`;
+    return `<tr><td>${fmtD(new Date(p.date))}</td><td><strong>${esc(t?t.name:'Eliminado')}</strong></td><td><span class="cuota-badge">${p.cuota}</span></td><td class="mono"><strong>${fmt(p.value)}</strong></td>${del}</tr>`;
+  }).join('');
+}
+
+/* ── Alerts ── */
+function renderAlerts() {
+  if(!isAdmin) return;
+  const wrap=document.getElementById('alerts-wrap');
+  const alerts=generateAlerts();
+  const urgent=alerts.filter(a=>a.type==='red'||a.type==='yellow').length;
+  const badge=document.getElementById('alert-badge');
+  if(badge) { badge.textContent=urgent; badge.style.display=urgent>0?'flex':'none'; }
+  wrap.innerHTML=alerts.map((a,i)=>`
+    <div class="alert-item alert-${a.type}" style="animation-delay:${i*30}ms">
+      <span class="alert-icon">${a.icon}</span>
+      <div><div class="alert-title">${esc(a.title)}</div><div class="alert-body">${esc(a.body)}</div></div>
+    </div>`).join('');
+}
+
+function generateAlerts() {
+  const alerts=[], today=new Date();
+  state.travelers.forEach(t=>{
+    const c=calcTraveler(t);
+    const paidSet=new Set(state.payments.filter(p=>p.travelerId===t.id).map(p=>p.cuota));
+    for(let i=1;i<=state.settings.installments;i++){
+      if(!paidSet.has(i)){
+        const due=calcDueDate(t,i);
+        if(due){
+          const diff=(due-today)/86400000;
+          if(diff<0) alerts.push({type:'red',icon:'🔴',title:`${t.name} — Cuota ${i} vencida`,body:`${Math.abs(Math.round(diff))} días de retraso. Pendiente: ${fmt(c.pending)}`});
+          else if(diff<=5) alerts.push({type:'yellow',icon:'⚠️',title:`${t.name} — Cuota ${i} vence en ${Math.round(diff)} días`,body:`Vence ${fmtD(due)} · Valor: ${fmt(c.instAmt)}`});
+        }
+      }
+    }
+    if(c.pending<=0 && state.payments.filter(p=>p.travelerId===t.id).length>0)
+      alerts.push({type:'green',icon:'✅',title:`${t.name} pagó todo`,body:`Deuda cancelada: ${fmt(c.total)}`});
+  });
+  let total=0,col=0; state.travelers.forEach(t=>{const c=calcTraveler(t);total+=c.total;col+=c.paid;});
+  const pct=total>0?col/total*100:0;
+  if(pct>=100&&state.travelers.length>0) alerts.push({type:'green',icon:'🎉',title:'¡Todos los vuelos pagados!',body:'El grupo completó los pagos. ¡A Cartagena! 🌴'});
+  if(!alerts.length) alerts.push({type:'green',icon:'✅',title:'Todo en orden',body:'No hay alertas activas.'});
+  return alerts;
+}
+
+/* ── Charts ── */
+function getCC() {
+  const dark=document.documentElement.getAttribute('data-theme')==='dark';
+  return { text2:dark?'#8b949e':'#475569', border:dark?'rgba(255,255,255,0.08)':'rgba(0,0,0,0.08)', green:'#10b981', red:'#ef4444', blue:'#2d6a9f' };
+}
+function renderCharts() {
+  const cc=getCC();
+  let total=0,col=0; state.travelers.forEach(t=>{const c=calcTraveler(t);total+=c.total;col+=c.paid;});
+  const c1=document.getElementById('chart-donut').getContext('2d');
+  if(charts.donut) charts.donut.destroy();
+  charts.donut=new Chart(c1,{type:'doughnut',data:{labels:['Recaudado','Pendiente'],datasets:[{data:[col,Math.max(0,total-col)],backgroundColor:[cc.green,cc.red],borderWidth:0,hoverOffset:8}]},options:{responsive:true,maintainAspectRatio:false,cutout:'70%',plugins:{legend:{position:'bottom',labels:{color:cc.text2,padding:14,font:{family:"'DM Sans'",size:12}}},tooltip:{callbacks:{label:c=>` ${fmt(c.parsed)}`}}}}});
+  const c2=document.getElementById('chart-bar').getContext('2d');
+  if(charts.bar) charts.bar.destroy();
+  charts.bar=new Chart(c2,{type:'bar',data:{labels:state.travelers.map(t=>t.name.split(' ')[0]),datasets:[{label:'Pagado',data:state.travelers.map(t=>Math.round(calcTraveler(t).paid)),backgroundColor:cc.green,borderRadius:6,borderSkipped:false},{label:'Pendiente',data:state.travelers.map(t=>Math.round(calcTraveler(t).pending)),backgroundColor:cc.red,borderRadius:6,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:cc.text2,font:{family:"'DM Sans'",size:12}}},tooltip:{callbacks:{label:c=>` ${fmt(c.parsed)}`}}},scales:{x:{stacked:true,ticks:{color:cc.text2},grid:{color:cc.border}},y:{stacked:true,ticks:{color:cc.text2,callback:v=>'$'+(v/1000).toFixed(0)+'k'},grid:{color:cc.border}}}}});
+  const sp=[...state.payments].sort((a,b)=>new Date(a.date)-new Date(b.date));
+  let cum=0;const ll=[],ld=[];
+  sp.forEach(p=>{cum+=p.value;ll.push(fmtD(new Date(p.date)));ld.push(Math.round(cum));});
+  if(!ll.length){ll.push('Hoy');ld.push(0);}
+  const c3=document.getElementById('chart-line').getContext('2d');
+  if(charts.line) charts.line.destroy();
+  charts.line=new Chart(c3,{type:'line',data:{labels:ll,datasets:[{label:'Recaudo',data:ld,borderColor:cc.blue,backgroundColor:cc.blue+'20',fill:true,tension:0.4,pointRadius:4,pointBackgroundColor:cc.blue}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:cc.text2,font:{family:"'DM Sans'",size:12}}},tooltip:{callbacks:{label:c=>` ${fmt(c.parsed)}`}}},scales:{x:{ticks:{color:cc.text2,font:{size:11}},grid:{color:cc.border}},y:{ticks:{color:cc.text2,callback:v=>'$'+(v/1000).toFixed(0)+'k'},grid:{color:cc.border}}}}});
+}
+
+/* ═══════════════════════════════════════════════════
+   ADMIN ACTIONS
+═══════════════════════════════════════════════════ */
+
+// Settings
+document.getElementById('btn-apply-settings').addEventListener('click', async ()=>{
+  const n=parseInt(document.getElementById('inp-install').value);
+  const r=parseFloat(document.getElementById('inp-interest').value);
+  if(!n||n<1||n>24) return toast('Cuotas: 1–24','error');
+  if(isNaN(r)||r<0||r>20) return toast('Interés: 0–20%','error');
+  try {
+    await api('PUT','/api/settings',{installments:n,interest:r,darkMode:state.settings.darkMode,tripDate:state.settings.tripDate});
+    state.settings.installments=n; state.settings.interest=r;
+    updateFormulaHint(); renderAll();
+    toast(`Plan: ${n} cuotas al ${r}%`,'success');
+  } catch(e){ toast(e.message,'error'); }
+});
+
+// Add traveler
+document.getElementById('btn-add').addEventListener('click', async ()=>{
+  const name=document.getElementById('inp-name').value.trim();
+  const flight=parseFloat(document.getElementById('inp-flight').value);
+  const date=document.getElementById('inp-date').value;
+  if(!name) return toast('Ingresa el nombre','error');
+  if(!flight||flight<=0) return toast('Valor de vuelo inválido','error');
+  if(!date) return toast('Selecciona la fecha','error');
+  try {
+    await api('POST','/api/travelers',{name,flight,firstPayDate:date});
+    document.getElementById('inp-name').value='';
+    document.getElementById('inp-flight').value='';
+    toast(`${name} agregado ✅`,'success');
+  } catch(e){ toast(e.message,'error'); }
+});
+
+// Edit traveler
+function openEdit(id) {
+  const t=state.travelers.find(x=>x.id===id); if(!t) return;
+  document.getElementById('edit-id').value=id;
+  document.getElementById('edit-name').value=t.name;
+  document.getElementById('edit-flight').value=t.flight;
+  document.getElementById('edit-date').value=t.firstPayDate;
+  editAvatarBase64=null;
+  // Show current avatar
+  const prev=document.getElementById('edit-avatar-preview');
+  prev.innerHTML=avatarHTML(t.avatarUrl, t.name, 64, 22);
+  openModal('modal-edit');
+}
+document.getElementById('btn-save-edit').addEventListener('click', async ()=>{
+  const id=document.getElementById('edit-id').value;
+  const name=document.getElementById('edit-name').value.trim();
+  const flight=parseFloat(document.getElementById('edit-flight').value);
+  const date=document.getElementById('edit-date').value;
+  if(!name) return toast('Falta nombre','error');
+  const body=isAdmin?{name,flight,firstPayDate:date}:{name};
+  try {
+    await api('PUT',`/api/travelers/${id}`,body);
+    // Upload avatar if changed
+    if(editAvatarBase64) {
+      const [header,data]=editAvatarBase64.split(',');
+      const ext=header.match(/image\/(\w+)/)?.[1]||'jpg';
+      await api('POST',`/api/travelers/${id}/avatar-base64`,{base64:editAvatarBase64,ext});
+    }
+    toast('Guardado ✅','success');
+    closeModal('modal-edit');
+  } catch(e){ toast(e.message,'error'); }
+});
+
+function previewAvatar(input) {
+  const file=input.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    editAvatarBase64=e.target.result;
+    const prev=document.getElementById('edit-avatar-preview');
+    prev.innerHTML=`<img src="${e.target.result}" style="width:64px;height:64px;border-radius:50%;object-fit:cover">`;
+  };
+  reader.readAsDataURL(file);
+}
+
+// Quick avatar upload from traveler card
+function quickAvatarUpload(tid) {
+  const inp=document.createElement('input');
+  inp.type='file'; inp.accept='image/*';
+  inp.onchange=async e=>{
+    const file=e.target.files[0]; if(!file) return;
+    const reader=new FileReader();
+    reader.onload=async ev=>{
+      try {
+        const [header,data]=ev.target.result.split(',');
+        const ext=header.match(/image\/(\w+)/)?.[1]||'jpg';
+        await api('POST',`/api/travelers/${tid}/avatar-base64`,{base64:ev.target.result,ext});
+        toast('Foto actualizada ✅','success');
+      } catch(e){ toast(e.message,'error'); }
+    };
+    reader.readAsDataURL(file);
+  };
+  inp.click();
+}
+
+// Upload MY avatar (from profile modal)
+async function uploadMyAvatar(input) {
+  const file=input.files[0]; if(!file) return;
+  if(!me||!me.travelerId) return toast('Tu cuenta no está vinculada a un viajero','warn');
+  const reader=new FileReader();
+  reader.onload=async e=>{
+    try {
+      const ext=file.name.split('.').pop()||'jpg';
+      await api('POST',`/api/travelers/${me.travelerId}/avatar-base64`,{base64:e.target.result,ext});
+      me.avatarUrl=e.target.result; // preview immediately
+      document.getElementById('profile-avatar-big').innerHTML=`<img src="${e.target.result}" style="width:80px;height:80px;border-radius:50%;object-fit:cover">`;
+      updateHeaderAvatar();
+      toast('Foto actualizada ✅','success');
+    } catch(err){ toast(err.message,'error'); }
+  };
+  reader.readAsDataURL(file);
+}
+
+// Delete traveler
+async function deleteTraveler(id) {
+  try { await api('DELETE',`/api/travelers/${id}`); toast('Viajero eliminado','info'); }
+  catch(e){ toast(e.message,'error'); }
+}
+
+// Payment
+function openPay(id) {
+  currentPayId=id;
+  const t=state.travelers.find(x=>x.id===id); if(!t) return;
+  document.getElementById('pay-name').value=t.name;
+  document.getElementById('pay-date').value=new Date().toISOString().slice(0,10);
+  const paidSet=new Set(state.payments.filter(p=>p.travelerId===id).map(p=>p.cuota));
+  const sel=document.getElementById('pay-cuota'); sel.innerHTML='';
+  for(let i=1;i<=state.settings.installments;i++){
+    const o=document.createElement('option');
+    o.value=i; o.textContent=`Cuota ${i}${paidSet.has(i)?' ✓':''}`;
+    sel.appendChild(o);
+  }
+  const next=[...Array(state.settings.installments)].map((_,i)=>i+1).find(n=>!paidSet.has(n))||state.settings.installments;
+  sel.value=next;
+  document.getElementById('pay-value').value=Math.round(calcTraveler(t).instAmt);
+  document.getElementById('modal-pay-title').textContent=`Pago — ${t.name.split(' ')[0]}`;
+  openModal('modal-pay');
+}
+document.getElementById('btn-save-pay').addEventListener('click', async ()=>{
+  const cuota=parseInt(document.getElementById('pay-cuota').value);
+  const date=document.getElementById('pay-date').value;
+  const value=parseFloat(document.getElementById('pay-value').value);
+  if(!date) return toast('Falta fecha','error');
+  if(!value||value<=0) return toast('Valor inválido','error');
+  try {
+    await api('POST','/api/payments',{travelerId:currentPayId,cuota,date,value});
+    toast('Pago registrado ✅','success');
+    closeModal('modal-pay');
+  } catch(e){ toast(e.message,'error'); }
+});
+
+async function deletePay(id) {
+  try { await api('DELETE',`/api/payments/${id}`); toast('Pago eliminado','info'); }
+  catch(e){ toast(e.message,'error'); }
+}
+
+/* ═══════════════════════════════════════════════════
+   USERS MANAGEMENT
+═══════════════════════════════════════════════════ */
+document.getElementById('btn-users').addEventListener('click', async ()=>{
+  await loadUsers();
+  populateTravelerSelects();
+  openModal('modal-users');
+});
+
+async function loadUsers() {
+  const list=document.getElementById('users-list');
+  try {
+    const users=await api('GET','/api/users');
+    if(!users.length){ list.innerHTML='<div class="table-empty">No hay usuarios</div>'; return; }
+    list.innerHTML=users.map(u=>`
+      <div class="user-row">
+        <div>${avatarHTML(u.avatar_url, u.display_name||u.username, 36, 13)}</div>
+        <div class="user-info">
+          <div class="user-name">${esc(u.display_name||u.username)}</div>
+          <div class="user-username">@${esc(u.username)}</div>
+        </div>
+        <span class="pill pill-${u.role}">${u.role==='admin'?'⚙️ Admin':'🏄 Participante'}</span>
+        <div class="user-actions">
+          <span style="font-size:11px;font-weight:600;color:${u.active?'var(--success)':'var(--danger)'}">${u.active?'●':'○'}</span>
+          <button class="btn btn-secondary btn-xs" onclick="openEditUser('${u.id}','${esc(u.username)}','${u.role}',${u.active},'${esc(u.display_name||'')}','${u.traveler_id||''}')">✏️</button>
+          ${u.id!==me.id?`<button class="btn btn-danger btn-xs" onclick="doConfirm('¿Eliminar a ${esc(u.username)}?',async()=>{await api('DELETE','/api/users/${u.id}');await loadUsers();toast('Usuario eliminado','info')})">🗑️</button>`:''}
+        </div>
+      </div>`).join('');
+  } catch(e){ list.innerHTML=`<div class="table-empty">${e.message}</div>`; }
+}
+
+function populateTravelerSelects() {
+  ['nu-traveler','eu-traveler'].forEach(selId=>{
+    const sel=document.getElementById(selId); if(!sel) return;
+    sel.innerHTML='<option value="">— ninguno —</option>';
+    state.travelers.forEach(t=>{ const o=document.createElement('option'); o.value=t.id; o.textContent=t.name; sel.appendChild(o); });
+  });
+}
+
+document.getElementById('btn-create-user').addEventListener('click', async ()=>{
+  const username=document.getElementById('nu-user').value.trim();
+  const password=document.getElementById('nu-pass').value;
+  const role=document.getElementById('nu-role').value;
+  const travelerId=document.getElementById('nu-traveler').value||null;
+  if(!username||!password) return toast('Completa usuario y contraseña','error');
+  if(password.length<6) return toast('Contraseña mínimo 6 caracteres','error');
+  try {
+    await api('POST','/api/users',{username,password,role,travelerId,displayName:username});
+    toast(`Usuario ${username} creado ✅`,'success');
+    document.getElementById('nu-user').value='';
+    document.getElementById('nu-pass').value='';
+    await loadUsers();
+  } catch(e){ toast(e.message,'error'); }
+});
+
+function openEditUser(id,username,role,active,displayName,travelerId) {
+  document.getElementById('eu-id').value=id;
+  document.getElementById('eu-username').value=username;
+  document.getElementById('eu-role').value=role;
+  document.getElementById('eu-active').value=active?'1':'0';
+  document.getElementById('eu-pass').value='';
+  populateTravelerSelects();
+  setTimeout(()=>{ document.getElementById('eu-traveler').value=travelerId||''; },50);
+  openModal('modal-edit-user');
+}
+document.getElementById('btn-save-edit-user').addEventListener('click', async ()=>{
+  const id=document.getElementById('eu-id').value;
+  const role=document.getElementById('eu-role').value;
+  const active=document.getElementById('eu-active').value==='1';
+  const pass=document.getElementById('eu-pass').value;
+  const travelerId=document.getElementById('eu-traveler').value||null;
+  const body={role,active,travelerId};
+  if(pass){ if(pass.length<6) return toast('Contraseña mínimo 6 caracteres','error'); body.password=pass; }
+  try {
+    await api('PUT',`/api/users/${id}`,body);
+    toast('Usuario actualizado ✅','success');
+    closeModal('modal-edit-user');
+    await loadUsers();
+  } catch(e){ toast(e.message,'error'); }
+});
+
+/* ═══════════════════════════════════════════════════
+   PROFILE MODAL
+═══════════════════════════════════════════════════ */
+document.getElementById('btn-profile').addEventListener('click', openProfile);
+function openProfile() {
+  document.getElementById('profile-display-name').textContent = me.displayName||me.username;
+  document.getElementById('profile-username-label').textContent = '@'+me.username;
+  document.getElementById('profile-role-pill').innerHTML = `<span class="pill pill-${me.role}">${me.role==='admin'?'⚙️ Administrador':'🏄 Participante'}</span>`;
+  document.getElementById('profile-display-inp').value = me.displayName||me.username;
+  document.getElementById('profile-avatar-big').innerHTML = avatarHTML(me.avatarUrl, me.displayName||me.username, 80, 28);
+  // My payment status
+  if(me.travelerId) {
+    const t=state.travelers.find(x=>x.id===me.travelerId);
+    const mstatus=document.getElementById('my-traveler-info');
+    if(t){ mstatus.style.display='block'; const c=calcTraveler(t); document.getElementById('my-payment-status').innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div class="kpi-card" style="padding:14px"><div class="kpi-label">Pagado</div><div class="kpi-value mono success" style="font-size:18px">${fmt(c.paid)}</div></div><div class="kpi-card" style="padding:14px"><div class="kpi-label">Pendiente</div><div class="kpi-value mono danger" style="font-size:18px">${fmt(c.pending)}</div></div></div>`;}
+  } else { document.getElementById('my-traveler-info').style.display='none'; }
+  openModal('modal-profile');
+}
+document.getElementById('btn-save-display-name').addEventListener('click', async ()=>{
+  const name=document.getElementById('profile-display-inp').value.trim();
+  if(!name) return toast('Ingresa un nombre','error');
+  try {
+    await api('PUT','/api/users/me',{displayName:name});
+    me.displayName=name; localStorage.setItem('ctg_me',JSON.stringify(me));
+    document.getElementById('profile-display-name').textContent=name;
+    updateHeaderAvatar();
+    toast('Nombre actualizado ✅','success');
+  } catch(e){ toast(e.message,'error'); }
+});
+
+/* ═══════════════════════════════════════════════════
+   ALERTS TOGGLE
+═══════════════════════════════════════════════════ */
+document.getElementById('btn-alerts').addEventListener('click',()=>{
+  const s=document.getElementById('alerts-section');
+  s.style.display=s.style.display==='none'?'block':'none';
+  if(s.style.display!=='none') renderAlerts();
+});
+document.getElementById('btn-close-alerts').addEventListener('click',()=>{ document.getElementById('alerts-section').style.display='none'; });
+
+/* ═══════════════════════════════════════════════════
+   SEARCH / FILTER / SORT
+═══════════════════════════════════════════════════ */
+['search-inp','filter-sel','sort-sel'].forEach(id=>{
+  const el=document.getElementById(id);
+  if(el) { el.addEventListener('input',renderTravelers); el.addEventListener('change',renderTravelers); }
+});
+
+/* ═══════════════════════════════════════════════════
+   WHATSAPP / EXPORTS
+═══════════════════════════════════════════════════ */
+function buildWAMsg() {
+  let total=0,col=0; state.travelers.forEach(t=>{const c=calcTraveler(t);total+=c.total;col+=c.paid;});
+  const tripDate=new Date(state.settings.tripDate+'T00:00:00');
+  const days=Math.max(0,Math.floor((tripDate-new Date())/86400000));
+  const lines=['✈️ *Cartagena 2026*','📍 Bogotá → Cartagena | 12–15 Nov 2026',`⏳ Faltan *${days} días*`,'',`💰 Total vuelos: ${fmt(total)}`,`✅ Recaudado: ${fmt(col)}`,`⏳ Pendiente: ${fmt(Math.max(0,total-col))}`,'','👥 *Estado:*'];
+  state.travelers.forEach(t=>{const c=calcTraveler(t),st=getStatus(t);const e=st==='ok'?'✅':st==='warn'?'⏰':'🔴';lines.push(`${e} ${t.name}: ${fmt(c.pending)} pendiente`);});
+  lines.push('','🏖️ ¡Nos vemos en Cartagena!');
+  return lines.join('\n');
+}
+const shareWA=()=>window.open('https://wa.me/?text='+encodeURIComponent(buildWAMsg()),'_blank');
+document.getElementById('btn-whatsapp').addEventListener('click',shareWA);
+document.getElementById('btn-whatsapp2').addEventListener('click',shareWA);
+
+document.getElementById('btn-excel').addEventListener('click',()=>{
+  if(!window.XLSX) return toast('SheetJS no disponible','error');
+  const wb=XLSX.utils.book_new();
+  const td=[['Nombre','Vuelo','Intereses','Total','Pagado','Pendiente','Cuota/mes','%']];
+  state.travelers.forEach(t=>{const c=calcTraveler(t);td.push([t.name,t.flight,Math.round(c.interest),Math.round(c.total),Math.round(c.paid),Math.round(c.pending),Math.round(c.instAmt),c.progress.toFixed(1)+'%']);});
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(td),'Viajeros');
+  const pd=[['Fecha','Viajero','Cuota','Valor']];
+  [...state.payments].sort((a,b)=>new Date(a.date)-new Date(b.date)).forEach(p=>{const t=state.travelers.find(x=>x.id===p.travelerId);pd.push([p.date,t?t.name:'?',p.cuota,p.value]);});
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(pd),'Pagos');
+  XLSX.writeFile(wb,'Cartagena2026.xlsx');
+  toast('Excel exportado ✅','success');
+});
+
+document.getElementById('btn-pdf').addEventListener('click',()=>{
+  if(!window.jspdf) return toast('jsPDF no disponible','error');
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  const W=210;let y=20;
+  doc.setFont('helvetica','bold');doc.setFontSize(22);doc.text('Viaje Cartagena 2026',W/2,y,{align:'center'});y+=8;
+  doc.setFontSize(11);doc.setFont('helvetica','normal');doc.setTextColor(100);doc.text('Bogotá → Cartagena · 12–15 Nov 2026',W/2,y,{align:'center'});y+=12;
+  let total=0,col=0;state.travelers.forEach(t=>{const c=calcTraveler(t);total+=c.total;col+=c.paid;});
+  doc.setFillColor(240,248,255);doc.roundedRect(15,y,W-30,22,4,4,'F');
+  doc.setTextColor(30);doc.setFont('helvetica','bold');doc.setFontSize(10);
+  doc.text('TOTAL',30,y+7);doc.text('RECAUDADO',80,y+7);doc.text('PENDIENTE',130,y+7);
+  doc.setFont('helvetica','normal');doc.setFontSize(13);
+  doc.text(fmt(total),30,y+17);doc.text(fmt(col),80,y+17);doc.text(fmt(Math.max(0,total-col)),130,y+17);y+=32;
+  doc.setFont('helvetica','bold');doc.setFontSize(10);doc.text('VIAJEROS',15,y);y+=5;
+  const cols=[15,70,110,145,175];doc.setFillColor(220,235,250);doc.rect(14,y,W-28,7,'F');
+  ['Nombre','Total','Pagado','Pendiente','%'].forEach((h,i)=>doc.text(h,cols[i]+1,y+5));y+=9;
+  doc.setFont('helvetica','normal');
+  state.travelers.forEach(t=>{const c=calcTraveler(t);if(y>270){doc.addPage();y=20;}[t.name,fmt(c.total),fmt(c.paid),fmt(c.pending),c.progress.toFixed(0)+'%'].forEach((v,i)=>doc.text(String(v),cols[i]+1,y+5));y+=8;});
+  doc.save('Cartagena2026.pdf');
+  toast('PDF generado ✅','success');
+});
+
+/* ═══════════════════════════════════════════════════
+   MODAL / CONFIRM / TOAST
+═══════════════════════════════════════════════════ */
+function openModal(id){ document.getElementById(id).classList.add('open'); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+// Close on overlay click
+document.querySelectorAll('.modal-overlay').forEach(ov=>ov.addEventListener('click',e=>{ if(e.target===ov) ov.classList.remove('open'); }));
+
+function doConfirm(msg,cb){
+  pendingConfirmCb=cb;
+  document.getElementById('confirm-msg').textContent=msg;
+  document.getElementById('confirm-overlay').classList.add('open');
+}
+document.getElementById('confirm-cancel').addEventListener('click',()=>{ document.getElementById('confirm-overlay').classList.remove('open'); pendingConfirmCb=null; });
+document.getElementById('confirm-ok').addEventListener('click',()=>{ document.getElementById('confirm-overlay').classList.remove('open'); if(pendingConfirmCb){ pendingConfirmCb(); pendingConfirmCb=null; } });
+
+function toast(msg, type='info') {
+  const icons={success:'✅',error:'❌',info:'ℹ️',warn:'⚠️'};
+  const el=document.createElement('div');
+  el.className=`toast ${type}`;
+  el.innerHTML=`<span>${icons[type]||'ℹ️'}</span><span>${msg}</span>`;
+  document.getElementById('toast-wrap').appendChild(el);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('show')));
+  setTimeout(()=>{ el.classList.remove('show'); setTimeout(()=>el.remove(),350); },3500);
+}
+
+function scrollToSection(id){ const el=document.getElementById(id); if(el) el.scrollIntoView({behavior:'smooth',block:'start'}); }
+
+window.matchMedia('(prefers-color-scheme:dark)').addEventListener('change',()=>setTimeout(renderCharts,50));
+</script>
+</body>
+</html>
