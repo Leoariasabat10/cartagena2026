@@ -333,103 +333,128 @@ img{max-width:100%;display:block}
 .section-title{font-size:20px;font-weight:700;letter-spacing:-0.4px}
 .section-sub{font-size:13px;color:var(--text-2);margin-top:2px}
 
-/* ── COUNTDOWN PREMIUM ── */
+/* ── COUNTDOWN DARK CARD (neon design) ── */
+:root {
+  --neon-cyan: oklch(0.85 0.18 195);
+  --neon-pink: oklch(0.78 0.2 350);
+  --neon-cyan-glow: oklch(0.85 0.18 195 / 0.5);
+  --neon-pink-glow: oklch(0.78 0.2 350 / 0.5);
+}
 .countdown-hero{
-  border-radius:28px;padding:48px 24px 40px;
+  border-radius:28px;padding:40px 28px 36px;
   text-align:center;position:relative;overflow:hidden;
   margin-bottom:36px;
-  background:linear-gradient(135deg,
-    #0a1628 0%,
-    #0d2240 25%,
-    #0a3855 50%,
-    #0d4a6e 75%,
-    #0a5a7a 100%);
+  background:oklch(0.145 0 0);
+  border:1px solid var(--neon-pink-glow);
   box-shadow:
-    0 24px 64px rgba(0,0,0,0.6),
-    0 0 0 1px rgba(56,189,248,0.1),
-    inset 0 1px 0 rgba(255,255,255,0.05);
+    0 0 16px oklch(0.78 0.2 350 / 0.4),
+    inset 0 0 16px oklch(0.78 0.2 350 / 0.15),
+    0 24px 64px rgba(0,0,0,0.7);
+  animation:neonPulse 3s ease-in-out infinite;
 }
-
-/* Animated wave background */
-.cd-bg-waves{
-  position:absolute;inset:0;
-  background:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120'%3E%3Cpath d='M0,60 C150,100 350,0 600,60 C850,120 1050,20 1200,60 L1200,120 L0,120 Z' fill='rgba(56,189,248,0.04)'/%3E%3C/svg%3E") bottom/200% auto repeat-x;
-  animation:waveMove 8s linear infinite;
-  pointer-events:none;
-}
-@keyframes waveMove{0%{background-position:0 bottom}100%{background-position:200% bottom}}
+@keyframes neonPulse{0%,100%{opacity:1}50%{opacity:0.88}}
 
 /* Glow orbs */
-.cd-bg-glow{
-  position:absolute;border-radius:50%;filter:blur(60px);pointer-events:none;
-  animation:glowPulse 6s ease-in-out infinite alternate;
-}
-.cd-bg-glow1{width:300px;height:300px;top:-80px;left:-60px;background:rgba(0,194,255,0.12)}
-.cd-bg-glow2{width:250px;height:250px;bottom:-60px;right:-40px;background:rgba(0,255,180,0.08);animation-delay:-3s}
-.cd-bg-glow3{width:200px;height:200px;top:20%;left:50%;transform:translateX(-50%);background:rgba(56,189,248,0.06);animation-delay:-1.5s}
-@keyframes glowPulse{0%{opacity:0.5;transform:scale(1)}100%{opacity:1;transform:scale(1.3)}}
+.cd-bg-glow{position:absolute;border-radius:50%;filter:blur(60px);pointer-events:none}
+.cd-bg-glow1{width:180px;height:180px;top:-60px;right:-40px;background:oklch(0.78 0.2 350 / 0.2)}
+.cd-bg-glow2{width:160px;height:160px;bottom:-50px;left:-30px;background:oklch(0.85 0.18 195 / 0.18)}
+.cd-bg-glow3{display:none}
+.cd-bg-waves{display:none}
 
 /* Particles */
 .cd-particles{position:absolute;inset:0;pointer-events:none;overflow:hidden}
 .cd-particle{
   position:absolute;border-radius:50%;
-  background:rgba(255,255,255,0.6);
-  animation:particleFloat var(--dur,8s) ease-in-out infinite;
-  opacity:0;
+  background:oklch(0.85 0.18 195 / 0.6);
+  animation:particleFloat var(--dur,8s) ease-in-out infinite;opacity:0;
 }
 @keyframes particleFloat{
   0%{opacity:0;transform:translateY(100%) scale(0)}
-  20%{opacity:0.8}
-  80%{opacity:0.4}
-  100%{opacity:0;transform:translateY(-120px) scale(1.5)}
+  20%{opacity:0.8}80%{opacity:0.3}
+  100%{opacity:0;transform:translateY(-80px) scale(1.2)}
 }
 
 .cd-content{position:relative;z-index:2}
 
+/* Badge */
+.countdown-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.12);
+  border-radius:100px;padding:5px 16px;
+  font-size:11px;font-weight:700;
+  color:rgba(255,255,255,0.6);
+  margin-bottom:18px;text-transform:uppercase;letter-spacing:0.8px;
+}
 .cd-badge-dot{
   display:inline-block;width:6px;height:6px;border-radius:50%;
-  background:#38bdf8;margin-right:6px;
+  background:oklch(0.85 0.18 195);
+  box-shadow:0 0 8px oklch(0.85 0.18 195);
   animation:badgePulse 2s ease-in-out infinite;
-  box-shadow:0 0 8px #38bdf8;
 }
-@keyframes badgePulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.8)}}
+@keyframes badgePulse{0%,100%{opacity:1}50%{opacity:0.4}}
 
-/* Glass unit cards */
+/* Message */
+.countdown-message{
+  font-size:clamp(18px,3vw,26px);font-weight:700;
+  color:oklch(0.85 0.18 195);
+  text-shadow:0 0 4px oklch(0.85 0.18 195 / 0.8),0 0 12px oklch(0.85 0.18 195 / 0.5);
+  margin-bottom:6px;line-height:1.3;
+}
+.countdown-sub-msg{
+  font-size:14px;color:rgba(255,255,255,0.5);margin-bottom:28px;
+}
+
+/* Grid — 4 in a row */
+.countdown-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:10px;max-width:520px;margin:0 auto 24px;align-items:center;
+}
+@media(min-width:500px){.countdown-grid{gap:14px}}
+
+.countdown-unit{display:flex;flex-direction:column;align-items:center}
 .cd-unit-glass{
-  background:rgba(255,255,255,0.06);
-  backdrop-filter:blur(12px);
-  border:1px solid rgba(255,255,255,0.12);
-  border-radius:20px;
-  padding:20px 16px 14px;
-  position:relative;overflow:hidden;
-  box-shadow:
-    0 8px 32px rgba(0,0,0,0.3),
-    inset 0 1px 0 rgba(255,255,255,0.1),
-    inset 0 -1px 0 rgba(0,0,0,0.2);
-  transition:transform 0.3s,box-shadow 0.3s;
+  width:100%;
+  background:rgba(255,255,255,0.04);
+  border:1px solid oklch(0.85 0.18 195 / 0.5);
+  border-radius:16px;padding:16px 8px 12px;
+  box-shadow:0 0 12px oklch(0.85 0.18 195 / 0.35),inset 0 0 12px oklch(0.85 0.18 195 / 0.15);
+  transition:transform 0.3s;
 }
-.cd-unit-glass::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:50%;
-  background:linear-gradient(to bottom,rgba(255,255,255,0.08),transparent);
-  border-radius:20px 20px 0 0;
-}
-.countdown-unit:hover .cd-unit-glass{
-  transform:translateY(-4px);
-  box-shadow:0 16px 48px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.15);
-}
+.countdown-unit:hover .cd-unit-glass{transform:translateY(-3px)}
 .cd-separator{
-  font-size:40px;font-weight:900;color:rgba(56,189,248,0.6);
-  display:flex;align-items:center;padding:0 4px;
+  font-size:32px;font-weight:900;
+  color:oklch(0.85 0.18 195);
+  text-shadow:0 0 8px oklch(0.85 0.18 195 / 0.8);
+  display:flex;align-items:center;justify-content:center;
+  padding-bottom:16px;
   animation:sepBlink 1s step-end infinite;
-  margin-bottom:20px;
 }
-@keyframes sepBlink{0%,100%{opacity:1}50%{opacity:0.2}}
+@keyframes sepBlink{0%,100%{opacity:1}50%{opacity:0.15}}
 
-.cd-unit-reflection{
-  height:8px;margin-top:4px;border-radius:0 0 8px 8px;
-  background:linear-gradient(to bottom,rgba(56,189,248,0.15),transparent);
-  filter:blur(4px);
+.countdown-num{
+  font-size:clamp(28px,5vw,44px);font-weight:900;
+  color:oklch(0.85 0.18 195);
+  text-shadow:0 0 4px oklch(0.85 0.18 195 / 0.8),0 0 12px oklch(0.85 0.18 195 / 0.6),0 0 28px oklch(0.7 0.18 195 / 0.45);
+  font-family:monospace;
+  display:block;letter-spacing:-1px;line-height:1;
+  background:none;-webkit-text-fill-color:unset;
+}
+.countdown-label{
+  display:block;font-size:10px;font-weight:700;
+  color:rgba(255,255,255,0.4);text-transform:uppercase;
+  letter-spacing:0.15em;margin-top:6px;
+}
+.cd-unit-reflection{display:none}
+
+/* Info pills */
+.countdown-trip-info{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:4px}
+.countdown-info-pill{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:100px;padding:5px 12px;
+  font-size:12px;color:rgba(255,255,255,0.55);
 }
 .countdown-badge{
   display:inline-flex;align-items:center;gap:6px;
@@ -906,6 +931,50 @@ body.viewer-mode .admin-only-inline{display:none!important}
 .pill-pending { display:inline-block;background:rgba(245,158,11,0.15);color:#f59e0b;font-size:10px;font-weight:700;border-radius:6px;padding:1px 6px;margin-left:4px; }
 .pill-rejected { display:inline-block;background:rgba(239,68,68,0.15);color:#ef4444;font-size:10px;font-weight:700;border-radius:6px;padding:1px 6px;margin-left:4px; }
 
+
+/* ── FOCUS CARDS (gallery strip) ── */
+.focus-cards{
+  display:flex;gap:10px;overflow-x:auto;
+  padding:0 0 8px;margin-bottom:40px;
+  scrollbar-width:none;
+}
+.focus-cards::-webkit-scrollbar{display:none}
+.focus-card{
+  flex-shrink:0;width:200px;height:280px;
+  border-radius:20px;overflow:hidden;position:relative;
+  cursor:pointer;
+  transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1),flex 0.4s,width 0.4s,box-shadow 0.4s;
+  box-shadow:0 8px 32px rgba(0,0,0,0.3);
+}
+.focus-card:hover,.focus-card.focused{
+  width:320px;flex:0 0 320px;
+  box-shadow:0 20px 60px rgba(0,0,0,0.5);
+  transform:translateY(-6px);
+}
+.focus-card img,.focus-card video{
+  width:100%;height:100%;object-fit:cover;
+  transition:transform 0.5s;
+}
+.focus-card:hover img,.focus-card:hover video{transform:scale(1.06)}
+.focus-card::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(0,0,0,0.8) 0%,transparent 50%);
+}
+.focus-card-label{
+  position:absolute;bottom:14px;left:14px;right:14px;z-index:1;
+  color:#fff;font-size:13px;font-weight:700;letter-spacing:0.3px;
+  opacity:0;transform:translateY(8px);
+  transition:all 0.3s;
+}
+.focus-card:hover .focus-card-label{opacity:1;transform:translateY(0)}
+
+/* WhatsApp group button */
+.wa-group-btn{
+  color:#25d366 !important;
+  transition:transform 0.2s,color 0.2s;
+}
+.wa-group-btn:hover{transform:scale(1.15)}
+
 </style>
 </head>
 <body>
@@ -1051,6 +1120,9 @@ body.viewer-mode .admin-only-inline{display:none!important}
         <span class="conn-dot" id="conn-dot"></span>
         <span class="conn-label" id="conn-label">En vivo</span>
       </div>
+      <a href="https://chat.whatsapp.com/FcXeCy5SplSKPvniAGR8EQ" target="_blank" rel="noopener" class="btn-icon wa-group-btn" title="Grupo WhatsApp">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      </a>
       <button class="btn-icon admin-only" id="btn-alerts" title="Alertas"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="badge-count" id="alert-badge" style="display:none">0</span></button>
       <button class="btn-icon admin-only" id="btn-users" title="Usuarios"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></button>
       <button class="btn-icon" id="btn-profile" title="Mi perfil">
@@ -1104,31 +1176,24 @@ body.viewer-mode .admin-only-inline{display:none!important}
             <span class="countdown-num" id="cd-days">00</span>
             <span class="countdown-label">Días</span>
           </div>
-          <div class="cd-unit-reflection"></div>
         </div>
-        <div class="cd-separator">:</div>
         <div class="countdown-unit">
           <div class="cd-unit-glass">
             <span class="countdown-num" id="cd-hours">00</span>
             <span class="countdown-label">Horas</span>
           </div>
-          <div class="cd-unit-reflection"></div>
         </div>
-        <div class="cd-separator">:</div>
         <div class="countdown-unit">
           <div class="cd-unit-glass">
             <span class="countdown-num" id="cd-mins">00</span>
             <span class="countdown-label">Min</span>
           </div>
-          <div class="cd-unit-reflection"></div>
         </div>
-        <div class="cd-separator">:</div>
         <div class="countdown-unit">
           <div class="cd-unit-glass">
             <span class="countdown-num" id="cd-secs">00</span>
             <span class="countdown-label">Seg</span>
           </div>
-          <div class="cd-unit-reflection"></div>
         </div>
       </div>
 
@@ -1140,81 +1205,47 @@ body.viewer-mode .admin-only-inline{display:none!important}
     </div>
   </div>
 
-  <!-- NUESTRAS FOTOS -->
-  <div class="ctg-strip">
-    <div class="ctg-strip-inner" id="ctg-strip-inner">
-      <div class="ctg-photo" style="background-image:url('/fotos/1d98b08f-a145-411b-8a0c-539b2373ed1d.jpg')">
-        <div class="ctg-photo-label">El crew</div>
-      </div>
-      <div class="ctg-photo" style="background-image:url('/fotos/5bd5cea7-f558-4016-bb81-ec34ae4da3aa.jpg')">
-        <div class="ctg-photo-label">La banda</div>
-      </div>
-      <div class="ctg-photo" style="background-image:url('/fotos/5c567547-0d48-45d9-bf8a-9fbd8e94d948.jpg')">
-        <div class="ctg-photo-label">Siempre juntos</div>
-      </div>
-      <div class="ctg-photo" style="background-image:url('/fotos/6d77c9a7-ce4b-4910-bce2-20ca964249bf.jpg')">
-        <div class="ctg-photo-label">Esos momentos</div>
-      </div>
-      <div class="ctg-photo" style="background-image:url('/fotos/IMG_5805.jpg')">
-        <div class="ctg-photo-label">Los mejores</div>
-      </div>
-      <div class="ctg-photo" style="background-image:url('/fotos/IMG_5971.jpg')">
-        <div class="ctg-photo-label">A Cartagena</div>
-      </div>
-      <div class="ctg-photo" style="background-image:url('/fotos/IMG_6143.jpg')">
-        <div class="ctg-photo-label">El grupo</div>
-      </div>
-      <div class="ctg-photo" style="background-image:url('/fotos/IMG_8415.JPG')">
-        <div class="ctg-photo-label">La vuelta</div>
-      </div>
-      <div class="ctg-photo" style="background-image:url('/fotos/fe71f618-e7cf-46ca-8ad7-a26e32cce756.jpg')">
-        <div class="ctg-photo-label">Nosotros</div>
-      </div>
-      <div class="ctg-photo" style="background-image:url('/fotos/videoframe_5652.png')">
-        <div class="ctg-photo-label">El viaje</div>
-      </div>
-      <div class="ctg-photo" style="background-image:url('/fotos/IMG_5930.PNG')">
-        <div class="ctg-photo-label">El plan</div>
-      </div>
-      <div class="ctg-photo" style="background-image:url('/fotos/370DA77F-6E88-4E7A-B7D9-A954F6A748DF.png')">
-        <div class="ctg-photo-label">Cartagena nos espera</div>
-      </div>
-      <div class="ctg-photo" style="background-image:url('/fotos/1d98b08f-a145-411b-8a0c-539b2373ed1d.jpg')">
-        <div class="ctg-photo-label">El crew</div>
-      </div>
-      <div class="ctg-photo" style="background-image:url('/fotos/5bd5cea7-f558-4016-bb81-ec34ae4da3aa.jpg')">
-        <div class="ctg-photo-label">La banda</div>
-      </div>
-      <div class="ctg-photo" style="background-image:url('/fotos/5c567547-0d48-45d9-bf8a-9fbd8e94d948.jpg')">
-        <div class="ctg-photo-label">Siempre juntos</div>
-      </div>
-      <div class="ctg-photo" style="background-image:url('/fotos/6d77c9a7-ce4b-4910-bce2-20ca964249bf.jpg')">
-        <div class="ctg-photo-label">Esos momentos</div>
-      </div>
-      <div class="ctg-photo" style="background-image:url('/fotos/IMG_5805.jpg')">
-        <div class="ctg-photo-label">Los mejores</div>
-      </div>
-      <div class="ctg-photo" style="background-image:url('/fotos/IMG_5971.jpg')">
-        <div class="ctg-photo-label">A Cartagena</div>
-      </div>
-      <div class="ctg-photo" style="background-image:url('/fotos/IMG_6143.jpg')">
-        <div class="ctg-photo-label">El grupo</div>
-      </div>
-      <div class="ctg-photo" style="background-image:url('/fotos/IMG_8415.JPG')">
-        <div class="ctg-photo-label">La vuelta</div>
-      </div>
-      <div class="ctg-photo" style="background-image:url('/fotos/fe71f618-e7cf-46ca-8ad7-a26e32cce756.jpg')">
-        <div class="ctg-photo-label">Nosotros</div>
-      </div>
-      <div class="ctg-photo" style="background-image:url('/fotos/videoframe_5652.png')">
-        <div class="ctg-photo-label">El viaje</div>
-      </div>
-      <div class="ctg-photo" style="background-image:url('/fotos/IMG_5930.PNG')">
-        <div class="ctg-photo-label">El plan</div>
-      </div>
-      <div class="ctg-photo" style="background-image:url('/fotos/370DA77F-6E88-4E7A-B7D9-A954F6A748DF.png')">
-        <div class="ctg-photo-label">Cartagena nos espera</div>
-      </div>
+  <!-- NUESTRAS FOTOS - Focus Cards -->
+  <div class="section-header" style="margin-bottom:12px">
+    <div><div class="section-title">Nuestros momentos</div><div class="section-sub">El grupo que va a Cartagena</div></div>
+  </div>
+  <div class="focus-cards" id="focus-cards-main">
+    <div class="focus-card" onclick="openLB('/fotos/1d98b08f-a145-411b-8a0c-539b2373ed1d.jpg')">
+      <img src="/fotos/1d98b08f-a145-411b-8a0c-539b2373ed1d.jpg" loading="lazy" alt="">
+      <div class="focus-card-label">El crew</div>
+    </div>
+    <div class="focus-card" onclick="openLB('/fotos/5c567547-0d48-45d9-bf8a-9fbd8e94d948.jpg')">
+      <img src="/fotos/5c567547-0d48-45d9-bf8a-9fbd8e94d948.jpg" loading="lazy" alt="">
+      <div class="focus-card-label">Siempre juntos</div>
+    </div>
+    <div class="focus-card" onclick="openLB('/fotos/IMG_5805.jpg')">
+      <img src="/fotos/IMG_5805.jpg" loading="lazy" alt="">
+      <div class="focus-card-label">Los mejores</div>
+    </div>
+    <div class="focus-card" onclick="openLB('/fotos/6d77c9a7-ce4b-4910-bce2-20ca964249bf.jpg')">
+      <img src="/fotos/6d77c9a7-ce4b-4910-bce2-20ca964249bf.jpg" loading="lazy" alt="">
+      <div class="focus-card-label">Esos momentos</div>
+    </div>
+    <div class="focus-card" onclick="openLB('/fotos/IMG_5971.jpg')">
+      <img src="/fotos/IMG_5971.jpg" loading="lazy" alt="">
+      <div class="focus-card-label">A Cartagena</div>
+    </div>
+    <div class="focus-card" onclick="openLB('/fotos/fe71f618-e7cf-46ca-8ad7-a26e32cce756.jpg')">
+      <img src="/fotos/fe71f618-e7cf-46ca-8ad7-a26e32cce756.jpg" loading="lazy" alt="">
+      <div class="focus-card-label">La banda</div>
+    </div>
+    <div class="focus-card" onclick="openLB('/fotos/IMG_6143.jpg')">
+      <img src="/fotos/IMG_6143.jpg" loading="lazy" alt="">
+      <div class="focus-card-label">Juntos</div>
+    </div>
+    <div class="focus-card" onclick="openLB('/fotos/IMG_8415.JPG')">
+      <img src="/fotos/IMG_8415.JPG" loading="lazy" alt="">
+      <div class="focus-card-label">El viaje</div>
+    </div>
+    <!-- Video card -->
+    <div class="focus-card" id="video-card-main">
+      <video src="/fotos/94d3b2f4-2b23-4368-b373-10f72b2819d8.mp4" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover"></video>
+      <div class="focus-card-label">El momento</div>
     </div>
   </div>
 
@@ -1379,6 +1410,7 @@ body.viewer-mode .admin-only-inline{display:none!important}
           <div class="form-group"><label class="form-label">Contraseña</label><input class="form-input" id="nu-pass" type="password" placeholder="Mín 6 caracteres"></div>
           <div class="form-group"><label class="form-label">Rol</label><select class="form-input" id="nu-role"><option value="participant">🏄 Participante</option><option value="admin">⚙️ Administrador</option></select></div>
           <div class="form-group"><label class="form-label">Vinculado a viajero</label><select class="form-input" id="nu-traveler"><option value="">— ninguno —</option></select></div>
+          <div class="form-group"><label class="form-label">Instagram (opcional)</label><input class="form-input" id="nu-instagram" type="text" placeholder="@usuario.instagram"></div>
         </div>
         <div style="display:flex;justify-content:flex-end"><button class="btn btn-primary btn-sm" id="btn-create-user">Crear usuario</button></div>
       </div>
@@ -2330,7 +2362,7 @@ async function loadUsers() {
         <div>${avatarHTML(u.avatar_url, u.display_name||u.username, 36, 13)}</div>
         <div class="user-info">
           <div class="user-name">${esc(u.display_name||u.username)}</div>
-          <div class="user-username">@${esc(u.username)}</div>
+          <div class="user-username">@${esc(u.username)}${u.instagram?` · <a href="https://instagram.com/${esc(u.instagram.replace('@',''))}" target="_blank" rel="noopener" style="color:#e1306c;text-decoration:none;font-weight:700">IG</a>`:''}</div>
         </div>
         <span class="pill pill-${u.role}">${u.role==='admin'?'Admin':'Participante'}</span>
         <div class="user-actions">
