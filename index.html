@@ -667,6 +667,151 @@ body.viewer-mode .admin-only-inline{display:none!important}
 }
 .ctg-photo:hover .ctg-photo-label{transform:translateY(0);opacity:1}
 
+
+/* ── GOOEY TEXT MORPHING ── */
+.gooey-wrap{
+  position:relative;height:80px;width:100%;
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:16px;
+}
+.gooey-text{
+  position:absolute;
+  font-size:clamp(28px,4vw,48px);font-weight:900;
+  color:#fff;text-align:center;
+  letter-spacing:-1px;line-height:1;
+  pointer-events:none;select:none;
+}
+
+/* ── BENTO GALLERY ── */
+.login-left-gallery{
+  padding:32px 28px 24px;
+  display:none;
+  flex-direction:column;align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+@media(min-width:900px){.login-left-gallery{display:flex;flex:1}}
+
+.bento-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  grid-template-rows:auto auto auto;
+  gap:8px;width:100%;max-width:480px;
+}
+.bento-item{
+  border-radius:16px;overflow:hidden;position:relative;
+  cursor:pointer;background:#0a1628;
+  transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1),box-shadow 0.4s;
+  box-shadow:0 4px 20px rgba(0,0,0,0.4);
+  aspect-ratio:1;
+}
+.bento-item.bento-tall{grid-row:span 2;aspect-ratio:auto}
+.bento-item.bento-wide{grid-column:span 2;aspect-ratio:16/9}
+.bento-item img,.bento-item video{
+  width:100%;height:100%;object-fit:cover;
+  display:block;transition:transform 0.5s;
+}
+.bento-item:hover{transform:scale(1.04);box-shadow:0 12px 40px rgba(0,0,0,0.6);z-index:2}
+.bento-item:hover img,.bento-item:hover video{transform:scale(1.06)}
+.bento-item::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(0,0,0,0.7) 0%,transparent 60%);
+}
+.bento-label{
+  position:absolute;bottom:8px;left:10px;z-index:1;
+  color:#fff;font-size:11px;font-weight:700;
+  text-shadow:0 1px 4px rgba(0,0,0,0.8);letter-spacing:0.3px;
+}
+
+/* ── MOBILE MEDIA STRIP ── */
+.login-media-strip{
+  width:100%;overflow:hidden;height:80px;
+  margin-bottom:16px;
+}
+@media(min-width:900px){.login-media-strip{display:none}}
+.login-media-strip-inner{
+  display:flex;gap:8px;
+  animation:stripScroll 20s linear infinite;
+  width:max-content;
+}
+.login-media-strip-inner img{
+  height:76px;width:120px;object-fit:cover;
+  border-radius:10px;flex-shrink:0;
+  opacity:0.85;
+}
+
+/* ── LIQUID GLASS BUTTON ── */
+.liquid-btn-wrap{
+  position:relative;width:100%;margin-top:4px;
+  border-radius:14px;overflow:hidden;
+}
+.liquid-btn-glass{
+  position:absolute;inset:0;border-radius:14px;
+  backdrop-filter:url("#liquid-glass");
+  background:rgba(255,255,255,0.04);
+  pointer-events:none;z-index:0;
+}
+.liquid-btn{
+  position:relative;z-index:1;
+  width:100%;
+  background:linear-gradient(135deg,rgba(26,74,110,0.9),rgba(45,106,159,0.85) 45%,rgba(56,189,248,0.9));
+  color:#fff;border-radius:14px;padding:15px;
+  font-size:15px;font-weight:700;letter-spacing:0.3px;
+  border:1px solid rgba(255,255,255,0.15);
+  transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  box-shadow:
+    0 6px 28px rgba(56,189,248,0.3),
+    inset 0 1px 0 rgba(255,255,255,0.2),
+    inset 0 -1px 0 rgba(0,0,0,0.2);
+}
+.liquid-btn::before{
+  content:"";position:absolute;inset:0;border-radius:14px;
+  background:linear-gradient(135deg,rgba(255,255,255,0.15),transparent 50%);
+  opacity:0;transition:opacity 0.3s;
+}
+.liquid-btn:hover::before{opacity:1}
+.liquid-btn:hover{
+  transform:translateY(-2px) scale(1.01);
+  box-shadow:0 12px 40px rgba(56,189,248,0.45),inset 0 1px 0 rgba(255,255,255,0.25);
+}
+.liquid-btn:active{transform:translateY(1px) scale(0.99)}
+
+/* ── LIGHTBOX ── */
+.lb-overlay{
+  display:none;position:fixed;inset:0;z-index:9999;
+  background:rgba(0,0,0,0.92);
+  align-items:center;justify-content:center;
+  animation:lbFadeIn 0.2s ease;
+}
+.lb-overlay.open{display:flex}
+@keyframes lbFadeIn{from{opacity:0}to{opacity:1}}
+.lb-inner{
+  position:relative;max-width:90vw;max-height:90vh;
+  border-radius:20px;overflow:hidden;
+  box-shadow:0 40px 100px rgba(0,0,0,0.8);
+}
+.lb-img{max-width:90vw;max-height:85vh;object-fit:contain;display:block}
+.lb-close{
+  position:absolute;top:12px;right:12px;
+  width:36px;height:36px;border-radius:50%;
+  background:rgba(255,255,255,0.15);
+  color:#fff;font-size:20px;line-height:1;
+  border:1px solid rgba(255,255,255,0.2);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:background 0.2s;z-index:1;
+}
+.lb-close:hover{background:rgba(255,255,255,0.3)}
+.lb-nav{
+  position:absolute;bottom:12px;left:0;right:0;
+  display:flex;justify-content:center;gap:12px;
+}
+.lb-nav button{
+  background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.2);
+  color:#fff;border-radius:8px;padding:6px 18px;
+  font-size:18px;cursor:pointer;transition:background 0.2s;
+}
+.lb-nav button:hover{background:rgba(255,255,255,0.3)}
+
 </style>
 </head>
 <body>
@@ -675,37 +820,80 @@ body.viewer-mode .admin-only-inline{display:none!important}
 <div id="login-screen">
   <!-- Shader BG -->
   <div class="login-shader-bg"></div>
-
-  <!-- Stars -->
   <div class="login-stars" id="login-stars"></div>
 
-  <!-- LEFT: Globe + Quote (desktop only) -->
-  <div class="login-left">
-    <div class="login-route-badge">BOG → CTG · Nov 2026</div>
-    <div class="globe-wrap">
-      <div class="globe-ring"></div>
-      <div class="globe-ring2"></div>
-      <div class="globe-orbit"><div class="globe-orbit-dot"></div></div>
-      <div class="globe"></div>
-      <div class="globe-star-1"></div>
-      <div class="globe-star-2"></div>
-      <div class="globe-star-3"></div>
-      <div class="globe-star-4"></div>
+  <!-- SVG filters for liquid glass + gooey text -->
+  <svg style="position:absolute;width:0;height:0" aria-hidden="true">
+    <defs>
+      <filter id="gooey-threshold">
+        <feColorMatrix in="SourceGraphic" type="matrix"
+          values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 255 -140"/>
+      </filter>
+      <filter id="liquid-glass" x="0%" y="0%" width="100%" height="100%" color-interpolation-filters="sRGB">
+        <feTurbulence type="fractalNoise" baseFrequency="0.06 0.06" numOctaves="1" seed="2" result="noise"/>
+        <feGaussianBlur in="noise" stdDeviation="2" result="blurNoise"/>
+        <feDisplacementMap in="SourceGraphic" in2="blurNoise" scale="60" xChannelSelector="R" yChannelSelector="B" result="displaced"/>
+        <feGaussianBlur in="displaced" stdDeviation="3" result="finalBlur"/>
+        <feComposite in="finalBlur" in2="finalBlur" operator="over"/>
+      </filter>
+    </defs>
+  </svg>
+
+  <!-- LEFT PANEL: Media gallery (desktop) -->
+  <div class="login-left login-left-gallery">
+    <!-- Gooey morphing title -->
+    <div class="gooey-wrap" style="filter:url(#gooey-threshold)">
+      <span class="gooey-text" id="gooey-t1"></span>
+      <span class="gooey-text" id="gooey-t2"></span>
     </div>
-    <div class="login-quote">
-      <div class="login-quote-text" id="login-left-typewriter"><span id="left-tw-text"></span><span class="tw-cursor">|</span></div>
-      <div class="login-quote-author">Cartagena 2026</div>
+    <div class="login-route-badge" style="margin-bottom:20px">BOG → CTG · Nov 2026</div>
+
+    <!-- Bento gallery grid -->
+    <div class="bento-grid" id="bento-grid">
+      <div class="bento-item bento-tall" data-src="/fotos/1d98b08f-a145-411b-8a0c-539b2373ed1d.jpg" data-type="img">
+        <img src="/fotos/1d98b08f-a145-411b-8a0c-539b2373ed1d.jpg" loading="lazy" alt="El crew">
+        <div class="bento-label">El crew</div>
+      </div>
+      <div class="bento-item bento-wide" data-src="/fotos/5c567547-0d48-45d9-bf8a-9fbd8e94d948.jpg" data-type="img">
+        <img src="/fotos/5c567547-0d48-45d9-bf8a-9fbd8e94d948.jpg" loading="lazy" alt="Juntos">
+        <div class="bento-label">Siempre juntos</div>
+      </div>
+      <div class="bento-item" data-src="/fotos/IMG_5805.jpg" data-type="img">
+        <img src="/fotos/IMG_5805.jpg" loading="lazy" alt="Nosotros">
+        <div class="bento-label">Los mejores</div>
+      </div>
+      <div class="bento-item" data-src="/fotos/6d77c9a7-ce4b-4910-bce2-20ca964249bf.jpg" data-type="img">
+        <img src="/fotos/6d77c9a7-ce4b-4910-bce2-20ca964249bf.jpg" loading="lazy" alt="Momentos">
+        <div class="bento-label">Esos momentos</div>
+      </div>
+      <div class="bento-item bento-wide" data-src="/fotos/IMG_5971.jpg" data-type="img">
+        <img src="/fotos/IMG_5971.jpg" loading="lazy" alt="Cartagena">
+        <div class="bento-label">A Cartagena</div>
+      </div>
+      <div class="bento-item" data-src="/fotos/fe71f618-e7cf-46ca-8ad7-a26e32cce756.jpg" data-type="img">
+        <img src="/fotos/fe71f618-e7cf-46ca-8ad7-a26e32cce756.jpg" loading="lazy" alt="La banda">
+        <div class="bento-label">La banda</div>
+      </div>
     </div>
   </div>
 
-  <!-- RIGHT: Form -->
+  <!-- RIGHT PANEL: Form -->
   <div class="login-right">
-    <div class="login-card">
-      <!-- Mobile globe -->
-      <div class="login-mobile-globe">
-        <div class="globe-sm"></div>
+    <!-- Mobile media strip -->
+    <div class="login-media-strip">
+      <div class="login-media-strip-inner">
+        <img src="/fotos/1d98b08f-a145-411b-8a0c-539b2373ed1d.jpg" alt="">
+        <img src="/fotos/5c567547-0d48-45d9-bf8a-9fbd8e94d948.jpg" alt="">
+        <img src="/fotos/IMG_5805.jpg" alt="">
+        <img src="/fotos/6d77c9a7-ce4b-4910-bce2-20ca964249bf.jpg" alt="">
+        <img src="/fotos/IMG_5971.jpg" alt="">
+        <img src="/fotos/fe71f618-e7cf-46ca-8ad7-a26e32cce756.jpg" alt="">
+        <img src="/fotos/1d98b08f-a145-411b-8a0c-539b2373ed1d.jpg" alt="">
+        <img src="/fotos/5c567547-0d48-45d9-bf8a-9fbd8e94d948.jpg" alt="">
       </div>
+    </div>
 
+    <div class="login-card">
       <div class="login-title">Cartagena 2026</div>
       <div class="login-sub">Bogotá → Cartagena · 12–15 Nov 2026</div>
       <div class="login-typewriter"><span id="login-tw-text"></span><span class="tw-cursor">|</span></div>
@@ -726,12 +914,29 @@ body.viewer-mode .admin-only-inline{display:none!important}
       </div>
 
       <div class="login-error" id="login-error"></div>
-      <button class="login-btn" id="btn-login">Entrar al viaje</button>
+
+      <!-- Liquid Glass Button -->
+      <div class="liquid-btn-wrap">
+        <div class="liquid-btn-glass"></div>
+        <button class="login-btn liquid-btn" id="btn-login">Entrar al viaje</button>
+      </div>
 
       <div class="login-badge-row">
         <span class="login-badge">Seguro</span>
         <span class="login-badge">Tiempo real</span>
         <span class="login-badge">Mobile</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lightbox -->
+  <div class="lb-overlay" id="lb-overlay" onclick="closeLB()">
+    <div class="lb-inner" onclick="event.stopPropagation()">
+      <button class="lb-close" onclick="closeLB()">×</button>
+      <img class="lb-img" id="lb-img" src="" alt="">
+      <div class="lb-nav">
+        <button onclick="lbNav(-1)">&#8592;</button>
+        <button onclick="lbNav(1)">&#8594;</button>
       </div>
     </div>
   </div>
@@ -1191,13 +1396,104 @@ typewriter(document.getElementById('login-tw-text'),[
   'Pagos al día = vacaciones 💳',
 ], 65, 2000);
 
-// Login left panel typewriter
+// Login left panel typewriter (kept for fallback)
 typewriter(document.getElementById('left-tw-text'),[
   'El viaje más esperado del año.',
   'Cartagena: ciudad de ensueño.',
   'Playas, historia y amigos.',
   'La aventura comienza aquí.',
 ], 70, 2500);
+
+/* ═══════════════════════════════════════════════════
+   GOOEY TEXT MORPHING
+═══════════════════════════════════════════════════ */
+(function initGooey(){
+  const texts = ['Cartagena','2026','El plan','La vuelta','Todos juntos','El viaje'];
+  const t1 = document.getElementById('gooey-t1');
+  const t2 = document.getElementById('gooey-t2');
+  if(!t1||!t2) return;
+  const MORPH_TIME = 1.2, COOLDOWN = 2.5;
+  let textIndex = 0, morph = 0, cooldown = COOLDOWN, lastTime = null;
+  t1.textContent = texts[0]; t2.textContent = texts[1];
+
+  function setMorph(frac){
+    t2.style.filter = `blur(${Math.min(8/frac-8,100)}px)`;
+    t2.style.opacity = `${Math.pow(frac,0.4)*100}%`;
+    const inv = 1-frac;
+    t1.style.filter = `blur(${Math.min(8/inv-8,100)}px)`;
+    t1.style.opacity = `${Math.pow(inv,0.4)*100}%`;
+  }
+  function cooldownFn(){
+    morph=0;
+    t2.style.filter=''; t2.style.opacity='100%';
+    t1.style.filter=''; t1.style.opacity='0%';
+  }
+  function frame(ts){
+    if(!lastTime) lastTime=ts;
+    const dt=(ts-lastTime)/1000; lastTime=ts;
+    let wasCooldown = cooldown>0;
+    cooldown-=dt;
+    if(cooldown<=0){
+      if(wasCooldown){
+        textIndex=(textIndex+1)%texts.length;
+        t1.textContent=texts[textIndex];
+        t2.textContent=texts[(textIndex+1)%texts.length];
+      }
+      morph-=cooldown; cooldown=0;
+      let frac=morph/MORPH_TIME;
+      if(frac>1){ cooldown=COOLDOWN; frac=1; }
+      setMorph(frac);
+    } else { cooldownFn(); }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+
+/* ═══════════════════════════════════════════════════
+   BENTO GALLERY LIGHTBOX
+═══════════════════════════════════════════════════ */
+const lbPhotos = [
+  '/fotos/1d98b08f-a145-411b-8a0c-539b2373ed1d.jpg',
+  '/fotos/5c567547-0d48-45d9-bf8a-9fbd8e94d948.jpg',
+  '/fotos/IMG_5805.jpg',
+  '/fotos/6d77c9a7-ce4b-4910-bce2-20ca964249bf.jpg',
+  '/fotos/IMG_5971.jpg',
+  '/fotos/fe71f618-e7cf-46ca-8ad7-a26e32cce756.jpg',
+  '/fotos/IMG_6143.jpg',
+  '/fotos/IMG_8415.JPG',
+  '/fotos/5bd5cea7-f558-4016-bb81-ec34ae4da3aa.jpg',
+];
+let lbIdx = 0;
+function openLB(src){
+  lbIdx = lbPhotos.indexOf(src);
+  if(lbIdx<0) lbIdx=0;
+  document.getElementById('lb-img').src = lbPhotos[lbIdx];
+  document.getElementById('lb-overlay').classList.add('open');
+}
+function closeLB(){
+  document.getElementById('lb-overlay').classList.remove('open');
+}
+function lbNav(dir){
+  lbIdx = (lbIdx+dir+lbPhotos.length)%lbPhotos.length;
+  const img=document.getElementById('lb-img');
+  img.style.opacity='0';
+  setTimeout(()=>{
+    img.src=lbPhotos[lbIdx];
+    img.style.opacity='1';
+    img.style.transition='opacity 0.3s';
+  },150);
+}
+// Wire up bento items
+document.querySelectorAll('.bento-item').forEach(el=>{
+  el.addEventListener('click',()=>openLB(el.dataset.src));
+});
+// Keyboard nav
+document.addEventListener('keydown',e=>{
+  if(!document.getElementById('lb-overlay').classList.contains('open')) return;
+  if(e.key==='ArrowRight') lbNav(1);
+  if(e.key==='ArrowLeft') lbNav(-1);
+  if(e.key==='Escape') closeLB();
+});
 
 let state = {
   settings:  { installments:4, interest:3, darkMode:false, tripDate:'2026-11-12' },
